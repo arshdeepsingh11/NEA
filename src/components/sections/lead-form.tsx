@@ -102,13 +102,13 @@ export function LeadForm({ kind, source, dark, className, after }: { kind: LeadK
 
   const input = cn(
     "w-full rounded-2xl border px-4 py-3.5 text-[15px] outline-none transition focus:ring-2",
-    dark ? "border-white/15 bg-white/5 text-white placeholder:text-white/40 focus:border-white/40 focus:ring-white/10" : "border-ink/10 bg-white text-ink focus:border-flora focus:ring-flora/15"
+    dark ? "border-white/15 bg-white/5 text-white placeholder:text-white/40 focus:border-white/40 focus:ring-white/10" : "border-white/12 bg-white/[0.04] text-ink placeholder:text-white/40 focus:border-flora focus:ring-flora/15"
   );
 
   if (state === "done")
     return (
       <div className={cn("rounded-3xl p-8", dark ? "bg-white/5" : "bg-flora-soft", className)} role="status">
-        <span className="grid h-12 w-12 place-items-center rounded-full bg-flora text-white">
+        <span className="grid h-12 w-12 place-items-center rounded-full bg-flora text-[#04121a]">
           <Check className="h-6 w-6" />
         </span>
         <p className="mt-4 text-lg font-medium">{preset.done}</p>
