@@ -59,7 +59,7 @@ export const programs: Program[] = [
     treatments: ["active-acne", "acne-scarring", "rosacea", "large-pores", "medical-grade-skincare"],
     priceFrom: 1200,
     duration: "90 days",
-    image: "2024/01/lines-and-wrinkles-1.jpg",
+    image: "2025/07/pexels-anna-nekrashevich-6476081-b-scaled.jpg",
     accent: "flora",
   },
   {
@@ -96,7 +96,7 @@ export const programs: Program[] = [
     treatments: ["hyperpigmentation-melasma", "perfect-derma-peel", "facials", "stretch-marks-and-scars"],
     priceFrom: 950,
     duration: "90 days",
-    image: "2024/01/facial-laser-treatments-e1718734631828.jpg",
+    image: "2025/04/w4dj3mshhq0.jpg",
     accent: "dermis",
   },
   {
@@ -173,7 +173,7 @@ export const programs: Program[] = [
     treatments: ["lines-wrinkles-sun-damage", "facial-laser", "neuromodulators", "dermal-fillers", "muscle-sculpting", "fotona-laser"],
     priceFrom: 3900,
     duration: "12 months",
-    image: "2024/06/longevity-wellness-packages.jpg",
+    image: "2025/08/cherrydeck-4p77t8fzGFo-unsplash-3-2-scaled.jpg",
     accent: "lumen",
   },
 ];
