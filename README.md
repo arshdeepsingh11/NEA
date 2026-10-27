@@ -40,7 +40,8 @@ When the new site replaces WordPress, download that folder into `public/media` a
 ```
 src/
   app/                    Every route (App Router). Old WordPress URLs redirect in next.config.mjs
-    page.tsx              Home
+    page.tsx              Home (3D "Body Intelligence" hero, systems network, sample report, face map)
+    body                  3D Body Explorer: realistic / hologram body + face map, click any region
     programs/[slug]       Clear Skin, Even Tone, Hair Regrowth, Healthy Aging
     treatments/[slug]     29 treatments (full original text)
     packages              All 12 beauty & wellness packages, word for word
@@ -48,27 +49,34 @@ src/
     skin-scan             Free NEA Skin Health Report + booking form
     experiences/[slug]    Body Truth Scan, Bring Your Bag, Calgary Skin, Bridal Glow, Men's Skin Check
     membership            Glow / Glow Plus / Glow Elite + comparison table
-    ask                   "Ask NEA" AI assistant (grounded in NEA content)  → api/ask
+    ask                   NEA Intelligence landing (/ask?q=… opens the AI)  → api/ask
     api/lead              Receives every form; forwards to LEAD_WEBHOOK_URL
     about, nutrition, microbiome, fotona, men, weight-loss, faq, testimonials,
     gallery, magazine, blog/[slug], contact, book, partners, finder, privacy, terms
     sitemap.ts, robots.ts SEO + AI crawlers (GEO); public/llms.txt for AI answer engines
   content/                All copy and data. Edit text here, not in components
+    body.ts               What each body region / face zone is made of, disruptors, NEA treatments + tests
+    program-insights.ts   Chart data for program pages (ILLUSTRATIVE, replace with NEA averages)
     generated/*.json      Extracted from the current site (treatments, blog, legal)
   components/
-    three/                planet-system, signal-convergence, beam-flow (WebGL), world-map
+    three/                anatomy-viewer (3D body + face), signal-convergence, beam-flow, world-map
+    ai/                   ai-provider (press N anywhere), ai-overlay, ai-prompt-bar, question chips
+    viz/                  trend-chart, radar, range-bars, weight-bars, sparkline, systems-network
+    body/                 body-explorer (the /body page UI)
     ui/                   focused-marquee, scroll-sphere-gallery, coverflow, evervault-card,
-                          apple-dock, pill-nav, terminal, animated-list, shine-border,
+                          apple-dock, terminal, animated-list, shine-border,
                           number-ticker, morphing-text, text-3d-flip, circular-progress, marquee
-    layout/               header, footer, dock, ⌘K command palette, smooth scroll, video slot
+    layout/               footer, dock (the only navigation), smooth scroll, video slot
     sections/             page sections (hero, skin finder, method, scan offer, forms…)
   lib/                    site constants, SEO/JSON-LD, search + Ask NEA knowledge engine
 ```
 
 ## Design system
 
-- Colours: porcelain `#F5F6F3`, ink `#15191C`, flora (microbiome green) `#2F7D6D`,
-  dermis `#E7C3B5`, lumen (laser violet) `#6E6BF5`, abyss `#0C1214` — `tailwind.config.ts`
+- Dark glass theme: background `#060912`, text `#EEF2FA`, aurora accents aqua `#5EEAD4`,
+  sky `#7DD3FC`, iris `#A5B4FC`, orchid `#E9A8F5`, peach `#FDBA94` — `tailwind.config.ts` + `globals.css`
+  (`.glass`, `.surface`, `.aurora-text`, `.aurora-border`, `.btn-primary`, `.btn-ghost`)
+- Charts use a separate colour-blind-safe set in `components/viz/palette.ts` (validated on the dark surface)
 - Type: Manrope (display) + Inter (text), loaded with `next/font`
 - Motion: Lenis smooth scroll synced to GSAP ScrollTrigger; framer-motion springs.
   Everything respects `prefers-reduced-motion`; 3D scenes pause off-screen and in hidden tabs.
@@ -80,8 +88,16 @@ src/
 - `robots.ts` welcomes GPTBot, ClaudeBot, PerplexityBot and Google-Extended; `public/llms.txt` summarizes NEA for AI tools
 - Permanent redirects keep the old WordPress URLs' search ranking
 
-## Upgrading "Ask NEA" to an LLM
+## NEA Intelligence (the AI)
 
-`src/app/api/ask/route.ts` retrieves the best-matching NEA pages (`src/lib/knowledge.ts`).
-Pass those `sources` as context to your model of choice and return its answer. Keep the rule
-that answers only use NEA content and never give personal medical advice.
+Press **N** on any page (or the Ask AI button in the dock). `src/app/api/ask/route.ts` always retrieves
+the best-matching NEA programs, treatments, tests, body regions and FAQs (`src/lib/knowledge.ts`) and
+builds a plan with a total when a budget is mentioned. Set `ANTHROPIC_API_KEY` (server only, never
+`NEXT_PUBLIC_`) to have Claude write the answer from those sources; `AI_MODEL` overrides the model.
+Without a key the built-in engine answers. It never diagnoses or invents prices.
+
+## 3D models and credits
+
+`public/models/body.glb` — MakeHuman base mesh (CC0). `public/models/head.glb` + textures —
+"Lee Perry-Smith" head scan by Infinite Realities, CC BY 3.0: keep the credit line on /body
+(see `public/models/CREDITS.md`).
