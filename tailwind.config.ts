@@ -6,17 +6,17 @@ const config: Config = {
     container: { center: true, padding: { DEFAULT: "1.25rem", md: "2rem" }, screens: { "2xl": "1240px" } },
     extend: {
       colors: {
-        // v2 "NEA Intelligence": deep night base, aurora accents, glass surfaces
-        porcelain: "#060912", // page background
-        mist: "#0D1322", // subtle raised surface
-        ink: "#EEF2FA", // primary text
-        graphite: "#9AA6BC", // secondary text
-        abyss: "#03050A", // deepest background
-        flora: { DEFAULT: "#5EEAD4", soft: "rgba(94,234,212,0.10)", deep: "#2DD4BF" }, // aqua: biology, health
-        sky: { DEFAULT: "#7DD3FC", soft: "rgba(125,211,252,0.10)" }, // data, signals
-        lumen: { DEFAULT: "#A5B4FC", soft: "rgba(165,180,252,0.12)" }, // AI, laser
-        orchid: { DEFAULT: "#E9A8F5", soft: "rgba(233,168,245,0.10)" }, // hormones, feminine health
-        dermis: { DEFAULT: "#FDBA94", deep: "#F59E7A" }, // skin warmth
+        // v3 "NEA Intelligence · Light": airy porcelain base, frosted glass, aurora accents tuned for light
+        porcelain: "#F4F7FB", // page background
+        mist: "#E9EEF5", // subtle raised surface
+        ink: "#0B1324", // primary text
+        graphite: "#556175", // secondary text (≥ 5:1 on white)
+        abyss: "#0B1324", // overlays on photos
+        flora: { DEFAULT: "#0F8A7E", soft: "rgba(15,138,126,0.10)", deep: "#0B6F65" }, // teal: biology, health
+        sky: { DEFAULT: "#0284C7", soft: "rgba(2,132,199,0.10)" }, // data, signals
+        lumen: { DEFAULT: "#5B5BD6", soft: "rgba(91,91,214,0.10)" }, // AI, laser
+        orchid: { DEFAULT: "#B5179E", soft: "rgba(181,23,158,0.08)" }, // hormones, feminine health
+        dermis: { DEFAULT: "#F2A07B", deep: "#D9774F" }, // skin warmth
       },
       fontFamily: {
         display: ["var(--font-display)", "system-ui", "sans-serif"],
