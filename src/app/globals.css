@@ -2,21 +2,90 @@
 @tailwind components;
 @tailwind utilities;
 
+:root,
+[data-theme="pearl"] {
+  /* PEARL — clinical pearl, blush and lilac. Channels are "R G B" so Tailwind can add alpha. */
+  --c-bg: 253 251 252;
+  --c-mist: 246 239 243;
+  --c-ink: 31 26 36;
+  --c-graphite: 98 88 104;
+  --c-accent: 176 57 107; /* deep rose: text-safe accent */
+  --c-accent-deep: 142 43 86;
+  --c-accent2: 91 79 209; /* deep lilac */
+  --c-accent3: 14 143 158; /* cool teal for data */
+  --c-warm: 232 164 184; /* blush */
+  --c-warm-deep: 214 120 150;
+  --fill-a: #f6cad8;
+  --fill-b: #ecd6f2;
+  --fill-c: #d6cdf7;
+  --glow-a: rgba(246, 202, 216, 0.6);
+  --glow-b: rgba(214, 205, 247, 0.55);
+  --glow-c: rgba(255, 224, 214, 0.45);
+  --shadow-tint: 120, 60, 95;
+  --grad-text: linear-gradient(110deg, #b0396b 0%, #8e3fae 55%, #5b4fd1 100%);
+  /* charts: validated on white (lightness, chroma, colour-blind, contrast) */
+  --viz-1: 194 69 122;
+  --viz-2: 91 79 209;
+  --viz-3: 14 143 158;
+  --viz-good: 14 143 158;
+  --viz-watch: 176 122 30;
+  /* hologram */
+  --holo-body: 0.97 0.9 0.95;
+  --holo-rim: 0.42 0.31 0.78;
+  --holo-point: #8e3fae;
+  /* body-region hues */
+  --r-1: #c2457a;
+  --r-2: #6f57d6;
+  --r-3: #e0896b;
+  --r-4: #1e9aa8;
+  --r-5: #9c3f9e;
+  color-scheme: light;
+}
+
+[data-theme="sand"] {
+  /* SAND — warm luxury: ivory, sand, champagne gold, espresso */
+  --c-bg: 251 248 243;
+  --c-mist: 241 233 221;
+  --c-ink: 43 33 27;
+  --c-graphite: 107 93 82;
+  --c-accent: 138 100 36; /* champagne gold, deepened for text */
+  --c-accent-deep: 110 79 27;
+  --c-accent2: 169 83 58; /* terracotta */
+  --c-accent3: 63 99 181;
+  --c-warm: 216 178 140;
+  --c-warm-deep: 184 146 90;
+  --fill-a: #ead8b6;
+  --fill-b: #f1dccb;
+  --fill-c: #e5c6b0;
+  --glow-a: rgba(234, 216, 182, 0.65);
+  --glow-b: rgba(229, 198, 176, 0.5);
+  --glow-c: rgba(214, 219, 196, 0.4);
+  --shadow-tint: 110, 79, 40;
+  --grad-text: linear-gradient(110deg, #8a6424 0%, #a8682f 50%, #a9533a 100%);
+  --viz-1: 160 112 42;
+  --viz-2: 63 99 181;
+  --viz-3: 184 69 111;
+  --viz-good: 63 125 94;
+  --viz-watch: 169 83 58;
+  --holo-body: 0.98 0.94 0.88;
+  --holo-rim: 0.55 0.39 0.16;
+  --holo-point: #8a6424;
+  --r-1: #b08433;
+  --r-2: #4867b8;
+  --r-3: #b4553a;
+  --r-4: #6e8b4e;
+  --r-5: #b5566f;
+  color-scheme: light;
+}
+
 :root {
-  --bg: #f4f7fb;
-  --ink: #0b1324;
-  /* pastel aurora for fills (buttons, tiles); deep aurora for text on white */
-  --aqua: #7ce7d8;
-  --sky: #93d5fb;
-  --iris: #b4bcfd;
-  --orchid: #efb6f7;
-  --peach: #fdc9a8;
-  --aurora: linear-gradient(115deg, var(--aqua) 0%, var(--sky) 32%, var(--iris) 64%, var(--orchid) 100%);
-  --aurora-deep: linear-gradient(115deg, #0d9488 0%, #0284c7 34%, #5b5bd6 68%, #b5179e 100%);
+  --aurora: linear-gradient(115deg, var(--fill-a) 0%, var(--fill-b) 50%, var(--fill-c) 100%);
+  --aurora-deep: var(--grad-text);
+  --bg: rgb(var(--c-bg));
+  --ink: rgb(var(--c-ink));
   --dock-h: 84px;
   /* kept for components that offset content under a fixed bar */
   --header-h: 24px;
-  color-scheme: light;
 }
 
 @layer base {
@@ -41,11 +110,11 @@
     font-feature-settings: "ss01", "cv11";
   }
   ::selection {
-    background: rgba(15, 138, 126, 0.18);
+    background: rgb(var(--c-accent) / 0.16);
     color: var(--ink);
   }
   :focus-visible {
-    outline: 2px solid #0f8a7e;
+    outline: 2px solid rgb(var(--c-accent));
     outline-offset: 3px;
     border-radius: 8px;
   }
@@ -74,7 +143,7 @@
   /* formerly a dark band; now a soft tinted band that keeps the page light */
   .chapter-dark {
     @apply text-ink;
-    background: linear-gradient(180deg, rgba(124, 231, 216, 0.14), rgba(180, 188, 253, 0.12) 60%, rgba(244, 247, 251, 0));
+    background: linear-gradient(180deg, var(--glow-a), var(--glow-b) 60%, rgb(var(--c-bg) / 0));
   }
   .measure {
     max-width: 66ch;
@@ -85,12 +154,12 @@
   .glass,
   .surface {
     @apply border border-white/80 bg-white/55 backdrop-blur-2xl backdrop-saturate-150;
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 1px 2px rgba(11, 19, 36, 0.04), 0 24px 60px -30px rgba(30, 64, 110, 0.22);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 1px 2px rgb(var(--c-ink) / 0.04), 0 24px 60px -30px rgba(var(--shadow-tint), 0.22);
   }
   .surface-strong {
     @apply border border-white/90 text-ink backdrop-blur-2xl backdrop-saturate-150;
-    background: linear-gradient(160deg, rgba(124, 231, 216, 0.32), rgba(180, 188, 253, 0.26) 50%, rgba(255, 255, 255, 0.7));
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.95), 0 30px 80px -40px rgba(13, 148, 136, 0.35);
+    background: linear-gradient(160deg, var(--glow-a), var(--glow-b) 50%, rgba(255, 255, 255, 0.7));
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.95), 0 30px 80px -40px rgba(var(--shadow-tint), 0.35);
   }
   .glass-dark {
     @apply border border-white/80 bg-white/60 backdrop-blur-2xl;
@@ -125,7 +194,7 @@
   .btn-primary {
     @apply btn text-ink;
     background: var(--aurora);
-    box-shadow: 0 12px 30px -12px rgba(13, 148, 136, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.7);
+    box-shadow: 0 12px 30px -12px rgba(var(--shadow-tint), 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.7);
   }
   .btn-primary:hover {
     filter: brightness(1.08) saturate(1.1);
@@ -135,7 +204,7 @@
   }
   .btn-ghost {
     @apply btn border border-ink/10 bg-white/70 text-ink backdrop-blur-xl hover:border-ink/20 hover:bg-white;
-    box-shadow: 0 8px 24px -16px rgba(30, 64, 110, 0.3);
+    box-shadow: 0 8px 24px -16px rgba(var(--shadow-tint), 0.3);
   }
   /* solid ink button: the strongest action on a light page */
   .btn-light {
@@ -171,6 +240,26 @@
 }
 
 @layer utilities {
+  /* Instrument Serif ships one weight: never let the browser fake-bold it */
+  .font-display,
+  h1,
+  h2,
+  h3 {
+    font-weight: 400 !important;
+  }
+  .font-display {
+    letter-spacing: -0.012em;
+  }
+  /* italic serif accent inside headlines: <em> */
+  h1 em,
+  h2 em,
+  h3 em,
+  .font-display em {
+    font-style: italic;
+  }
+  .eyebrow {
+    @apply text-[11.5px] font-medium uppercase tracking-[0.22em] text-graphite;
+  }
   .preserve-3d {
     transform-style: preserve-3d;
   }
@@ -201,7 +290,8 @@
   z-index: -10;
   overflow: hidden;
   pointer-events: none;
-  background: radial-gradient(120% 80% at 50% -10%, #ffffff 0%, #f4f7fb 55%, #eef2f8 100%);
+  background: radial-gradient(120% 80% at 50% -10%, #ffffff 0%, rgb(var(--c-bg)) 55%, rgb(var(--c-mist)) 100%);
+  transition: background 0.6s ease;
 }
 .aurora-bg::before,
 .aurora-bg::after {
@@ -213,19 +303,19 @@
   animation: aurora 26s ease-in-out infinite;
 }
 .aurora-bg::before {
-  background: radial-gradient(35% 30% at 20% 25%, rgba(124, 231, 216, 0.38), transparent 70%),
-    radial-gradient(30% 28% at 78% 18%, rgba(180, 188, 253, 0.36), transparent 70%);
+  background: radial-gradient(35% 30% at 20% 25%, var(--glow-a), transparent 70%),
+    radial-gradient(30% 28% at 78% 18%, var(--glow-b), transparent 70%);
 }
 .aurora-bg::after {
-  background: radial-gradient(32% 30% at 70% 80%, rgba(239, 182, 247, 0.3), transparent 70%),
-    radial-gradient(30% 26% at 15% 85%, rgba(147, 213, 251, 0.28), transparent 70%);
+  background: radial-gradient(32% 30% at 70% 80%, var(--glow-c), transparent 70%),
+    radial-gradient(30% 26% at 15% 85%, var(--glow-b), transparent 70%);
   animation-duration: 34s;
   animation-direction: reverse;
 }
 .aurora-grid {
   position: absolute;
   inset: 0;
-  background-image: linear-gradient(rgba(11, 19, 36, 0.045) 1px, transparent 1px), linear-gradient(90deg, rgba(11, 19, 36, 0.045) 1px, transparent 1px);
+  background-image: linear-gradient(rgb(var(--c-ink) / 0.04) 1px, transparent 1px), linear-gradient(90deg, rgb(var(--c-ink) / 0.04) 1px, transparent 1px);
   background-size: 72px 72px;
   mask-image: radial-gradient(70% 60% at 50% 30%, black, transparent);
 }
@@ -245,5 +335,31 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
     scroll-behavior: auto !important;
+  }
+}
+
+/* ---------- Motion keyframes used by the v4 home ---------- */
+@keyframes heroscan {
+  0% {
+    transform: translateY(-40%);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(360%);
+    opacity: 0;
+  }
+}
+@keyframes marquee-x {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
   }
 }
