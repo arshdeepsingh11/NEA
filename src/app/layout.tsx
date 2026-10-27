@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Manrope } from "next/font/google";
+import { Inter, Instrument_Serif } from "next/font/google";
 import "./globals.css";
 import { Footer } from "@/components/layout/footer";
 import { Dock } from "@/components/layout/dock";
@@ -7,8 +7,10 @@ import { AiProvider } from "@/components/ai/ai-provider";
 import { SmoothScroll } from "@/components/layout/smooth-scroll";
 import { JsonLd, clinicSchema } from "@/lib/seo";
 import { site } from "@/lib/site";
+import { themeInitScript } from "@/components/theme/init";
 
-const display = Manrope({ subsets: ["latin"], variable: "--font-display", weight: ["400", "500", "600", "700", "800"], display: "swap" });
+// Editorial serif for headlines (Aesop / luxury feel), Inter for everything you read and tap.
+const display = Instrument_Serif({ subsets: ["latin"], variable: "--font-display", weight: "400", style: ["normal", "italic"], display: "swap" });
 const sans = Inter({ subsets: ["latin"], variable: "--font-sans", display: "swap" });
 
 export const metadata: Metadata = {
@@ -44,8 +46,8 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#F4F7FB" },
-    { media: "(prefers-color-scheme: dark)", color: "#F4F7FB" },
+    { media: "(prefers-color-scheme: light)", color: "#FDFBFC" },
+    { media: "(prefers-color-scheme: dark)", color: "#FDFBFC" },
   ],
   width: "device-width",
   initialScale: 1,
@@ -53,7 +55,10 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en-CA" className={`${display.variable} ${sans.variable}`}>
+    <html lang="en-CA" data-theme="pearl" className={`${display.variable} ${sans.variable}`} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+      </head>
       <body>
         <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-full focus:bg-white focus:px-4 focus:py-2 focus:text-[#060912]">
           Skip to content
