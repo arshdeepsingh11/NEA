@@ -73,10 +73,10 @@ src/
 
 ## Design system
 
-- Dark glass theme: background `#060912`, text `#EEF2FA`, aurora accents aqua `#5EEAD4`,
-  sky `#7DD3FC`, iris `#A5B4FC`, orchid `#E9A8F5`, peach `#FDBA94` — `tailwind.config.ts` + `globals.css`
-  (`.glass`, `.surface`, `.aurora-text`, `.aurora-border`, `.btn-primary`, `.btn-ghost`)
-- Charts use a separate colour-blind-safe set in `components/viz/palette.ts` (validated on the dark surface)
+- Light glass theme: background `#F4F7FB`, text `#0B1324`, secondary `#556175`; frosted white glass
+  (`.glass`, `.surface`), pastel aurora fills for buttons (`.btn-primary`), deep aurora for headline text
+  (`.aurora-text`), solid ink for the strongest action (`.btn-light`) — `tailwind.config.ts` + `globals.css`
+- Charts use a separate colour-blind-safe set in `components/viz/palette.ts` (validated on white)
 - Type: Manrope (display) + Inter (text), loaded with `next/font`
 - Motion: Lenis smooth scroll synced to GSAP ScrollTrigger; framer-motion springs.
   Everything respects `prefers-reduced-motion`; 3D scenes pause off-screen and in hidden tabs.
