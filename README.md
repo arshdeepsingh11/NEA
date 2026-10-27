@@ -73,11 +73,11 @@ src/
 
 ## Design system
 
-- Light glass theme: background `#F4F7FB`, text `#0B1324`, secondary `#556175`; frosted white glass
-  (`.glass`, `.surface`), pastel aurora fills for buttons (`.btn-primary`), deep aurora for headline text
-  (`.aurora-text`), solid ink for the strongest action (`.btn-light`) — `tailwind.config.ts` + `globals.css`
+- Two switchable themes (dock button, or More → Colour theme; saved per visitor, no flash on load):
+  **Pearl & blush** (default) and **Sand & gold**. Every colour is a CSS variable in `globals.css`
+  under `[data-theme="pearl"]` / `[data-theme="sand"]`; Tailwind colours, charts and the 3D scenes all read them.
+- Type: Instrument Serif for headlines (italic accents via `*word*` in `SplitReveal` or `<em>`), Inter for text
 - Charts use a separate colour-blind-safe set in `components/viz/palette.ts` (validated on white)
-- Type: Manrope (display) + Inter (text), loaded with `next/font`
 - Motion: Lenis smooth scroll synced to GSAP ScrollTrigger; framer-motion springs.
   Everything respects `prefers-reduced-motion`; 3D scenes pause off-screen and in hidden tabs.
 
