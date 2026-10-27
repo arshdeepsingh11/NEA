@@ -25,7 +25,7 @@ export function PageHero({
       <JsonLd data={breadcrumbSchema(crumbs)} />
       <div className="container relative">
         {trail.length > 0 && (
-          <nav aria-label="Breadcrumb" className={cn("mb-8 flex flex-wrap items-center gap-1 text-[13px]", dark ? "text-white/55" : "text-graphite")}>
+          <nav aria-label="Breadcrumb" className={cn("mb-8 flex flex-wrap items-center gap-1 text-[13px]", dark ? "text-graphite" : "text-graphite")}>
             {crumbs.map((c, i) => (
               <span key={c.path} className="flex items-center gap-1">
                 {i > 0 && <ChevronRight className="h-3.5 w-3.5 opacity-60" />}
@@ -41,7 +41,7 @@ export function PageHero({
           </nav>
         )}
         <h1 className="max-w-4xl text-display-lg font-semibold">{title}</h1>
-        {lede && <p className={cn("measure mt-6 text-lede", dark ? "text-white/70" : "text-graphite")}>{lede}</p>}
+        {lede && <p className={cn("measure mt-6 text-lede", dark ? "text-graphite" : "text-graphite")}>{lede}</p>}
         {children && <div className="mt-10">{children}</div>}
       </div>
     </section>
@@ -52,7 +52,7 @@ export function SectionHead({ title, lede, className, dark, center }: { title: R
   return (
     <div className={cn("mb-12 md:mb-16", center && "mx-auto text-center", className)}>
       <h2 className={cn("max-w-3xl text-display-md font-semibold", center && "mx-auto")}>{title}</h2>
-      {lede && <p className={cn("measure mt-5 text-lede", dark ? "text-white/65" : "text-graphite", center && "mx-auto")}>{lede}</p>}
+      {lede && <p className={cn("measure mt-5 text-lede", dark ? "text-graphite" : "text-graphite", center && "mx-auto")}>{lede}</p>}
     </div>
   );
 }

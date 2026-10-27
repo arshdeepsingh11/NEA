@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { PageHero, SectionHead } from "@/components/sections/page-hero";
-import { LazyPlanet } from "@/components/three/lazy";
+import { SystemsNetwork } from "@/components/viz/systems-network";
 import { getTest } from "@/content/tests";
 import { pageMeta } from "@/lib/seo";
 import { money } from "@/lib/utils";
@@ -21,7 +21,6 @@ export default function MicrobiomePage() {
   return (
     <>
       <section className="chapter-dark relative overflow-hidden">
-        <LazyPlanet type="biome" className="absolute inset-0 opacity-90 md:left-1/3" />
         <div className="relative">
           <PageHero
             dark
@@ -30,6 +29,11 @@ export default function MicrobiomePage() {
             title="Did you know your gut and brain are strongly connected?"
             lede="Our gut and brain are in constant communication through the vagus nerve, which can influence our mood and other feelings. Microbiome testing shows whether that connection is strong, or whether lifestyle and habits are getting in the way."
           />
+        </div>
+      </section>
+      <section className="pb-8">
+        <div className="container">
+          <SystemsNetwork />
         </div>
       </section>
       <section className="chapter">

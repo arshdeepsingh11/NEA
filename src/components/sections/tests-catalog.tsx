@@ -25,7 +25,7 @@ export function TestsCatalog({ tests, groups, regionsByTest = {} }: { tests: Lab
             key={x.id}
             onClick={() => setG(x.id)}
             aria-pressed={g === x.id}
-            className={cn("rounded-full border px-4 py-2 text-[14px] transition", g === x.id ? "border-white/30 bg-white/15 text-white" : "border-white/10 bg-white/[0.03] text-graphite hover:text-white")}
+            className={cn("rounded-full border px-4 py-2 text-[14px] transition", g === x.id ? "border-ink bg-ink text-white" : "border-ink/10 bg-white/60 text-graphite hover:text-ink")}
           >
             {x.label}
             <span className="tabular ml-2 text-[12px] opacity-60">{x.id === "all" ? tests.length : tests.filter((t) => t.group === x.id).length}</span>
@@ -42,15 +42,15 @@ export function TestsCatalog({ tests, groups, regionsByTest = {} }: { tests: Lab
             id={t.slug}
             onPointerEnter={() => setHot(t.slug)}
             onPointerLeave={() => setHot(null)}
-            className={cn("surface flex scroll-mt-32 flex-col rounded-[28px] p-6 transition", hot === t.slug && "border-white/25", t.featured && "aurora-border")}
+            className={cn("surface flex scroll-mt-32 flex-col rounded-[28px] p-6 transition", hot === t.slug && "border-ink/20", t.featured && "aurora-border")}
           >
             <div className="flex items-center justify-between gap-2">
               <span className="chip !text-[11px]">{label[t.group]}</span>
               {t.featured && <span className="text-[11px] text-flora">Most used at NEA</span>}
             </div>
             <div className="mt-5 flex items-start justify-between gap-4">
-              <h3 className="text-xl font-semibold tracking-tight text-white">{t.name}</h3>
-              <span className="tabular shrink-0 font-display text-lg font-semibold text-white">{money(t.price)}</span>
+              <h3 className="text-xl font-semibold tracking-tight text-ink">{t.name}</h3>
+              <span className="tabular shrink-0 font-display text-lg font-semibold text-ink">{money(t.price)}</span>
             </div>
             <p className="mt-1 text-[13px] text-graphite">Best for: {t.bestFor}</p>
             <p className="mt-4 flex-1 text-[14.5px] leading-relaxed text-ink/90">{t.neaUse}</p>
@@ -59,22 +59,22 @@ export function TestsCatalog({ tests, groups, regionsByTest = {} }: { tests: Lab
               <div className="mt-5 flex flex-wrap items-center gap-1.5">
                 <PersonStanding className="h-3.5 w-3.5 text-graphite" />
                 {regionsByTest[t.slug].map((r) => (
-                  <Link key={r.id} href={`/body?focus=${r.id}`} className="rounded-full bg-white/[0.06] px-2 py-0.5 text-[11.5px] text-ink/80 hover:bg-white/10">
+                  <Link key={r.id} href={`/body?focus=${r.id}`} className="rounded-full bg-white/60 px-2 py-0.5 text-[11.5px] text-ink/80 hover:bg-white/90">
                     {r.name}
                   </Link>
                 ))}
               </div>
             )}
 
-            <div className="mt-5 flex items-center justify-between border-t border-white/[0.07] pt-4 text-[13px]">
+            <div className="mt-5 flex items-center justify-between border-t border-ink/10 pt-4 text-[13px]">
               <span className="flex items-center gap-1.5 text-graphite">
                 <Clock className="h-3.5 w-3.5" /> {t.results ? `Results in ${t.results}` : "BioAro Labs"}
               </span>
               <span className="flex items-center gap-3">
-                <button onClick={() => ai.open({ query: `Should I take the ${t.name} test?`, context: t.name })} className="flex items-center gap-1 text-flora hover:text-white">
+                <button onClick={() => ai.open({ query: `Should I take the ${t.name} test?`, context: t.name })} className="flex items-center gap-1 text-flora hover:text-ink">
                   <Sparkles className="h-3.5 w-3.5" /> Ask AI
                 </button>
-                <Link href={`/book?topic=${encodeURIComponent(t.name)}`} className="flex items-center gap-0.5 text-ink hover:text-white">
+                <Link href={`/book?topic=${encodeURIComponent(t.name)}`} className="flex items-center gap-0.5 text-ink hover:text-ink">
                   Book <ArrowUpRight className="h-3.5 w-3.5" />
                 </Link>
               </span>
@@ -110,12 +110,12 @@ function PriceMap({ tests, hot, setHot }: { tests: LabTest[]; hot: string | null
   return (
     <div className="surface rounded-[28px] p-6">
       <div className="mb-3 flex flex-wrap items-baseline justify-between gap-2">
-        <p className="font-display text-lg font-semibold text-white">Price map</p>
+        <p className="font-display text-lg font-semibold text-ink">Price map</p>
         <p className="text-[13px] text-graphite">{h ? `${h.name} · ${money(h.price)}` : `${tests.length} tests · hover a dot`}</p>
       </div>
       <div className="relative h-24">
         {ticks.map((t) => (
-          <div key={t} className="absolute bottom-0 top-0 border-l border-white/[0.06]" style={{ left: `${(t / max) * 100}%` }}>
+          <div key={t} className="absolute bottom-0 top-0 border-l border-ink/10" style={{ left: `${(t / max) * 100}%` }}>
             <span className={cn("tabular absolute -bottom-0.5 whitespace-nowrap text-[11px] text-graphite/80", t === max ? "right-1" : "left-1")}>{money(t)}</span>
           </div>
         ))}

@@ -89,7 +89,7 @@ export function BodyExplorer({ body, face, links }: { body: Region[]; face: Regi
               />
             </div>
 
-            <div className="pointer-events-none absolute bottom-4 left-4 hidden items-center gap-4 text-[12px] text-white/55 sm:flex">
+            <div className="pointer-events-none absolute bottom-4 left-4 hidden items-center gap-4 text-[12px] text-graphite sm:flex">
               <span className="flex items-center gap-1.5">
                 <Rotate3d className="h-3.5 w-3.5" /> Drag to rotate
               </span>
@@ -111,7 +111,7 @@ export function BodyExplorer({ body, face, links }: { body: Region[]; face: Regi
                     <span className="h-2.5 w-2.5 rounded-full" style={{ background: region.color, boxShadow: `0 0 12px ${region.color}` }} />
                     <span className="chip">{region.system}</span>
                   </div>
-                  <h2 className="mt-4 font-display text-3xl font-semibold tracking-tight text-white">{region.name}</h2>
+                  <h2 className="mt-4 font-display text-3xl font-semibold tracking-tight text-ink">{region.name}</h2>
                   <p className="mt-2 text-[17px] leading-snug text-ink/90">{region.headline}</p>
 
                   <Block title="What it is made of" icon={<Layers className="h-4 w-4" />}>
@@ -135,7 +135,7 @@ export function BodyExplorer({ body, face, links }: { body: Region[]; face: Regi
                     </div>
                   </Block>
 
-                  <div className="aurora-border relative mt-7 rounded-2xl bg-white/[0.04] p-5">
+                  <div className="aurora-border relative mt-7 rounded-2xl bg-white/60 p-5">
                     <p className="flex items-center gap-2 text-[13px] font-medium text-flora">
                       <Target className="h-4 w-4" /> How NEA improves it
                     </p>
@@ -146,7 +146,7 @@ export function BodyExplorer({ body, face, links }: { body: Region[]; face: Regi
                     <Block title="Measured with" icon={<FlaskConical className="h-4 w-4" />}>
                       <div className="grid gap-2.5 sm:grid-cols-2">
                         {l.tests.map((t) => (
-                          <Link key={t.slug} href={`/tests#${t.slug}`} className="group rounded-2xl border border-white/10 bg-white/[0.03] p-4 transition hover:border-white/25 hover:bg-white/[0.06]">
+                          <Link key={t.slug} href={`/tests#${t.slug}`} className="group rounded-2xl border border-ink/10 bg-white/60 p-4 transition hover:border-ink/20 hover:bg-white/90">
                             <div className="flex items-baseline justify-between gap-2">
                               <p className="text-[14.5px] font-medium text-ink">{t.name}</p>
                               <p className="tabular text-[13px] text-flora">${t.price.toLocaleString("en-CA")}</p>
@@ -160,10 +160,10 @@ export function BodyExplorer({ body, face, links }: { body: Region[]; face: Regi
 
                   {l && l.treatments.length > 0 && (
                     <Block title="Treatments for this area">
-                      <ul className="divide-y divide-white/[0.06] rounded-2xl border border-white/10">
+                      <ul className="divide-y divide-ink/[0.07] rounded-2xl border border-ink/10">
                         {l.treatments.map((t) => (
                           <li key={t.slug}>
-                            <Link href={`/treatments/${t.slug}`} className="flex items-center justify-between gap-4 px-4 py-3 hover:bg-white/[0.04]">
+                            <Link href={`/treatments/${t.slug}`} className="flex items-center justify-between gap-4 px-4 py-3 hover:bg-white/90">
                               <span>
                                 <span className="block text-[14.5px] text-ink">{t.title}</span>
                                 <span className="block line-clamp-1 text-[12.5px] text-graphite">{t.summary}</span>
@@ -179,7 +179,7 @@ export function BodyExplorer({ body, face, links }: { body: Region[]; face: Regi
                   <Block title="What we track over time">
                     <div className="grid grid-cols-2 gap-2.5">
                       {region.tracks.map((t, i) => (
-                        <div key={t} className="flex items-center justify-between gap-2 rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3">
+                        <div key={t} className="flex items-center justify-between gap-2 rounded-2xl border border-ink/10 bg-white/60 px-4 py-3">
                           <span className="text-[13px] text-ink">{t}</span>
                           <Sparkline values={SHAPES[i % SHAPES.length]} width={56} height={20} />
                         </div>
@@ -188,10 +188,10 @@ export function BodyExplorer({ body, face, links }: { body: Region[]; face: Regi
                   </Block>
 
                   {l?.program && (
-                    <Link href={`/programs/${l.program.slug}`} className="mt-7 flex items-center justify-between gap-4 rounded-2xl border border-white/10 bg-gradient-to-br from-flora/10 to-lumen/10 p-5 transition hover:border-white/25">
+                    <Link href={`/programs/${l.program.slug}`} className="mt-7 flex items-center justify-between gap-4 rounded-2xl border border-ink/10 bg-gradient-to-br from-flora/10 to-lumen/10 p-5 transition hover:border-ink/20">
                       <span>
                         <span className="stat-label">Recommended program</span>
-                        <span className="mt-1 block font-display text-lg font-semibold text-white">{l.program.name}</span>
+                        <span className="mt-1 block font-display text-lg font-semibold text-ink">{l.program.name}</span>
                         <span className="text-[13px] text-graphite">
                           {l.program.duration} · from ${l.program.priceFrom.toLocaleString("en-CA")}
                         </span>
@@ -220,7 +220,7 @@ export function BodyExplorer({ body, face, links }: { body: Region[]; face: Regi
                   <p className="chip">
                     <Sparkles className="h-3 w-3 text-flora" /> {mode === "body" ? "10 systems" : "6 facial zones"}
                   </p>
-                  <h2 className="mt-4 font-display text-3xl font-semibold tracking-tight text-white">{mode === "body" ? "Tap any part of the body." : "Tap any zone of the face."}</h2>
+                  <h2 className="mt-4 font-display text-3xl font-semibold tracking-tight text-ink">{mode === "body" ? "Tap any part of the body." : "Tap any zone of the face."}</h2>
                   <p className="mt-3 text-[15px] leading-relaxed text-graphite">
                     {mode === "body"
                       ? "Each area shows what it is made of, what throws it off, and exactly how NEA measures and improves it."
@@ -229,7 +229,7 @@ export function BodyExplorer({ body, face, links }: { body: Region[]; face: Regi
                   <ul className="mt-7 space-y-2">
                     {regions.map((r) => (
                       <li key={r.id}>
-                        <button onClick={() => setSel(r.id)} className="group flex w-full items-center gap-4 rounded-2xl border border-white/[0.07] bg-white/[0.02] px-4 py-3 text-left transition hover:border-white/20 hover:bg-white/[0.05]">
+                        <button onClick={() => setSel(r.id)} className="group flex w-full items-center gap-4 rounded-2xl border border-ink/10 bg-white/60 px-4 py-3 text-left transition hover:border-ink/20 hover:bg-white/90">
                           <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: r.color, boxShadow: `0 0 10px ${r.color}` }} />
                           <span className="min-w-0 flex-1">
                             <span className="block text-[15px] text-ink">{r.name}</span>
@@ -267,7 +267,7 @@ function Segmented({ value, onChange, options }: { value: string; onChange: (v: 
   return (
     <div role="tablist" className="glass flex rounded-full p-1">
       {options.map((o) => (
-        <button key={o.v} role="tab" aria-selected={value === o.v} onClick={() => onChange(o.v)} className={cn("relative rounded-full px-4 py-1.5 text-[13px] transition", value === o.v ? "text-[#04121a]" : "text-white/70 hover:text-white")}>
+        <button key={o.v} role="tab" aria-selected={value === o.v} onClick={() => onChange(o.v)} className={cn("relative rounded-full px-4 py-1.5 text-[13px] transition", value === o.v ? "text-ink" : "text-graphite hover:text-ink")}>
           {value === o.v && <motion.span layoutId={`seg-${options[0].v}`} className="absolute inset-0 rounded-full" style={{ background: "var(--aurora)" }} transition={{ type: "spring", stiffness: 400, damping: 34 }} />}
           <span className="relative">{o.label}</span>
         </button>

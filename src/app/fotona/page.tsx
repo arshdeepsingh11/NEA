@@ -22,14 +22,14 @@ export default function FotonaPage() {
         </div>
         <div className="container relative flex min-h-[92vh] flex-col justify-end pb-20 pt-40">
           <h1 className="max-w-4xl text-display-xl font-semibold">Fotona laser.</h1>
-          <p className="measure mt-6 text-lede text-white/75">
+          <p className="measure mt-6 text-lede text-graphite">
             Widely acclaimed for its versatility. NEA is one of the first centres to offer Fotona and all its applications, with predictable, safe results and short downtime, clinically proven for all skin types and colours.
           </p>
           <div className="mt-10 flex flex-wrap gap-3">
             <a href={site.bookingUrl} target="_blank" rel="noreferrer" className="btn-light">
               Book a session
             </a>
-            <Link href="/treatments?focus=laser" className="btn border border-white/20 text-white hover:bg-white/10">
+            <Link href="/treatments?focus=laser" className="btn border border-ink/20 text-ink hover:bg-white/90">
               See laser treatments
             </Link>
           </div>

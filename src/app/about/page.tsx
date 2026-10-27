@@ -49,17 +49,17 @@ export default function AboutPage() {
       <section className="chapter chapter-dark" id="mission">
         <div className="container">
           <h2 className="max-w-4xl text-display-lg font-semibold">Be the CEO of your own health.</h2>
-          <p className="measure mt-6 text-lede text-white/70">
+          <p className="measure mt-6 text-lede text-graphite">
             We believe you should be the CEO of your own health. By offering genetic and microbiome testing, we empower individuals with valuable health insights that were previously inaccessible. With a focus on evidence-based guidelines, we provide affordable, personalized healthcare experiences.
           </p>
           <div className="mt-16 grid gap-6 md:grid-cols-2">
             <div className="glass-dark rounded-4xl p-8">
               <h3 className="text-2xl font-semibold">Our mission</h3>
-              <p className="mt-3 text-lg leading-relaxed text-white/75">To revolutionize personalized healthcare through innovative software solutions, precision health clinics and advanced testing solutions.</p>
+              <p className="mt-3 text-lg leading-relaxed text-graphite">To revolutionize personalized healthcare through innovative software solutions, precision health clinics and advanced testing solutions.</p>
             </div>
             <div className="glass-dark rounded-4xl p-8">
               <h3 className="text-2xl font-semibold">Our vision</h3>
-              <p className="mt-3 text-lg leading-relaxed text-white/75">To extend human healthspan, integrating innovative approaches for a healthier tomorrow.</p>
+              <p className="mt-3 text-lg leading-relaxed text-graphite">To extend human healthspan, integrating innovative approaches for a healthier tomorrow.</p>
             </div>
           </div>
         </div>

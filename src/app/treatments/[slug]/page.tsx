@@ -59,7 +59,7 @@ export default async function TreatmentPage({ params }: Props) {
             <div className="mt-5 flex flex-wrap items-center gap-2 text-[13px] text-graphite">
               Works on:
               {where.map(({ r, face }) => (
-                <Link key={r.id} href={`/body?${face ? "mode=face&" : ""}focus=${r.id}`} className="chip hover:text-white">
+                <Link key={r.id} href={`/body?${face ? "mode=face&" : ""}focus=${r.id}`} className="chip hover:text-ink">
                   <span className="h-1.5 w-1.5 rounded-full" style={{ background: r.color }} />
                   {r.name}
                 </Link>
@@ -103,10 +103,10 @@ export default async function TreatmentPage({ params }: Props) {
           </article>
           <aside className="space-y-4 lg:sticky lg:top-[calc(var(--header-h)+24px)] lg:h-fit">
             {program && (
-              <Link href={`/programs/${program.slug}`} className="block rounded-4xl surface-strong p-7 text-white">
-                <p className="text-[13px] text-white/55">Part of</p>
+              <Link href={`/programs/${program.slug}`} className="block rounded-4xl surface-strong p-7 text-ink">
+                <p className="text-[13px] text-graphite">Part of</p>
                 <p className="mt-1 text-2xl font-semibold tracking-tight">{program.name}</p>
-                <p className="mt-3 text-[15px] leading-relaxed text-white/70">{program.headline}</p>
+                <p className="mt-3 text-[15px] leading-relaxed text-graphite">{program.headline}</p>
                 <span className="mt-5 inline-block text-[14px] underline underline-offset-4">See the full program</span>
               </Link>
             )}

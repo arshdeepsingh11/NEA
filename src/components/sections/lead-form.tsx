@@ -102,13 +102,13 @@ export function LeadForm({ kind, source, dark, className, after }: { kind: LeadK
 
   const input = cn(
     "w-full rounded-2xl border px-4 py-3.5 text-[15px] outline-none transition focus:ring-2",
-    dark ? "border-white/15 bg-white/5 text-white placeholder:text-white/40 focus:border-white/40 focus:ring-white/10" : "border-white/12 bg-white/[0.04] text-ink placeholder:text-white/40 focus:border-flora focus:ring-flora/15"
+    dark ? "border-ink/10 bg-white/60 text-ink placeholder:text-graphite/80 focus:border-ink/20 focus:ring-white/10" : "border-ink/10 bg-white/60 text-ink placeholder:text-graphite/80 focus:border-flora focus:ring-flora/15"
   );
 
   if (state === "done")
     return (
-      <div className={cn("rounded-3xl p-8", dark ? "bg-white/5" : "bg-flora-soft", className)} role="status">
-        <span className="grid h-12 w-12 place-items-center rounded-full bg-flora text-[#04121a]">
+      <div className={cn("rounded-3xl p-8", dark ? "bg-white/60" : "bg-flora-soft", className)} role="status">
+        <span className="grid h-12 w-12 place-items-center rounded-full bg-flora text-ink">
           <Check className="h-6 w-6" />
         </span>
         <p className="mt-4 text-lg font-medium">{preset.done}</p>
@@ -121,7 +121,7 @@ export function LeadForm({ kind, source, dark, className, after }: { kind: LeadK
       <input type="text" name="company_website" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden />
       {preset.fields.map((f) => (
         <label key={f.name} className={cn("flex flex-col gap-1.5", f.half ? "col-span-2 sm:col-span-1" : "col-span-2")}>
-          <span className={cn("text-[13px]", dark ? "text-white/70" : "text-graphite")}>
+          <span className={cn("text-[13px]", dark ? "text-graphite" : "text-graphite")}>
             {f.label}
             {f.required && <span aria-hidden> *</span>}
           </span>
@@ -145,7 +145,7 @@ export function LeadForm({ kind, source, dark, className, after }: { kind: LeadK
         <button type="submit" disabled={state === "sending"} className={cn(dark ? "btn-light" : "btn-primary", "min-w-[200px]")}>
           {state === "sending" ? <Loader2 className="h-4 w-4 animate-spin" /> : preset.submit}
         </button>
-        <p className={cn("text-[12px]", dark ? "text-white/50" : "text-graphite")}>We only use your details to contact you about this request.</p>
+        <p className={cn("text-[12px]", dark ? "text-graphite/80" : "text-graphite")}>We only use your details to contact you about this request.</p>
       </div>
       {state === "error" && (
         <p role="alert" className="col-span-2 text-sm text-red-600">

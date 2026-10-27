@@ -51,7 +51,7 @@ function MoreSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
   return (
     <AnimatePresence>
       {open && (
-        <motion.div className="fixed inset-0 z-[80] flex items-end justify-center bg-[#03050a]/60 backdrop-blur-md sm:items-center" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose}>
+        <motion.div className="fixed inset-0 z-[80] flex items-end justify-center bg-ink/20 backdrop-blur-md sm:items-center" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose}>
           <motion.div
             role="dialog"
             aria-modal="true"
@@ -65,7 +65,7 @@ function MoreSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
           >
             <div className="mb-8 flex items-center justify-between">
               <p className="font-display text-2xl font-semibold tracking-tight">Everything at NEA</p>
-              <button onClick={onClose} className="grid h-10 w-10 place-items-center rounded-full border border-white/10 bg-white/5" aria-label="Close">
+              <button onClick={onClose} className="grid h-10 w-10 place-items-center rounded-full border border-ink/10 bg-white/60" aria-label="Close">
                 <X className="h-4 w-4" />
               </button>
             </div>
@@ -76,7 +76,7 @@ function MoreSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
                   <ul className="space-y-2">
                     {g.links.map((l) => (
                       <li key={l.href}>
-                        <Link href={l.href} onClick={onClose} className="text-[15px] text-ink/90 hover:text-white">
+                        <Link href={l.href} onClick={onClose} className="text-[15px] text-ink/90 hover:text-ink">
                           {l.label}
                         </Link>
                       </li>
@@ -85,7 +85,7 @@ function MoreSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
                 </nav>
               ))}
             </div>
-            <div className="mt-10 flex flex-wrap gap-3 border-t border-white/10 pt-6 text-[14px] text-graphite">
+            <div className="mt-10 flex flex-wrap gap-3 border-t border-ink/10 pt-6 text-[14px] text-graphite">
               <a href={site.phoneHref} className="chip !text-[13px]">
                 {site.phone}
               </a>

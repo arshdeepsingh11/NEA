@@ -19,7 +19,7 @@ export function SystemsChapter() {
       <div className="container">
         <div className="mb-12 max-w-3xl md:mb-16">
           <p className="chip">Why NEA is different</p>
-          <h2 className="mt-5 text-display-md font-semibold text-white">Your skin is the output. These are the inputs.</h2>
+          <h2 className="mt-5 text-display-md font-semibold text-ink">Your skin is the output. These are the inputs.</h2>
           <p className="measure mt-5 text-lede text-graphite">Most clinics treat the surface. We measure the six systems that feed it, so the treatment works and the result lasts.</p>
         </div>
         <SystemsNetwork />
@@ -59,7 +59,7 @@ export function SkinReportChapter() {
             <p className="chip">
               <ScanFace className="h-3.5 w-3.5 text-flora" /> The free NEA Skin Health Report
             </p>
-            <h2 className="mt-5 text-display-md font-semibold text-white">See what your mirror can’t.</h2>
+            <h2 className="mt-5 text-display-md font-semibold text-ink">See what your mirror can’t.</h2>
             <p className="measure mt-5 text-lede text-graphite">A 15-minute advanced scan becomes a report like this: six skin layers, optional lab markers, and a plan with a measurable goal.</p>
           </div>
           <Link href="/skin-scan" className="btn-primary">
@@ -77,13 +77,13 @@ export function SkinReportChapter() {
 
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {tiles.map((t) => (
-              <div key={t.label} className="rounded-3xl border border-white/[0.07] bg-white/[0.03] p-5">
+              <div key={t.label} className="rounded-3xl border border-ink/10 bg-white/60 p-5">
                 <p className="flex items-center gap-2 text-[12.5px] text-graphite">
                   <span className="text-flora">{t.icon}</span>
                   {t.label}
                 </p>
                 <div className="mt-3 flex items-end justify-between gap-2">
-                  <p className="tabular font-display text-3xl font-semibold text-white">
+                  <p className="tabular font-display text-3xl font-semibold text-ink">
                     {t.value}
                     <span className="text-[14px] font-normal text-graphite">{t.unit}</span>
                   </p>
@@ -94,22 +94,22 @@ export function SkinReportChapter() {
           </div>
 
           <div className="mt-4 grid gap-4 lg:grid-cols-[1fr_1.15fr]">
-            <div className="rounded-3xl border border-white/[0.07] bg-white/[0.03] p-6">
-              <p className="font-display text-lg font-semibold text-white">Skin fingerprint</p>
+            <div className="rounded-3xl border border-ink/10 bg-white/60 p-6">
+              <p className="font-display text-lg font-semibold text-ink">Skin fingerprint</p>
               <p className="text-[13px] text-graphite">Six layers from the scan, scored 0–100.</p>
               <Radar className="mx-auto mt-2 max-w-[360px]" axes={SAMPLE_RADAR} />
             </div>
             <div className="grid gap-4">
-              <div className="rounded-3xl border border-white/[0.07] bg-white/[0.03] p-6">
-                <p className="font-display text-lg font-semibold text-white">Inside-out markers</p>
+              <div className="rounded-3xl border border-ink/10 bg-white/60 p-6">
+                <p className="font-display text-lg font-semibold text-ink">Inside-out markers</p>
                 <p className="mb-5 text-[13px] text-graphite">Optional BioAro tests that explain what the scan sees.</p>
                 <RangeBars markers={SAMPLE_MARKERS} />
               </div>
             </div>
           </div>
 
-          <div className="mt-4 rounded-3xl border border-white/[0.07] bg-white/[0.03] p-6">
-            <p className="mb-4 font-display text-lg font-semibold text-white">Projected skin score</p>
+          <div className="mt-4 rounded-3xl border border-ink/10 bg-white/60 p-6">
+            <p className="mb-4 font-display text-lg font-semibold text-ink">Projected skin score</p>
             <TrendChart
               series={[
                 { name: "With NEA plan", values: [62, 66, 70, 74, 77, 80, 82] },
@@ -139,18 +139,18 @@ export function FaceMapChapter({ zones }: { zones: Region[] }) {
       <div className="container grid items-center gap-8 lg:grid-cols-[1fr_1.1fr]">
         <div>
           <p className="chip">3D face map</p>
-          <h2 className="mt-5 text-display-md font-semibold text-white">Every zone of your face ages differently.</h2>
+          <h2 className="mt-5 text-display-md font-semibold text-ink">Every zone of your face ages differently.</h2>
           <p className="measure mt-5 text-lede text-graphite">Lines start on the forehead, pigment on the cheeks, oil in the T-zone. Pick a zone to see what drives it and what treats it.</p>
           <div className="mt-8 flex flex-wrap gap-2">
             {zones.map((x) => (
-              <button key={x.id} onClick={() => setSel(x.id)} className={cn("chip !py-1.5 !text-[13px] transition", sel === x.id ? "!border-white/40 !bg-white/15 !text-white" : "hover:text-white")}>
+              <button key={x.id} onClick={() => setSel(x.id)} className={cn("chip !py-1.5 !text-[13px] transition", sel === x.id ? "!border-ink !bg-ink !text-white" : "hover:text-ink")}>
                 <span className="h-1.5 w-1.5 rounded-full" style={{ background: x.color }} />
                 {x.name}
               </button>
             ))}
           </div>
           <div className="surface mt-6 rounded-3xl p-6">
-            <p className="font-display text-xl font-semibold text-white">{z.name}</p>
+            <p className="font-display text-xl font-semibold text-ink">{z.name}</p>
             <p className="mt-1 text-[15px] text-ink/90">{z.headline}</p>
             <p className="mt-3 text-[14px] leading-relaxed text-graphite">{z.improve}</p>
             <div className="mt-5 flex flex-wrap gap-3">

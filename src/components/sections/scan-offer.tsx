@@ -51,7 +51,7 @@ export function ScanOffer() {
           <AnimatedList className="h-[392px] overflow-hidden" delay={1100}>
             {LAYERS.map((l) => (
               <div key={l.title} className="flex items-center gap-4 rounded-2xl border border-ink/[0.06] surface p-4">
-                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl surface-strong text-white">{l.icon}</span>
+                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl surface-strong text-ink">{l.icon}</span>
                 <div>
                   <p className="text-[15px] font-medium">{l.title}</p>
                   <p className="text-[13px] text-graphite">{l.detail}</p>

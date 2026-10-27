@@ -90,12 +90,12 @@ export function TestsChapter() {
             <EvervaultCard key={t.slug} className="min-h-[300px]">
               <div className="flex h-full min-h-[300px] flex-col justify-between p-7">
                 <div>
-                  <p className="text-[13px] text-white/50">BioAro Labs</p>
+                  <p className="text-[13px] text-graphite/80">BioAro Labs</p>
                   <h3 className="mt-1 font-display text-3xl font-semibold">{t.name}</h3>
                 </div>
                 <div>
-                  <p className="text-[15px] leading-relaxed text-white/75">{t.neaUse}</p>
-                  <p className="mt-4 text-[14px] text-white/55">
+                  <p className="text-[15px] leading-relaxed text-graphite">{t.neaUse}</p>
+                  <p className="mt-4 text-[14px] text-graphite">
                     {money(t.price)} · results to your secure dashboard
                   </p>
                 </div>
@@ -103,24 +103,24 @@ export function TestsChapter() {
             </EvervaultCard>
           ))}
         </div>
-        <div className="mt-12 grid gap-8 border-t border-white/10 pt-10 sm:grid-cols-3">
+        <div className="mt-12 grid gap-8 border-t border-ink/10 pt-10 sm:grid-cols-3">
           <div>
             <p className="font-display text-5xl font-semibold">
               <NumberTicker value={3} />
             </p>
-            <p className="mt-2 text-white/60">microbiomes we test: gut, skin and vaginal</p>
+            <p className="mt-2 text-graphite">microbiomes we test: gut, skin and vaginal</p>
           </div>
           <div>
             <p className="font-display text-5xl font-semibold">
               <NumberTicker value={40} suffix="+" />
             </p>
-            <p className="mt-2 text-white/60">advanced lab tests available through BioAro Labs</p>
+            <p className="mt-2 text-graphite">advanced lab tests available through BioAro Labs</p>
           </div>
           <div>
             <p className="font-display text-5xl font-semibold">
               <NumberTicker value={1} />
             </p>
-            <p className="mt-2 text-white/60">connected report, explained by your NEA team</p>
+            <p className="mt-2 text-graphite">connected report, explained by your NEA team</p>
           </div>
         </div>
         <div className="mt-10">
@@ -142,18 +142,18 @@ export function FotonaChapter() {
       </div>
       <div className="container relative flex min-h-[90vh] flex-col justify-center py-24">
         <h2 className="max-w-3xl text-display-lg font-semibold">One laser platform. Every skin tone.</h2>
-        <p className="measure mt-6 text-lede text-white/70">
+        <p className="measure mt-6 text-lede text-graphite">
           NEA was one of the first centres in Calgary to offer Fotona and all its applications. Two wavelengths, Er:YAG and Nd:YAG, delivered gently enough to tighten collagen and safe for all skin types and colours.
         </p>
         <ul className="mt-10 flex max-w-3xl flex-wrap gap-2">
           {modes.map((m) => (
-            <li key={m} className="rounded-full border border-white/15 bg-white/5 px-4 py-2 text-[14px] text-white/80 backdrop-blur">
+            <li key={m} className="rounded-full border border-ink/10 bg-white/60 px-4 py-2 text-[14px] text-graphite backdrop-blur">
               {m}
             </li>
           ))}
         </ul>
-        <Link href="/fotona" className="mt-12 inline-flex w-fit items-center gap-2 border-b border-white/30 pb-1 text-xl font-medium text-white transition hover:border-white">
-          <Text3DFlip text="Explore Fotona at NEA" flipClassName="text-[#9fd3c1]" />
+        <Link href="/fotona" className="mt-12 inline-flex w-fit items-center gap-2 border-b border-ink/20 pb-1 text-xl font-medium text-ink transition hover:border-ink/30">
+          <Text3DFlip text="Explore Fotona at NEA" flipClassName="text-flora" />
         </Link>
       </div>
     </section>
@@ -301,7 +301,7 @@ export function MapChapter() {
             { name: "Manila", lat: 14.6, lng: 120.98, note: "Sample submission" },
           ]}
         />
-        <p className="mt-4 text-[13px] text-white/40">Routes are illustrative of BioAro’s secure global sample submission.</p>
+        <p className="mt-4 text-[13px] text-graphite/80">Routes are illustrative of BioAro’s secure global sample submission.</p>
       </div>
     </section>
   );

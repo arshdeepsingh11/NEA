@@ -33,12 +33,12 @@ export default function MagazinePage() {
         <div className="container grid gap-12 lg:grid-cols-2">
           <div>
             <h2 className="text-display-md font-semibold">How old are you… really?</h2>
-            <p className="measure mt-5 text-lede text-white/70">
+            <p className="measure mt-5 text-lede text-graphite">
               BioNow 2025 is a guide to health trends, new science and practical ways to “know your age” on a deeper level: your backstage pass to the future of health, longevity and sustainable living.
             </p>
           </div>
           <div className="glass-dark rounded-4xl p-6 md:p-10">
-            <p className="mb-6 text-white/70">Fill in your details to get the magazine.</p>
+            <p className="mb-6 text-graphite">Fill in your details to get the magazine.</p>
             <LeadForm kind="magazine" source="bionow" dark />
           </div>
         </div>

@@ -29,7 +29,7 @@ export function HomeHero() {
           <p className="chip">
             <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-flora" /> NEA Precision Skin · Calgary
           </p>
-          <h1 className="mt-6 font-display text-[clamp(2.8rem,5.4vw,5.2rem)] font-semibold leading-[0.98] tracking-[-0.035em] text-white">
+          <h1 className="mt-6 font-display text-[clamp(2.8rem,5.4vw,5.2rem)] font-semibold leading-[0.98] tracking-[-0.035em] text-ink">
             Healthy skin
             <br />
             starts <span className="aurora-text">inside.</span>
@@ -52,18 +52,18 @@ export function HomeHero() {
             </Link>
           </div>
 
-          <dl className="mt-8 grid max-w-[34rem] grid-cols-3 gap-4 border-t border-white/10 pt-6">
+          <dl className="mt-8 grid max-w-[34rem] grid-cols-3 gap-4 border-t border-ink/10 pt-6">
             {stats.map((s) => (
               <div key={s.label}>
                 <dt className="sr-only">{s.label}</dt>
-                <dd className="tabular font-display text-3xl font-semibold text-white">
+                <dd className="tabular font-display text-3xl font-semibold text-ink">
                   <NumberTicker value={s.n} />
                 </dd>
                 <dd className="mt-1 text-[12.5px] leading-snug text-graphite">{s.label}</dd>
               </div>
             ))}
           </dl>
-          <p className="mt-6 text-[12.5px] text-white/45">Open Monday to Saturday, 9 to 5 · {site.address.line1}, Calgary</p>
+          <p className="mt-6 text-[12.5px] text-graphite/80">Open Monday to Saturday, 9 to 5 · {site.address.line1}, Calgary</p>
         </div>
 
         <div className="relative order-1 h-[56svh] min-h-[420px] lg:order-2 lg:h-[86svh]">

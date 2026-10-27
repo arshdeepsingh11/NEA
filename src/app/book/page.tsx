@@ -21,10 +21,10 @@ export default function BookPage() {
       />
       <section className="pb-12">
         <div className="container grid gap-4 md:grid-cols-3">
-          <a href={site.bookingUrl} target="_blank" rel="noreferrer" className="rounded-4xl surface-strong p-8 text-white transition hover:brightness-110">
+          <a href={site.bookingUrl} target="_blank" rel="noreferrer" className="rounded-4xl surface-strong p-8 text-ink transition hover:brightness-110">
             <CalendarCheck className="h-6 w-6" />
             <h2 className="mt-6 text-2xl font-semibold tracking-tight">Book online</h2>
-            <p className="mt-2 text-white/65">Pick a treatment and time in our booking system. Fastest if you know what you want.</p>
+            <p className="mt-2 text-graphite">Pick a treatment and time in our booking system. Fastest if you know what you want.</p>
           </a>
           <Link href="/skin-scan" className="rounded-4xl surface p-8 transition hover:shadow-[0_20px_50px_-30px_rgba(21,25,28,0.35)]">
             <ScanFace className="h-6 w-6 text-flora" />

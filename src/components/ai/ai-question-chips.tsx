@@ -8,7 +8,7 @@ export function AiQuestionChips({ questions, context }: { questions: string[]; c
   return (
     <div className="flex flex-wrap gap-2">
       {questions.map((q) => (
-        <button key={q} onClick={() => ai.open({ query: q, context })} className="chip !py-1.5 !text-[13px] transition hover:border-white/25 hover:text-white">
+        <button key={q} onClick={() => ai.open({ query: q, context })} className="chip !py-1.5 !text-[13px] transition hover:border-ink/20 hover:text-ink">
           <Sparkles className="h-3 w-3 text-flora" />
           {q}
         </button>

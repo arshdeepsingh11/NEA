@@ -33,7 +33,7 @@ export function HeroBody({ regions }: { regions: ScanRegion[] }) {
       {/* Scan progress across the ten systems */}
       <div className="absolute left-1/2 top-2 flex -translate-x-1/2 items-center gap-1.5" aria-hidden>
         {regions.map((x, k) => (
-          <button key={x.id} onClick={() => setI(k)} className="pointer-events-auto h-1.5 rounded-full transition-all" style={{ width: k === i ? 22 : 6, background: k === i ? x.color : "rgba(255,255,255,0.2)" }} tabIndex={-1} />
+          <button key={x.id} onClick={() => setI(k)} className="pointer-events-auto h-1.5 rounded-full transition-all" style={{ width: k === i ? 22 : 6, background: k === i ? x.color : "rgba(11,19,36,0.2)" }} tabIndex={-1} />
         ))}
       </div>
 
@@ -47,7 +47,7 @@ export function HeroBody({ regions }: { regions: ScanRegion[] }) {
               </span>
               <span className="chip !px-2 !py-0.5 !text-[11px]">{r.system}</span>
             </div>
-            <p className="mt-3 font-display text-lg font-semibold text-white">{r.name}</p>
+            <p className="mt-3 font-display text-lg font-semibold text-ink">{r.name}</p>
             <p className="mt-1 text-[13px] leading-snug text-graphite">{r.headline}</p>
             {r.tests.length > 0 && (
               <p className="mt-3 text-[12px] text-graphite">
@@ -56,12 +56,12 @@ export function HeroBody({ regions }: { regions: ScanRegion[] }) {
             )}
             <div className="mt-3 flex flex-wrap gap-1.5">
               {r.tracks.slice(0, 3).map((t) => (
-                <span key={t} className="rounded-full bg-white/[0.06] px-2 py-0.5 text-[11px] text-ink/80">
+                <span key={t} className="rounded-full bg-white/60 px-2 py-0.5 text-[11px] text-ink/80">
                   {t}
                 </span>
               ))}
             </div>
-            <Link href={`/body?focus=${r.id}`} className="mt-4 flex items-center gap-1 text-[13px] font-medium text-white hover:text-flora">
+            <Link href={`/body?focus=${r.id}`} className="mt-4 flex items-center gap-1 text-[13px] font-medium text-ink hover:text-flora">
               Explore {r.name.toLowerCase()} <ArrowUpRight className="h-3.5 w-3.5" />
             </Link>
           </motion.div>

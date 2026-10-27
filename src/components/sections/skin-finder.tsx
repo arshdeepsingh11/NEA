@@ -40,7 +40,7 @@ export function SkinFinder({ compact }: { compact?: boolean }) {
   const chip = (active: boolean) =>
     cn(
       "rounded-full border px-4 py-2.5 text-[15px] transition-all duration-300 ease-spring active:scale-[0.97]",
-      active ? "border-ink surface-strong text-white" : "border-ink/15 surface hover:border-ink/30"
+      active ? "border-ink surface-strong text-ink" : "border-ink/15 surface hover:border-ink/30"
     );
 
   return (
@@ -81,24 +81,24 @@ export function SkinFinder({ compact }: { compact?: boolean }) {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -10 }}
               transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              className="h-full rounded-4xl surface-strong p-8 text-white md:p-10"
+              className="h-full rounded-4xl surface-strong p-8 text-ink md:p-10"
             >
-              <p className="text-[14px] text-white/55">We suggest</p>
+              <p className="text-[14px] text-graphite">We suggest</p>
               <h3 className="mt-2 text-3xl font-semibold tracking-tight">{program ? program.name : "title" in c ? c.title : ""}</h3>
-              <p className="mt-4 leading-relaxed text-white/75">{program ? program.summary : "note" in c ? c.note : ""}</p>
-              {ageNote && <p className="mt-3 leading-relaxed text-white/75">{ageNote}</p>}
+              <p className="mt-4 leading-relaxed text-graphite">{program ? program.summary : "note" in c ? c.note : ""}</p>
+              {ageNote && <p className="mt-3 leading-relaxed text-graphite">{ageNote}</p>}
               {program && (
                 <p className="mt-6 text-[15px]">
-                  <span className="text-white/55">From </span>
+                  <span className="text-graphite">From </span>
                   <span className="font-semibold">{money(program.priceFrom)}</span>
-                  <span className="text-white/55"> · {program.duration}</span>
+                  <span className="text-graphite"> · {program.duration}</span>
                 </p>
               )}
               <div className="mt-8 flex flex-wrap gap-3">
                 <Link href={program ? `/programs/${program.slug}` : "href" in c ? c.href : "/"} className="btn-light">
                   See the plan
                 </Link>
-                <Link href="/skin-scan" className="btn border border-white/20 hover:bg-white/10">
+                <Link href="/skin-scan" className="btn border border-ink/20 hover:bg-white/90">
                   Start with a free scan
                 </Link>
                 <button
@@ -107,7 +107,7 @@ export function SkinFinder({ compact }: { compact?: boolean }) {
                     setConcern(null);
                     setAge(null);
                   }}
-                  className="btn text-white/60 hover:text-white"
+                  className="btn text-graphite hover:text-ink"
                 >
                   <RotateCcw className="h-4 w-4" /> Start over
                 </button>

@@ -101,7 +101,7 @@ export function AiOverlay({ open, onClose, initialQuery, context, nonce }: { ope
     <AnimatePresence>
       {open && (
         <motion.div
-          className="fixed inset-0 z-[90] flex items-end justify-center bg-[#03050a]/70 p-0 backdrop-blur-xl sm:items-center sm:p-6"
+          className="fixed inset-0 z-[90] flex items-end justify-center bg-ink/20 p-0 backdrop-blur-xl sm:items-center sm:p-6"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -116,9 +116,9 @@ export function AiOverlay({ open, onClose, initialQuery, context, nonce }: { ope
             animate={{ y: 0, opacity: 1, scale: 1 }}
             exit={{ y: 30, opacity: 0, scale: 0.98 }}
             transition={{ type: "spring", stiffness: 320, damping: 32 }}
-            className="aurora-border relative flex h-[92dvh] w-full max-w-3xl flex-col overflow-hidden rounded-t-[32px] border border-white/10 bg-[rgba(9,13,24,0.82)] shadow-[0_60px_160px_-40px_rgba(94,234,212,0.35)] backdrop-blur-2xl sm:h-[82vh] sm:rounded-[32px]"
+            className="aurora-border relative flex h-[92dvh] w-full max-w-3xl flex-col overflow-hidden rounded-t-[32px] border border-ink/10 bg-white/80 shadow-[0_60px_160px_-40px_rgba(30,64,110,0.35)] backdrop-blur-2xl sm:h-[82vh] sm:rounded-[32px]"
           >
-            <header className="flex items-center justify-between gap-4 border-b border-white/[0.07] px-5 py-4 sm:px-7">
+            <header className="flex items-center justify-between gap-4 border-b border-ink/10 px-5 py-4 sm:px-7">
               <div className="flex items-center gap-3">
                 <Orb active={busy} />
                 <div>
@@ -126,7 +126,7 @@ export function AiOverlay({ open, onClose, initialQuery, context, nonce }: { ope
                   <p className="text-[12px] text-graphite">Grounded in NEA’s programs, treatments, tests and FAQs{context ? ` · focus: ${context}` : ""}</p>
                 </div>
               </div>
-              <button onClick={onClose} className="grid h-10 w-10 place-items-center rounded-full border border-white/10 bg-white/5 text-white/70 hover:text-white" aria-label="Close (Esc)">
+              <button onClick={onClose} className="grid h-10 w-10 place-items-center rounded-full border border-ink/10 bg-white/60 text-graphite hover:text-ink" aria-label="Close (Esc)">
                 <X className="h-4 w-4" />
               </button>
             </header>
@@ -140,7 +140,7 @@ export function AiOverlay({ open, onClose, initialQuery, context, nonce }: { ope
                   <p className="mt-3 max-w-lg text-graphite">I can explain the cause behind a concern, match you to a program, price a plan, compare tests, or tell you how to book.</p>
                   <div className="mt-8 grid gap-2 sm:grid-cols-2">
                     {STARTERS.map((s) => (
-                      <button key={s} onClick={() => send(s)} className="glass rounded-2xl px-4 py-3.5 text-left text-[14px] text-ink/90 transition hover:border-white/20 hover:bg-white/[0.08]">
+                      <button key={s} onClick={() => send(s)} className="glass rounded-2xl px-4 py-3.5 text-left text-[14px] text-ink/90 transition hover:border-ink/20 hover:bg-white/90">
                         {s}
                       </button>
                     ))}
@@ -150,7 +150,7 @@ export function AiOverlay({ open, onClose, initialQuery, context, nonce }: { ope
               {msgs.map((m, i) =>
                 m.role === "user" ? (
                   <div key={i} className="flex justify-end">
-                    <p className="max-w-[85%] rounded-3xl rounded-br-lg bg-white/[0.1] px-5 py-3 text-[15px]">{m.text}</p>
+                    <p className="max-w-[85%] rounded-3xl rounded-br-lg bg-white/60 px-5 py-3 text-[15px]">{m.text}</p>
                   </div>
                 ) : (
                   <AssistantReply key={i} reply={m.reply} onClose={onClose} />
@@ -163,8 +163,8 @@ export function AiOverlay({ open, onClose, initialQuery, context, nonce }: { ope
               )}
             </div>
 
-            <form onSubmit={onSubmit} className="border-t border-white/[0.07] p-3 sm:p-4">
-              <div className="flex items-end gap-2 rounded-3xl border border-white/10 bg-white/[0.05] p-2 pl-4 focus-within:border-flora/50">
+            <form onSubmit={onSubmit} className="border-t border-ink/10 p-3 sm:p-4">
+              <div className="flex items-end gap-2 rounded-3xl border border-ink/10 bg-white/60 p-2 pl-4 focus-within:border-flora/50">
                 <label htmlFor="nea-ai-input" className="sr-only">
                   Ask NEA
                 </label>
@@ -182,16 +182,16 @@ export function AiOverlay({ open, onClose, initialQuery, context, nonce }: { ope
                     }
                   }}
                   placeholder="Describe a concern, a goal or a budget…"
-                  className="max-h-32 min-h-[44px] flex-1 resize-none bg-transparent py-2.5 text-[16px] text-white outline-none placeholder:text-white/35"
+                  className="max-h-32 min-h-[44px] flex-1 resize-none bg-transparent py-2.5 text-[16px] text-ink outline-none placeholder:text-graphite/80"
                 />
-                <button type="button" onClick={toggleMic} className={cn("grid h-11 w-11 place-items-center rounded-full transition", listening ? "bg-orchid/30 text-white" : "text-white/60 hover:text-white")} aria-label={listening ? "Stop voice input" : "Speak your question"}>
+                <button type="button" onClick={toggleMic} className={cn("grid h-11 w-11 place-items-center rounded-full transition", listening ? "bg-orchid/30 text-ink" : "text-graphite hover:text-ink")} aria-label={listening ? "Stop voice input" : "Speak your question"}>
                   <Mic className="h-5 w-5" />
                 </button>
                 <button type="submit" disabled={busy || !q.trim()} className="btn-primary !h-11 !w-11 !p-0 disabled:opacity-40" aria-label="Send">
                   <ArrowUp className="h-5 w-5" />
                 </button>
               </div>
-              <p className="mt-2 px-2 text-center text-[11px] text-white/35">Not medical advice. For anything personal, book a free 15-minute consultation. Press Esc to close.</p>
+              <p className="mt-2 px-2 text-center text-[11px] text-graphite/80">Not medical advice. For anything personal, book a free 15-minute consultation. Press Esc to close.</p>
             </form>
           </motion.div>
         </motion.div>
@@ -204,7 +204,7 @@ function Orb({ active }: { active?: boolean }) {
   return (
     <span className="relative grid h-10 w-10 place-items-center">
       <span className={cn("absolute inset-0 rounded-full blur-md [background:var(--aurora)]", active ? "animate-pulseglow" : "opacity-60")} />
-      <span className="relative grid h-9 w-9 place-items-center rounded-full text-[#04121a] [background:var(--aurora)]">
+      <span className="relative grid h-9 w-9 place-items-center rounded-full text-ink [background:var(--aurora)]">
         <Sparkles className="h-4 w-4" />
       </span>
     </span>
@@ -249,16 +249,16 @@ function AssistantReply({ reply, onClose }: { reply: Reply; onClose: () => void 
           <div className="flex items-center justify-between">
             <p className="font-display font-semibold">Your starting plan</p>
             <p className="text-[13px] text-graphite">
-              Total from <span className="font-semibold text-white">{money(reply.plan.total)}</span>
+              Total from <span className="font-semibold text-ink">{money(reply.plan.total)}</span>
               {reply.plan.budget ? ` · budget ${money(reply.plan.budget)}` : ""}
             </p>
           </div>
           <ol className="mt-4 space-y-2">
             {reply.plan.items.map((it, i) => (
               <li key={it.href}>
-                <Link href={it.href} onClick={onClose} className="flex items-center justify-between gap-4 rounded-2xl bg-white/[0.05] px-4 py-3 hover:bg-white/[0.09]">
+                <Link href={it.href} onClick={onClose} className="flex items-center justify-between gap-4 rounded-2xl bg-white/60 px-4 py-3 hover:bg-white/90">
                   <span className="flex items-center gap-3">
-                    <span className="grid h-7 w-7 place-items-center rounded-full bg-white/10 text-[12px] tabular">{i + 1}</span>
+                    <span className="grid h-7 w-7 place-items-center rounded-full bg-white/60 text-[12px] tabular">{i + 1}</span>
                     <span>
                       <span className="block text-[15px] font-medium">{it.title}</span>
                       <span className="block text-[12.5px] text-graphite">{it.why}</span>
@@ -274,7 +274,7 @@ function AssistantReply({ reply, onClose }: { reply: Reply; onClose: () => void 
           </ol>
           {reply.plan.budget !== undefined && (
             <div className="mt-4">
-              <div className="h-2 overflow-hidden rounded-full bg-white/10">
+              <div className="h-2 overflow-hidden rounded-full bg-white/60">
                 <div className="h-full rounded-full [background:var(--aurora)]" style={{ width: `${Math.min(100, (reply.plan.total / reply.plan.budget) * 100)}%` }} />
               </div>
             </div>
@@ -285,7 +285,7 @@ function AssistantReply({ reply, onClose }: { reply: Reply; onClose: () => void 
       {doneText && reply.sources.length > 0 && (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="grid gap-2 sm:grid-cols-2">
           {reply.sources.map((s) => (
-            <Link key={s.href} href={s.href} onClick={onClose} className="glass group rounded-2xl p-4 transition hover:border-white/20">
+            <Link key={s.href} href={s.href} onClick={onClose} className="glass group rounded-2xl p-4 transition hover:border-ink/20">
               <span className="chip !py-0.5">{s.kind}</span>
               <span className="mt-2 block font-medium leading-snug group-hover:underline">{s.title}</span>
               {s.meta?.summary && <span className="mt-1 line-clamp-2 block text-[13px] text-graphite">{s.meta.summary}</span>}

@@ -25,12 +25,12 @@ export function EvervaultCard({ children, className }: { children: ReactNode; cl
   const style = { maskImage: mask, WebkitMaskImage: mask };
 
   return (
-    <div onMouseMove={onMove} className={cn("group/ev relative overflow-hidden rounded-3xl border border-white/10 bg-abyss", className)}>
+    <div onMouseMove={onMove} className={cn("group/ev relative overflow-hidden surface rounded-3xl", className)}>
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute inset-0 [mask-image:linear-gradient(white,transparent)] group-hover/ev:opacity-50" />
-        <motion.div className="absolute inset-0 bg-gradient-to-br from-flora to-lumen opacity-0 transition duration-500 group-hover/ev:opacity-100" style={style} />
-        <motion.div className="absolute inset-0 opacity-0 mix-blend-overlay group-hover/ev:opacity-100" style={style}>
-          <p className="absolute inset-x-0 h-full whitespace-pre-wrap break-words font-mono text-[11px] font-bold leading-4 text-white">{str}</p>
+        <motion.div className="absolute inset-0 bg-gradient-to-br from-[#7CE7D8] to-[#B4BCFD] opacity-0 transition duration-500 group-hover/ev:opacity-100" style={style} />
+        <motion.div className="absolute inset-0 opacity-0 group-hover/ev:opacity-60" style={style}>
+          <p className="absolute inset-x-0 h-full whitespace-pre-wrap break-words font-mono text-[11px] font-bold leading-4 text-ink/40">{str}</p>
         </motion.div>
       </div>
       <div className="relative z-10">{children}</div>

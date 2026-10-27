@@ -20,15 +20,15 @@ export default function MembershipPage() {
         <div className="container grid gap-5 lg:grid-cols-3">
           {memberships.map((m) => {
             const inner = (
-              <div className={cn("flex h-full flex-col rounded-[30px] p-8", "popular" in m && m.popular ? "surface-strong text-white" : "surface")}>
+              <div className={cn("flex h-full flex-col rounded-[30px] p-8", "popular" in m && m.popular ? "surface-strong text-ink" : "surface")}>
                 <div className="flex items-center justify-between">
                   <h2 className="text-2xl font-semibold tracking-tight">{m.name}</h2>
-                  {"popular" in m && m.popular && <span className="rounded-full bg-white/10 px-3 py-1 text-[12px]">Most chosen</span>}
+                  {"popular" in m && m.popular && <span className="rounded-full bg-white/60 px-3 py-1 text-[12px]">Most chosen</span>}
                 </div>
-                <p className={cn("mt-2", "popular" in m && m.popular ? "text-white/65" : "text-graphite")}>{m.blurb}</p>
+                <p className={cn("mt-2", "popular" in m && m.popular ? "text-graphite" : "text-graphite")}>{m.blurb}</p>
                 <p className="mt-8">
                   <span className="font-display text-5xl font-semibold">{money(m.price)}</span>
-                  <span className={cn("ml-1", "popular" in m && m.popular ? "text-white/60" : "text-graphite")}>/ month</span>
+                  <span className={cn("ml-1", "popular" in m && m.popular ? "text-graphite" : "text-graphite")}>/ month</span>
                 </p>
                 <ul className="mt-8 flex-1 space-y-3 text-[15px]">
                   {m.features.map((f) => (

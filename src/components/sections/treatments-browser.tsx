@@ -33,7 +33,7 @@ export function TreatmentsBrowser({ items, categories }: { items: Item[]; catego
                 key={c.id}
                 onClick={() => setCat(c.id)}
                 aria-pressed={cat === c.id}
-                className={cn("shrink-0 rounded-full px-4 py-2 text-[14px] transition", cat === c.id ? "surface-strong text-white" : "text-graphite hover:bg-ink/5 hover:text-ink")}
+                className={cn("shrink-0 rounded-full px-4 py-2 text-[14px] transition", cat === c.id ? "surface-strong text-ink" : "text-graphite hover:bg-ink/5 hover:text-ink")}
               >
                 {c.label}
               </button>

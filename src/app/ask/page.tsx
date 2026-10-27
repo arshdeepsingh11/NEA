@@ -28,7 +28,7 @@ export default function AskPage() {
           <p className="chip">
             <Sparkles className="h-3.5 w-3.5 text-flora" /> NEA Intelligence
           </p>
-          <h1 className="mt-6 text-display-lg font-semibold text-white">
+          <h1 className="mt-6 text-display-lg font-semibold text-ink">
             Ask <span className="aurora-text">anything.</span>
           </h1>
           <p className="mx-auto mt-5 max-w-xl text-lede text-graphite">Treatments, tests, prices, preparation, hours. Press N on any page to open it.</p>
@@ -40,10 +40,10 @@ export default function AskPage() {
         <div className="mx-auto mt-20 grid max-w-5xl gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {CAN.map(({ icon: Icon, title, text }) => (
             <div key={title} className="surface rounded-[28px] p-6">
-              <span className="grid h-10 w-10 place-items-center rounded-2xl bg-white/[0.06] text-flora">
+              <span className="grid h-10 w-10 place-items-center rounded-2xl bg-white/60 text-flora">
                 <Icon className="h-5 w-5" />
               </span>
-              <h2 className="mt-5 text-lg font-semibold text-white">{title}</h2>
+              <h2 className="mt-5 text-lg font-semibold text-ink">{title}</h2>
               <p className="mt-2 text-[14px] leading-relaxed text-graphite">{text}</p>
             </div>
           ))}
