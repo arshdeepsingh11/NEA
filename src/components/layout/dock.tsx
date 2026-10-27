@@ -8,6 +8,7 @@ import { AppleDock, type DockItem } from "@/components/ui/apple-dock";
 import { useAi } from "@/components/ai/ai-provider";
 import { footerNav } from "@/content/nav";
 import { site } from "@/lib/site";
+import { ThemeDot, ThemePicker, useTheme } from "@/components/theme/theme";
 
 /**
  * The only navigation on the site: a floating glass dock.
@@ -17,6 +18,7 @@ export function Dock() {
   const pathname = usePathname();
   const ai = useAi();
   const [more, setMore] = useState(false);
+  const { theme, toggle } = useTheme();
   const is = (p: string) => (p === "/" ? pathname === "/" : pathname === p || pathname.startsWith(p + "/"));
 
   const items: DockItem[] = [
@@ -29,6 +31,7 @@ export function Dock() {
     { label: "Free scan", href: "/skin-scan", icon: <ScanFace />, active: is("/skin-scan") },
     { label: "Book", href: site.bookingUrl, icon: <CalendarCheck />, external: true },
     { label: "More", icon: <Grid2x2 />, onClick: () => setMore(true) },
+    { label: theme === "pearl" ? "Sand" : "Pearl", icon: <ThemeDot theme={theme} />, onClick: toggle, hint: theme === "pearl" ? "Switch to Sand & gold" : "Switch to Pearl & blush" },
   ];
 
   // Phones get the five most important, still with the AI in the centre.
@@ -85,7 +88,11 @@ function MoreSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
                 </nav>
               ))}
             </div>
-            <div className="mt-10 flex flex-wrap gap-3 border-t border-ink/10 pt-6 text-[14px] text-graphite">
+            <div className="mt-10 border-t border-ink/10 pt-6">
+              <p className="mb-3 text-[13px] text-graphite">Colour theme</p>
+              <ThemePicker />
+            </div>
+            <div className="mt-8 flex flex-wrap gap-3 border-t border-ink/10 pt-6 text-[14px] text-graphite">
               <a href={site.phoneHref} className="chip !text-[13px]">
                 {site.phone}
               </a>
