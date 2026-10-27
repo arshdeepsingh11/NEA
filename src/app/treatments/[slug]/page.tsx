@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { AiQuestionChips } from "@/components/ai/ai-question-chips";
+import { bodyRegions, faceZones } from "@/content/body";
 import { notFound } from "next/navigation";
 import { NeaImage } from "@/components/ui/nea-image";
 import { Blocks } from "@/components/sections/blocks";
@@ -48,6 +50,23 @@ export default async function TreatmentPage({ params }: Props) {
             Not sure? Get a free scan
           </Link>
         </div>
+        <div className="mt-6">
+          <AiQuestionChips context={t.title} questions={[`Is ${t.title.split(" (")[0]} right for me?`, "How many sessions will I need?", "What is the downtime?"]} />
+        </div>
+        {(() => {
+          const where = [...bodyRegions.map((r) => ({ r, face: false })), ...faceZones.map((r) => ({ r, face: true }))].filter(({ r }) => r.treatments.includes(t.slug));
+          return where.length ? (
+            <div className="mt-5 flex flex-wrap items-center gap-2 text-[13px] text-graphite">
+              Works on:
+              {where.map(({ r, face }) => (
+                <Link key={r.id} href={`/body?${face ? "mode=face&" : ""}focus=${r.id}`} className="chip hover:text-white">
+                  <span className="h-1.5 w-1.5 rounded-full" style={{ background: r.color }} />
+                  {r.name}
+                </Link>
+              ))}
+            </div>
+          ) : null;
+        })()}
       </PageHero>
       <section className="pb-24">
         <div className="container grid gap-14 lg:grid-cols-[1.3fr_0.7fr]">
@@ -84,14 +103,14 @@ export default async function TreatmentPage({ params }: Props) {
           </article>
           <aside className="space-y-4 lg:sticky lg:top-[calc(var(--header-h)+24px)] lg:h-fit">
             {program && (
-              <Link href={`/programs/${program.slug}`} className="block rounded-4xl bg-ink p-7 text-white">
+              <Link href={`/programs/${program.slug}`} className="block rounded-4xl surface-strong p-7 text-white">
                 <p className="text-[13px] text-white/55">Part of</p>
                 <p className="mt-1 text-2xl font-semibold tracking-tight">{program.name}</p>
                 <p className="mt-3 text-[15px] leading-relaxed text-white/70">{program.headline}</p>
                 <span className="mt-5 inline-block text-[14px] underline underline-offset-4">See the full program</span>
               </Link>
             )}
-            <div className="rounded-4xl bg-white p-7">
+            <div className="rounded-4xl surface p-7">
               <p className="font-semibold">Good to know</p>
               <dl className="mt-4 space-y-3 text-[15px]">
                 <div>
@@ -115,7 +134,7 @@ export default async function TreatmentPage({ params }: Props) {
         </div>
       </section>
       {related.length > 0 && (
-        <section className="chapter bg-white">
+        <section className="chapter">
           <div className="container">
             <h2 className="mb-10 text-display-md font-semibold">Related treatments.</h2>
             <div className="grid gap-5 md:grid-cols-3">
