@@ -41,7 +41,7 @@ export default function PackagesPage() {
               {wellnessPackages
                 .filter((p) => p.group === g.id)
                 .map((p) => (
-                  <a key={p.id} href={`#${p.id}`} className="shrink-0 rounded-full border border-ink/10 bg-white px-4 py-2 text-[14px] hover:border-ink/30">
+                  <a key={p.id} href={`#${p.id}`} className="shrink-0 rounded-full border border-ink/10 surface px-4 py-2 text-[14px] hover:border-ink/30">
                     {p.name}
                   </a>
                 ))}
@@ -50,7 +50,7 @@ export default function PackagesPage() {
               {wellnessPackages
                 .filter((p) => p.group === g.id)
                 .map((p) => (
-                  <article key={p.id} id={p.id} className="scroll-mt-32 overflow-hidden rounded-5xl bg-white lg:grid lg:grid-cols-[0.8fr_1.2fr]">
+                  <article key={p.id} id={p.id} className="scroll-mt-32 overflow-hidden rounded-5xl surface lg:grid lg:grid-cols-[0.8fr_1.2fr]">
                     <div className="relative min-h-[260px] bg-mist">
                       <NeaImage src={p.image} alt={p.name} fill sizes="(max-width: 1024px) 100vw, 40vw" className="object-cover" />
                     </div>

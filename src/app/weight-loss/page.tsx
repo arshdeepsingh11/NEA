@@ -29,7 +29,7 @@ export default function WeightLossPage() {
           <SectionHead title="Explore our programs." />
           <div className="grid gap-5 lg:grid-cols-3">
             {nutritionPrograms.map((p) => (
-              <div key={p.name} className="flex flex-col rounded-4xl bg-white p-8">
+              <div key={p.name} className="flex flex-col rounded-4xl surface p-8">
                 <h3 className="text-2xl font-semibold tracking-tight">{p.name}</h3>
                 <ul className="mt-6 flex-1 space-y-2.5">
                   {p.items.map((it) => (

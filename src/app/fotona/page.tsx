@@ -48,7 +48,7 @@ export default function FotonaPage() {
           </div>
         </div>
       </section>
-      <section className="chapter bg-white">
+      <section className="chapter">
         <div className="container">
           <SectionHead title="What Fotona treats at NEA." />
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

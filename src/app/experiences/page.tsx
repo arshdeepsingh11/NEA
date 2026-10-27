@@ -13,7 +13,7 @@ export default function ExperiencesPage() {
       <section className="pb-28">
         <div className="container grid gap-5 md:grid-cols-2 lg:grid-cols-3">
           {offers.map((o) => (
-            <Link key={o.slug} href={o.slug === "skin-scan" ? "/skin-scan" : `/experiences/${o.slug}`} className="group overflow-hidden rounded-4xl bg-white">
+            <Link key={o.slug} href={o.slug === "skin-scan" ? "/skin-scan" : `/experiences/${o.slug}`} className="group overflow-hidden rounded-4xl surface">
               <div className="relative aspect-[16/10] bg-mist">
                 <NeaImage src={o.image} alt="" fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover transition-transform duration-700 ease-spring group-hover:scale-105" />
               </div>

@@ -32,7 +32,7 @@ export default function SkinScanPage() {
           <ScanOffer />
         </div>
       </section>
-      <section className="chapter bg-white">
+      <section className="chapter">
         <div className="container">
           <SectionHead title="What happens at your scan." />
           <ol className="grid gap-4 md:grid-cols-5">
@@ -64,7 +64,7 @@ export default function SkinScanPage() {
             <p className="measure mt-5 text-lede text-graphite">Tell us a little about you so the right aesthetician prepares for your scan. We confirm within one business day.</p>
             <Accordion className="mt-10" items={QA.map((x) => ({ title: x.q, content: <p className="leading-relaxed text-graphite">{x.a}</p> }))} />
           </div>
-          <ShineBorder radius={36} className="h-fit bg-white p-6 md:p-10">
+          <ShineBorder radius={36} className="h-fit surface p-6 md:p-10">
             <LeadForm kind="skin-scan" source="skin-scan-page" />
           </ShineBorder>
         </div>

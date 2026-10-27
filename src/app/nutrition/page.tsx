@@ -45,7 +45,7 @@ export default function NutritionPage() {
           </div>
         </div>
       </section>
-      <section className="chapter bg-white">
+      <section className="chapter">
         <div className="container">
           <SectionHead title="We understand the challenges, and we are here to support you." />
           <div className="grid gap-4 md:grid-cols-2">

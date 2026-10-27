@@ -28,7 +28,7 @@ export default function ProgramsPage() {
           ))}
         </div>
       </section>
-      <section className="chapter bg-white">
+      <section className="chapter">
         <div className="container">
           <SectionHead title="Side by side." />
           <div className="overflow-x-auto">

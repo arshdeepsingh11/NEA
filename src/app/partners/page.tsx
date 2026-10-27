@@ -30,7 +30,7 @@ export default function PartnersPage() {
           <SectionHead title="Who we partner with." />
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {WHO.map((w) => (
-              <div key={w.t} className="rounded-4xl bg-white p-7">
+              <div key={w.t} className="rounded-4xl surface p-7">
                 <h3 className="text-lg font-semibold tracking-tight">{w.t}</h3>
                 <p className="mt-2 leading-relaxed text-graphite">{w.d}</p>
               </div>
@@ -51,7 +51,7 @@ export default function PartnersPage() {
               ))}
             </ol>
           </div>
-          <div className="rounded-5xl bg-white p-6 md:p-10">
+          <div className="rounded-5xl surface p-6 md:p-10">
             <LeadForm kind="partner" source="partners-page" />
           </div>
         </div>

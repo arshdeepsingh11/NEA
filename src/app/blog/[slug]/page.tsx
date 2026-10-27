@@ -47,7 +47,7 @@ export default async function PostPage({ params }: Props) {
         )}
         <div className="container mt-14 max-w-3xl text-[17px]">
           <Blocks blocks={p.blocks} />
-          <div className="mt-16 rounded-4xl bg-white p-8">
+          <div className="mt-16 rounded-4xl surface p-8">
             <p className="font-display text-xl font-semibold">Questions about your skin?</p>
             <p className="mt-2 text-graphite">Book a complimentary 15-minute consultation or a free Skin Health Report.</p>
             <div className="mt-6 flex flex-wrap gap-3">

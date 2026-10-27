@@ -13,7 +13,7 @@ export default function ContactPage() {
       <section className="pb-24">
         <div className="container grid gap-10 lg:grid-cols-[1fr_1.2fr]">
           <div className="space-y-4">
-            <div className="rounded-4xl bg-white p-8">
+            <div className="rounded-4xl surface p-8">
               <h2 className="text-xl font-semibold tracking-tight">Call, text or email</h2>
               <ul className="mt-4 space-y-2 text-[17px]">
                 <li>
@@ -33,7 +33,7 @@ export default function ContactPage() {
                 </li>
               </ul>
             </div>
-            <div className="rounded-4xl bg-white p-8">
+            <div className="rounded-4xl surface p-8">
               <h2 className="text-xl font-semibold tracking-tight">Location and hours</h2>
               <address className="mt-4 not-italic text-[17px]">
                 {site.address.line1}
@@ -56,7 +56,7 @@ export default function ContactPage() {
               <ClinicMap query={site.mapsQuery} />
             </div>
           </div>
-          <div className="h-fit rounded-5xl bg-white p-6 md:p-10">
+          <div className="h-fit rounded-5xl surface p-6 md:p-10">
             <h2 className="mb-6 text-2xl font-semibold tracking-tight">Send us a message</h2>
             <LeadForm kind="contact" source="contact-page" />
           </div>

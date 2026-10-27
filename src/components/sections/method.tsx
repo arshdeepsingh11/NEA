@@ -55,7 +55,7 @@ export function Method() {
               onClick={() => setStep(i)}
               onMouseEnter={() => setStep(i)}
               aria-expanded={step === i}
-              className={cn("w-full rounded-3xl p-6 text-left transition-colors duration-500", step === i ? "bg-white shadow-[0_20px_50px_-30px_rgba(21,25,28,0.35)]" : "hover:bg-white/50")}
+              className={cn("w-full rounded-3xl p-6 text-left transition-colors duration-500", step === i ? "surface shadow-[0_20px_50px_-30px_rgba(21,25,28,0.35)]" : "hover:bg-white/50")}
             >
               <div className="flex items-baseline gap-4">
                 <span className={cn("font-display text-sm tabular-nums transition-colors", step === i ? "text-flora" : "text-graphite/60")}>{i + 1}</span>
@@ -75,7 +75,7 @@ export function Method() {
       </ol>
       <div className="space-y-5">
         <Terminal lines={LINES} title="nea — skin health report" />
-        <div ref={gauges} className="flex flex-wrap items-center justify-between gap-4 rounded-3xl bg-white p-6">
+        <div ref={gauges} className="flex flex-wrap items-center justify-between gap-4 rounded-3xl surface p-6">
           {SCORES.map((s) => (
             <div key={s.label} className="flex flex-col items-center gap-2">
               <CircularProgress value={after ? s.to : s.from} color={s.color} size={104} label={s.label} />

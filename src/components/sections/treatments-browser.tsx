@@ -33,7 +33,7 @@ export function TreatmentsBrowser({ items, categories }: { items: Item[]; catego
                 key={c.id}
                 onClick={() => setCat(c.id)}
                 aria-pressed={cat === c.id}
-                className={cn("shrink-0 rounded-full px-4 py-2 text-[14px] transition", cat === c.id ? "bg-ink text-white" : "text-graphite hover:bg-ink/5 hover:text-ink")}
+                className={cn("shrink-0 rounded-full px-4 py-2 text-[14px] transition", cat === c.id ? "surface-strong text-white" : "text-graphite hover:bg-ink/5 hover:text-ink")}
               >
                 {c.label}
               </button>
@@ -42,7 +42,7 @@ export function TreatmentsBrowser({ items, categories }: { items: Item[]; catego
           <label className="relative md:ml-auto md:w-72">
             <span className="sr-only">Search treatments</span>
             <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-graphite" />
-            <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search a concern, e.g. melasma" className="w-full rounded-full border border-ink/10 bg-white py-2.5 pl-10 pr-4 text-[14px] outline-none focus:border-flora" />
+            <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search a concern, e.g. melasma" className="w-full rounded-full border border-ink/10 surface py-2.5 pl-10 pr-4 text-[14px] outline-none focus:border-flora" />
           </label>
         </div>
       </div>
@@ -51,7 +51,7 @@ export function TreatmentsBrowser({ items, categories }: { items: Item[]; catego
         <AnimatePresence mode="popLayout">
           {list.map((t) => (
             <motion.div key={t.slug} layout initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.96 }} transition={{ type: "spring", stiffness: 300, damping: 30 }}>
-              <Link href={`/treatments/${t.slug}`} className="group block overflow-hidden rounded-4xl bg-white">
+              <Link href={`/treatments/${t.slug}`} className="group block overflow-hidden rounded-4xl surface">
                 <div className="relative aspect-[4/3] overflow-hidden bg-mist">
                   <NeaImage src={t.image} alt="" fill sizes="(max-width: 640px) 100vw, 33vw" className="object-cover transition-transform duration-700 ease-spring group-hover:scale-105" />
                 </div>

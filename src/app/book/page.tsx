@@ -21,17 +21,17 @@ export default function BookPage() {
       />
       <section className="pb-12">
         <div className="container grid gap-4 md:grid-cols-3">
-          <a href={site.bookingUrl} target="_blank" rel="noreferrer" className="rounded-4xl bg-ink p-8 text-white transition hover:bg-black">
+          <a href={site.bookingUrl} target="_blank" rel="noreferrer" className="rounded-4xl surface-strong p-8 text-white transition hover:brightness-110">
             <CalendarCheck className="h-6 w-6" />
             <h2 className="mt-6 text-2xl font-semibold tracking-tight">Book online</h2>
             <p className="mt-2 text-white/65">Pick a treatment and time in our booking system. Fastest if you know what you want.</p>
           </a>
-          <Link href="/skin-scan" className="rounded-4xl bg-white p-8 transition hover:shadow-[0_20px_50px_-30px_rgba(21,25,28,0.35)]">
+          <Link href="/skin-scan" className="rounded-4xl surface p-8 transition hover:shadow-[0_20px_50px_-30px_rgba(21,25,28,0.35)]">
             <ScanFace className="h-6 w-6 text-flora" />
             <h2 className="mt-6 text-2xl font-semibold tracking-tight">Free Skin Health Report</h2>
             <p className="mt-2 text-graphite">Not sure what you need? See your skin first, then decide.</p>
           </Link>
-          <a href={site.phoneHref} className="rounded-4xl bg-white p-8 transition hover:shadow-[0_20px_50px_-30px_rgba(21,25,28,0.35)]">
+          <a href={site.phoneHref} className="rounded-4xl surface p-8 transition hover:shadow-[0_20px_50px_-30px_rgba(21,25,28,0.35)]">
             <Phone className="h-6 w-6 text-flora" />
             <h2 className="mt-6 text-2xl font-semibold tracking-tight">Call {site.phone}</h2>
             <p className="mt-2 text-graphite">Monday to Saturday, 9 a.m. to 5 p.m.</p>
@@ -56,7 +56,7 @@ export default function BookPage() {
               ))}
             </ul>
           </div>
-          <div className="h-fit rounded-5xl bg-white p-6 md:p-10">
+          <div className="h-fit rounded-5xl surface p-6 md:p-10">
             <LeadForm kind="consultation" source="book-page" />
           </div>
         </div>

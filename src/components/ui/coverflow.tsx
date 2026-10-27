@@ -92,7 +92,7 @@ export function Coverflow({ children, className, cardWidth = 380, label = "Carou
         ))}
       </div>
       <div className="mt-2 flex items-center justify-center gap-4">
-        <button onClick={() => go(-1)} className="grid h-11 w-11 place-items-center rounded-full border border-ink/10 bg-white transition hover:bg-mist disabled:opacity-30" disabled={active === 0} aria-label="Previous">
+        <button onClick={() => go(-1)} className="grid h-11 w-11 place-items-center rounded-full border border-ink/10 surface transition hover:bg-mist disabled:opacity-30" disabled={active === 0} aria-label="Previous">
           <ChevronLeft className="h-5 w-5" />
         </button>
         <div className="flex gap-1.5">
@@ -100,7 +100,7 @@ export function Coverflow({ children, className, cardWidth = 380, label = "Carou
             <span key={i} className={cn("h-1.5 rounded-full transition-all duration-500", i === active ? "w-6 bg-ink" : "w-1.5 bg-ink/20")} />
           ))}
         </div>
-        <button onClick={() => go(1)} className="grid h-11 w-11 place-items-center rounded-full border border-ink/10 bg-white transition hover:bg-mist disabled:opacity-30" disabled={active === children.length - 1} aria-label="Next">
+        <button onClick={() => go(1)} className="grid h-11 w-11 place-items-center rounded-full border border-ink/10 surface transition hover:bg-mist disabled:opacity-30" disabled={active === children.length - 1} aria-label="Next">
           <ChevronRight className="h-5 w-5" />
         </button>
       </div>

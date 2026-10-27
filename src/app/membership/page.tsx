@@ -20,7 +20,7 @@ export default function MembershipPage() {
         <div className="container grid gap-5 lg:grid-cols-3">
           {memberships.map((m) => {
             const inner = (
-              <div className={cn("flex h-full flex-col rounded-[30px] p-8", "popular" in m && m.popular ? "bg-ink text-white" : "bg-white")}>
+              <div className={cn("flex h-full flex-col rounded-[30px] p-8", "popular" in m && m.popular ? "surface-strong text-white" : "surface")}>
                 <div className="flex items-center justify-between">
                   <h2 className="text-2xl font-semibold tracking-tight">{m.name}</h2>
                   {"popular" in m && m.popular && <span className="rounded-full bg-white/10 px-3 py-1 text-[12px]">Most chosen</span>}
@@ -54,7 +54,7 @@ export default function MembershipPage() {
         </div>
         <p className="container mt-6 text-[13px] text-graphite">Founding member pricing shown is indicative and confirmed when you join.</p>
       </section>
-      <section className="chapter bg-white">
+      <section className="chapter">
         <div className="container overflow-x-auto">
           <h2 className="mb-10 text-display-md font-semibold">Compare memberships.</h2>
           <table className="w-full min-w-[640px] text-left text-[15px]">
@@ -89,7 +89,7 @@ export default function MembershipPage() {
             <h2 className="text-display-md font-semibold">Become a founding member.</h2>
             <p className="measure mt-5 text-lede text-graphite">Tell us which membership interests you. We will confirm pricing, answer questions and set up your first visit.</p>
           </div>
-          <div className="rounded-5xl bg-white p-6 md:p-10">
+          <div className="rounded-5xl surface p-6 md:p-10">
             <LeadForm kind="consultation" source="membership" />
           </div>
         </div>

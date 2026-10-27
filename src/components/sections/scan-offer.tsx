@@ -42,16 +42,16 @@ export function ScanOffer() {
           </Link>
         </div>
       </div>
-      <ShineBorder radius={36} className="bg-white p-3 shadow-[0_40px_90px_-50px_rgba(21,25,28,0.5)]">
+      <ShineBorder radius={36} className="surface p-3 shadow-[0_40px_90px_-50px_rgba(21,25,28,0.5)]">
         <div className="rounded-[28px] bg-porcelain p-5 sm:p-7">
           <div className="mb-5 flex items-center justify-between">
             <p className="font-display text-lg font-semibold">What the scan maps</p>
-            <span className="rounded-full bg-flora-soft px-3 py-1 text-[12px] text-flora-deep">Live preview</span>
+            <span className="rounded-full bg-flora-soft px-3 py-1 text-[12px] text-flora">Live preview</span>
           </div>
           <AnimatedList className="h-[392px] overflow-hidden" delay={1100}>
             {LAYERS.map((l) => (
-              <div key={l.title} className="flex items-center gap-4 rounded-2xl border border-ink/[0.06] bg-white p-4">
-                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-ink text-white">{l.icon}</span>
+              <div key={l.title} className="flex items-center gap-4 rounded-2xl border border-ink/[0.06] surface p-4">
+                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl surface-strong text-white">{l.icon}</span>
                 <div>
                   <p className="text-[15px] font-medium">{l.title}</p>
                   <p className="text-[13px] text-graphite">{l.detail}</p>

@@ -40,7 +40,7 @@ export function SkinFinder({ compact }: { compact?: boolean }) {
   const chip = (active: boolean) =>
     cn(
       "rounded-full border px-4 py-2.5 text-[15px] transition-all duration-300 ease-spring active:scale-[0.97]",
-      active ? "border-ink bg-ink text-white" : "border-ink/15 bg-white hover:border-ink/30"
+      active ? "border-ink surface-strong text-white" : "border-ink/15 surface hover:border-ink/30"
     );
 
   return (
@@ -81,7 +81,7 @@ export function SkinFinder({ compact }: { compact?: boolean }) {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -10 }}
               transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              className="h-full rounded-4xl bg-ink p-8 text-white md:p-10"
+              className="h-full rounded-4xl surface-strong p-8 text-white md:p-10"
             >
               <p className="text-[14px] text-white/55">We suggest</p>
               <h3 className="mt-2 text-3xl font-semibold tracking-tight">{program ? program.name : "title" in c ? c.title : ""}</h3>

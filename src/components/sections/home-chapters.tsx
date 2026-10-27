@@ -201,7 +201,7 @@ export function GalleryChapter() {
 export function ReviewsChapter() {
   const half = Math.ceil(reviews.length / 2);
   const Card = ({ r }: { r: (typeof reviews)[number] }) => (
-    <figure className="w-[340px] shrink-0 rounded-3xl border border-ink/[0.06] bg-white p-6">
+    <figure className="w-[340px] shrink-0 rounded-3xl border border-ink/[0.06] surface p-6">
       <blockquote className="line-clamp-6 text-[15px] leading-relaxed text-ink">“{r.text}”</blockquote>
       <figcaption className="mt-5 flex items-center justify-between text-[13px]">
         <span className="font-medium">{r.name === "Client" ? "NEA client" : r.name}</span>
@@ -352,7 +352,7 @@ export function JournalChapter() {
 
 export function VisitChapter() {
   return (
-    <section className="chapter bg-white">
+    <section className="chapter">
       <div className="container grid gap-10 lg:grid-cols-2">
         <div>
           <h2 className="text-display-md font-semibold">Ready when you are.</h2>

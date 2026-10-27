@@ -24,7 +24,7 @@ export default function TestimonialsPage() {
       <section className="pb-28">
         <div className="container columns-1 gap-5 md:columns-2 lg:columns-3">
           {reviews.map((r, i) => (
-            <figure key={i} className="mb-5 break-inside-avoid rounded-4xl bg-white p-7">
+            <figure key={i} className="mb-5 break-inside-avoid rounded-4xl surface p-7">
               <blockquote className="text-[16px] leading-relaxed">“{r.text}”</blockquote>
               <figcaption className="mt-6 flex items-center justify-between text-[14px]">
                 <span className="font-medium">{r.name === "Client" ? "NEA client" : r.name}</span>

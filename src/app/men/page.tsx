@@ -34,7 +34,7 @@ export default function MenPage() {
       <section className="pb-28">
         <div className="container grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {list.map((t) => (
-            <Link key={t.slug} href={`/treatments/${t.slug}`} className="group overflow-hidden rounded-4xl bg-white">
+            <Link key={t.slug} href={`/treatments/${t.slug}`} className="group overflow-hidden rounded-4xl surface">
               <div className="relative aspect-square bg-mist">
                 <NeaImage src={t.image} alt="" fill sizes="(max-width: 640px) 100vw, 25vw" className="object-cover transition-transform duration-700 ease-spring group-hover:scale-105" />
               </div>

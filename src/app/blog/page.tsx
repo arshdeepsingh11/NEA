@@ -15,7 +15,7 @@ export default function BlogPage() {
       <section className="pb-28">
         <div className="container">
           {first && (
-            <Link href={`/blog/${first.slug}`} className="group mb-16 grid overflow-hidden rounded-5xl bg-white lg:grid-cols-2">
+            <Link href={`/blog/${first.slug}`} className="group mb-16 grid overflow-hidden rounded-5xl surface lg:grid-cols-2">
               <div className="relative min-h-[280px] bg-mist">
                 {first.image && <NeaImage src={first.image} alt="" fill priority sizes="(max-width: 1024px) 100vw, 50vw" className="object-cover" />}
               </div>

@@ -7,12 +7,12 @@ const accent: Record<Program["accent"], string> = {
   flora: "from-flora/90",
   dermis: "from-dermis-deep/90",
   lumen: "from-lumen/90",
-  ink: "from-ink/90",
+  ink: "from-abyss/90",
 };
 
 export function ProgramCard({ p, className }: { p: Program; className?: string }) {
   return (
-    <Link href={`/programs/${p.slug}`} className={cn("group relative flex aspect-[4/5] flex-col justify-end overflow-hidden rounded-4xl bg-ink text-white", className)}>
+    <Link href={`/programs/${p.slug}`} className={cn("group relative flex aspect-[4/5] flex-col justify-end overflow-hidden rounded-4xl surface-strong text-white", className)}>
       <NeaImage src={p.image} alt="" fill sizes="(max-width: 768px) 82vw, 380px" className="object-cover transition-transform duration-[1.2s] ease-spring group-hover:scale-105" />
       <div className={cn("absolute inset-0 bg-gradient-to-t via-black/20 to-transparent", accent[p.accent])} />
       <div className="relative p-7">

@@ -41,7 +41,7 @@ export default async function ExperiencePage({ params }: Props) {
           </div>
         </div>
       </section>
-      <section className="chapter bg-white">
+      <section className="chapter">
         <div className="container grid gap-14 lg:grid-cols-[1.1fr_1fr]">
           <div>
             <h2 className="text-display-md font-semibold">How it works.</h2>
@@ -77,7 +77,7 @@ export default async function ExperiencePage({ params }: Props) {
           <h2 className="mb-10 text-display-md font-semibold">More ways to start.</h2>
           <div className="grid gap-5 md:grid-cols-3">
             {others.map((x) => (
-              <Link key={x.slug} href={x.slug === "skin-scan" ? "/skin-scan" : `/experiences/${x.slug}`} className="group rounded-4xl bg-white p-7">
+              <Link key={x.slug} href={x.slug === "skin-scan" ? "/skin-scan" : `/experiences/${x.slug}`} className="group rounded-4xl surface p-7">
                 <p className="text-[13px] text-flora">{x.kicker}</p>
                 <h3 className="mt-2 text-xl font-semibold tracking-tight group-hover:underline">{x.name}</h3>
                 <p className="mt-2 text-[15px] text-graphite">{x.headline}</p>

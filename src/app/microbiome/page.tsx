@@ -42,7 +42,7 @@ export default function MicrobiomePage() {
             {BIOMES.map((b) => {
               const t = getTest(b.test);
               return (
-                <div key={b.name} className="flex flex-col rounded-4xl bg-white p-8">
+                <div key={b.name} className="flex flex-col rounded-4xl surface p-8">
                   <h3 className="text-2xl font-semibold tracking-tight">{b.name}</h3>
                   <p className="mt-3 flex-1 leading-relaxed text-graphite">{b.text}</p>
                   {t && (

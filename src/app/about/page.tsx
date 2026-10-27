@@ -69,7 +69,7 @@ export default function AboutPage() {
           <SectionHead title="What makes NEA different." />
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {DIFFERENT.map((d) => (
-              <Link key={d.title} href={d.href} className="group rounded-4xl bg-white p-7 transition hover:shadow-[0_20px_50px_-30px_rgba(21,25,28,0.35)]">
+              <Link key={d.title} href={d.href} className="group rounded-4xl surface p-7 transition hover:shadow-[0_20px_50px_-30px_rgba(21,25,28,0.35)]">
                 <h3 className="text-lg font-semibold tracking-tight group-hover:underline">{d.title}</h3>
                 <p className="mt-2 text-[15px] leading-relaxed text-graphite">{d.text}</p>
               </Link>
@@ -77,7 +77,7 @@ export default function AboutPage() {
           </div>
         </div>
       </section>
-      <section className="chapter bg-white" id="raman">
+      <section className="chapter" id="raman">
         <div className="container grid gap-12 lg:grid-cols-[0.8fr_1.2fr]">
           <div className="relative aspect-[4/5] overflow-hidden rounded-5xl bg-mist lg:sticky lg:top-28 lg:h-fit">
             <NeaImage src={founder.image} alt={founder.name} fill sizes="(max-width: 1024px) 100vw, 40vw" className="object-cover" />
@@ -108,7 +108,7 @@ export default function AboutPage() {
               <p className="mt-2 text-graphite">Aestheticians and injectors who appear in NEA’s Google reviews.</p>
               <ul className="mt-5 flex flex-wrap gap-2">
                 {teamNamedInReviews.map((n) => (
-                  <li key={n} className="rounded-full bg-white px-4 py-2 text-[15px]">
+                  <li key={n} className="rounded-full surface px-4 py-2 text-[15px]">
                     {n}
                   </li>
                 ))}
