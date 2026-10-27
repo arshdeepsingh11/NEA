@@ -1,12 +1,18 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Check } from "lucide-react";
+import { ArrowUpRight, CalendarCheck, Check, FlaskConical, PersonStanding, ScanFace, Sparkles } from "lucide-react";
 import { NeaImage } from "@/components/ui/nea-image";
 import { ShineBorder } from "@/components/ui/shine-border";
 import { SectionHead } from "@/components/sections/page-hero";
+import { AiPromptBar } from "@/components/ai/ai-prompt-bar";
+import { AiQuestionChips } from "@/components/ai/ai-question-chips";
+import { Radar } from "@/components/viz/radar";
+import { TrendChart } from "@/components/viz/trend-chart";
+import { WeightBars } from "@/components/viz/weight-bars";
 import { JsonLd, breadcrumbSchema, pageMeta, procedureSchema } from "@/lib/seo";
 import { getProgram, programs } from "@/content/programs";
-import { getTest } from "@/content/tests";
+import { programInsights } from "@/content/program-insights";
+import { getTest, testGroups } from "@/content/tests";
 import { getTreatment } from "@/content/treatments";
 import { site } from "@/lib/site";
 import { money, nea } from "@/lib/utils";
@@ -23,101 +29,178 @@ export async function generateMetadata({ params }: Props) {
   return pageMeta({ title: `${p.name}: ${p.problem} treatment in Calgary`, description: `${p.headline} ${p.summary}`, path: `/programs/${p.slug}`, image: nea(p.image) });
 }
 
+const PHASE_ICON = [FlaskConical, Sparkles, ScanFace, CalendarCheck];
+
 export default async function ProgramPage({ params }: Props) {
   const p = getProgram((await params).slug);
   if (!p) notFound();
+  const ins = programInsights[p.slug];
   const tests = p.tests.map(getTest).filter((t): t is NonNullable<typeof t> => Boolean(t));
   const tx = p.treatments.map(getTreatment).filter((t): t is NonNullable<typeof t> => Boolean(t));
+  const groupLabel = Object.fromEntries(testGroups.map((g) => [g.id, g.label]));
+  const first = ins?.metric.values[0];
+  const last = ins?.metric.values[ins.metric.values.length - 1];
 
   return (
     <>
       <JsonLd data={[procedureSchema({ name: p.name, description: p.summary, path: `/programs/${p.slug}`, image: nea(p.image) }), breadcrumbSchema([{ name: "Home", path: "/" }, { name: "Programs", path: "/programs" }, { name: p.name, path: `/programs/${p.slug}` }])]} />
-      <section className="chapter-dark relative overflow-hidden">
-        <NeaImage src={p.image} alt="" fill priority sizes="100vw" className="object-cover opacity-45" />
-        <div className="absolute inset-0 bg-gradient-to-t from-abyss via-abyss/60 to-abyss/20" />
-        <div className="container relative flex min-h-[78vh] flex-col justify-end pb-20 pt-40">
-          <Link href="/programs" className="mb-6 text-[14px] text-white/60 hover:text-white">
-            All programs
-          </Link>
-          <p className="text-[15px] text-white/70">{p.problem}</p>
-          <h1 className="mt-2 max-w-4xl text-display-xl font-semibold">{p.headline}</h1>
-          <p className="measure mt-6 text-lede text-white/75">{p.summary}</p>
-          <div className="mt-10 flex flex-wrap items-center gap-4">
-            <a href={site.bookingUrl} target="_blank" rel="noreferrer" className="btn-light">
-              Book this program
-            </a>
-            <Link href="/skin-scan" className="btn border border-white/25 text-white hover:bg-white/10">
-              Start with a free scan
+
+      {/* Hero */}
+      <section className="relative overflow-hidden">
+        <div className="container grid items-center gap-10 pb-16 pt-10 md:pt-14 lg:grid-cols-[1.1fr_1fr] lg:pb-24">
+          <div>
+            <Link href="/programs" className="chip transition hover:text-white">
+              ← All programs
             </Link>
-            <span className="text-[15px] text-white/70">
-              From <strong className="text-white">{money(p.priceFrom)}</strong> · {p.duration}
-            </span>
-          </div>
-        </div>
-      </section>
+            <p className="mt-6 text-[15px] text-flora">{p.problem}</p>
+            <h1 className="mt-2 max-w-3xl font-display text-[clamp(2.6rem,5vw,4.4rem)] font-semibold leading-[1] tracking-[-0.03em] text-white">{p.headline}</h1>
+            <p className="measure mt-6 text-lede text-graphite">{p.summary}</p>
 
-      <section className="chapter">
-        <div className="container grid gap-14 lg:grid-cols-2">
-          <div>
-            <h2 className="text-display-md font-semibold">Who it is for.</h2>
-            <p className="measure mt-5 text-lede text-graphite">{p.forWho}</p>
-          </div>
-          <div>
-            <h2 className="text-display-md font-semibold">What we look for.</h2>
-            <ul className="mt-6 space-y-3">
-              {p.rootCauses.map((c) => (
-                <li key={c} className="flex gap-3 text-[17px]">
-                  <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-flora" />
-                  {c}
-                </li>
+            <dl className="mt-8 grid max-w-xl grid-cols-3 gap-3">
+              {[
+                ["From", money(p.priceFrom)],
+                ["Duration", p.duration],
+                ["Tests", String(tests.length)],
+              ].map(([k, v]) => (
+                <div key={k} className="surface rounded-2xl px-4 py-3">
+                  <dt className="stat-label">{k}</dt>
+                  <dd className="tabular mt-1 font-display text-xl font-semibold text-white">{v}</dd>
+                </div>
               ))}
-            </ul>
+            </dl>
+
+            <AiPromptBar className="mt-8 max-w-xl" context={p.name} placeholder={`Ask about the ${p.name}…`} />
+
+            <div className="mt-6 flex flex-wrap gap-3">
+              <a href={site.bookingUrl} target="_blank" rel="noreferrer" className="btn-primary">
+                Book this program
+              </a>
+              <Link href="/skin-scan" className="btn-ghost">
+                <ScanFace className="h-4 w-4" /> Start with a free scan
+              </Link>
+            </div>
+          </div>
+
+          <div className="relative">
+            <div className="surface relative aspect-[4/5] overflow-hidden rounded-[36px]">
+              <NeaImage src={p.image} alt={p.name} fill priority sizes="(min-width:1024px) 45vw, 100vw" className="object-cover opacity-90" />
+              <div className="absolute inset-0 bg-gradient-to-t from-abyss/90 via-abyss/10 to-transparent" />
+              <div className="absolute inset-x-5 bottom-5 grid gap-2">
+                {p.rootCauses.slice(0, 3).map((c, i) => (
+                  <div key={c} className="flex items-center gap-3 rounded-2xl border border-white/10 bg-[#0B1120]/75 px-4 py-2.5 text-[13px] text-ink backdrop-blur-xl">
+                    <span className="tabular text-flora">{String(i + 1).padStart(2, "0")}</span>
+                    {c}
+                  </div>
+                ))}
+              </div>
+            </div>
+            {ins && first !== undefined && last !== undefined && (
+              <div className="absolute -left-4 top-8 hidden rounded-3xl border border-white/15 bg-[#0B1120]/80 p-4 shadow-2xl backdrop-blur-xl md:block">
+                <p className="stat-label">{ins.metric.name}</p>
+                <p className="tabular mt-1 font-display text-2xl font-semibold text-white">
+                  {first} <span className="text-graphite">→</span> <span className="aurora-text">{last}</span>
+                </p>
+                <p className="text-[11px] text-graphite">Illustrative goal over {p.duration}</p>
+              </div>
+            )}
           </div>
         </div>
       </section>
 
-      <section className="chapter bg-white">
+      {/* What drives it */}
+      {ins && (
+        <section className="chapter">
+          <div className="container">
+            <SectionHead title="What is usually driving it." lede="Skin concerns rarely have one cause. These are the systems we check first, weighted by how often they matter for this concern." />
+            <div className="grid gap-5 lg:grid-cols-[1.1fr_1fr]">
+              <div className="surface rounded-[32px] p-7 md:p-9">
+                <div className="mb-6 flex items-center justify-between">
+                  <p className="font-display text-lg font-semibold text-white">Contributing systems</p>
+                  <Link href="/body" className="flex items-center gap-1.5 text-[13px] text-graphite hover:text-white">
+                    <PersonStanding className="h-4 w-4" /> See on 3D body
+                  </Link>
+                </div>
+                <WeightBars items={ins.systems} />
+                <p className="mt-6 text-[12px] text-graphite/80">Illustrative weighting. Your assessment decides what applies to you.</p>
+              </div>
+              <div className="surface rounded-[32px] p-7 md:p-9">
+                <p className="font-display text-lg font-semibold text-white">What your scan measures</p>
+                <p className="mt-1 text-[13px] text-graphite">A typical starting profile and the goal we plan towards.</p>
+                <Radar className="mx-auto mt-4 max-w-[380px]" axes={ins.radar.map((a) => ({ label: a.label, value: a.value, target: a.target }))} />
+                <p className="mt-2 text-center text-[12px] text-graphite/80">Illustrative example, not a personal result.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Trajectory + method */}
+      <section className="chapter">
         <div className="container">
-          <SectionHead title="How the program runs." lede="The NEA Method, step by step." />
+          <SectionHead title="How the program runs, and what we track." lede="The NEA Method: test, treat, track, maintain. Every checkpoint is a re-scan, so progress is measured, not guessed." />
+          {ins && (
+            <div className="surface mb-5 rounded-[32px] p-7 md:p-9">
+              <div className="mb-4 flex flex-wrap items-baseline justify-between gap-2">
+                <p className="font-display text-lg font-semibold text-white">{ins.metric.name}</p>
+                <span className="chip">Illustrative trajectory · {ins.metric.better === "up" ? "higher is better" : "lower is better"}</span>
+              </div>
+              <TrendChart series={[{ name: ins.metric.name, values: ins.metric.values }]} labels={ins.metric.labels} projectFrom={ins.metric.projectFrom} min={ins.metric.better === "down" ? 0 : undefined} caption="Solid line: checkpoints in the first phase. Dashed: where the plan aims. Real results vary from person to person." />
+            </div>
+          )}
           <ol className="grid gap-4 md:grid-cols-4">
-            {p.phases.map((ph, i) => (
-              <li key={ph.name} className="rounded-4xl bg-porcelain p-7">
-                <span className="font-display text-sm tabular-nums text-flora">{i + 1}</span>
-                <h3 className="mt-3 text-2xl font-semibold tracking-tight">{ph.name}</h3>
-                <p className="mt-3 leading-relaxed text-graphite">{ph.detail}</p>
-              </li>
-            ))}
+            {p.phases.map((ph, i) => {
+              const Icon = PHASE_ICON[i % PHASE_ICON.length];
+              return (
+                <li key={ph.name} className="surface relative overflow-hidden rounded-[28px] p-7">
+                  <div className="flex items-center justify-between">
+                    <span className="grid h-10 w-10 place-items-center rounded-2xl bg-white/[0.06] text-flora">
+                      <Icon className="h-5 w-5" />
+                    </span>
+                    <span className="tabular font-display text-sm text-graphite">0{i + 1}</span>
+                  </div>
+                  <h3 className="mt-5 text-2xl font-semibold tracking-tight text-white">{ph.name}</h3>
+                  <p className="mt-2 text-[15px] leading-relaxed text-graphite">{ph.detail}</p>
+                  <div aria-hidden className="absolute inset-x-0 bottom-0 h-[3px]" style={{ background: "var(--aurora)", opacity: 0.25 + i * 0.2 }} />
+                </li>
+              );
+            })}
           </ol>
         </div>
       </section>
 
+      {/* Who + included + price */}
       <section className="chapter">
-        <div className="container grid gap-12 lg:grid-cols-[1.2fr_1fr]">
-          <div>
-            <h2 className="text-display-md font-semibold">What is included.</h2>
-            <ul className="mt-8 grid gap-3 sm:grid-cols-2">
+        <div className="container grid gap-5 lg:grid-cols-[1.2fr_1fr]">
+          <div className="surface rounded-[32px] p-7 md:p-9">
+            <p className="stat-label">Who it is for</p>
+            <p className="mt-2 text-[18px] leading-relaxed text-ink">{p.forWho}</p>
+            <p className="stat-label mt-8">What is included</p>
+            <ul className="mt-4 grid gap-2.5 sm:grid-cols-2">
               {p.includes.map((it) => (
-                <li key={it} className="flex gap-3 rounded-2xl bg-white p-4 text-[15px]">
+                <li key={it} className="flex gap-3 rounded-2xl border border-white/[0.07] bg-white/[0.03] p-3.5 text-[14.5px] text-ink">
                   <Check className="mt-0.5 h-4 w-4 shrink-0 text-flora" />
                   {it}
                 </li>
               ))}
             </ul>
           </div>
-          <ShineBorder radius={36} className="h-fit bg-ink p-8 text-white md:p-10">
+          <ShineBorder radius={32} className="surface-strong h-fit p-8 text-white md:p-10">
             <p className="text-white/60">{p.name}</p>
-            <p className="mt-2 font-display text-5xl font-semibold">{money(p.priceFrom)}</p>
+            <p className="tabular mt-2 font-display text-5xl font-semibold">{money(p.priceFrom)}</p>
             <p className="mt-1 text-white/60">starting price · {p.duration}</p>
-            <ul className="mt-8 space-y-2 text-[15px] text-white/80">
-              <li>Free Skin Health Report before you commit</li>
-              <li>Monthly payment plans available</li>
-              <li>Registered Dietitian visits may be covered by your benefits</li>
+            <ul className="mt-8 space-y-2.5 text-[15px] text-white/80">
+              {["Free Skin Health Report before you commit", "Monthly payment plans available", "Registered Dietitian visits may be covered by your benefits"].map((x) => (
+                <li key={x} className="flex gap-2.5">
+                  <Check className="mt-0.5 h-4 w-4 shrink-0 text-flora" />
+                  {x}
+                </li>
+              ))}
             </ul>
             <div className="mt-8 flex flex-col gap-3">
-              <a href={site.bookingUrl} target="_blank" rel="noreferrer" className="btn-light">
+              <a href={site.bookingUrl} target="_blank" rel="noreferrer" className="btn-primary">
                 Book online
               </a>
-              <Link href="/book" className="btn border border-white/20 hover:bg-white/10">
+              <Link href="/book" className="btn-ghost">
                 Ask a question first
               </Link>
             </div>
@@ -126,16 +209,24 @@ export default async function ProgramPage({ params }: Props) {
         </div>
       </section>
 
+      {/* Tests */}
       {tests.length > 0 && (
-        <section className="chapter chapter-dark">
+        <section className="chapter">
           <div className="container">
-            <SectionHead dark title="Tests that can be part of your plan." lede="Only the ones your assessment says will change the plan. Fulfilled by BioAro Labs." />
+            <SectionHead title="Tests that can be part of your plan." lede="Only the ones your assessment says will change the plan. Fulfilled by BioAro Labs in CLIA-registered laboratories." />
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
               {tests.map((t) => (
-                <Link key={t.slug} href={`/tests#${t.slug}`} className="glass-dark rounded-3xl p-6 transition hover:bg-white/10">
-                  <h3 className="text-xl font-semibold">{t.name}</h3>
-                  <p className="mt-2 text-[14px] leading-relaxed text-white/65">{t.neaUse}</p>
-                  <p className="mt-4 text-[14px] text-white/50">{money(t.price)} list price</p>
+                <Link key={t.slug} href={`/tests#${t.slug}`} className="surface group flex flex-col rounded-[28px] p-6 transition hover:border-white/25">
+                  <div className="flex items-center justify-between">
+                    <span className="chip !text-[11px]">{groupLabel[t.group]}</span>
+                    <ArrowUpRight className="h-4 w-4 text-graphite transition group-hover:text-white" />
+                  </div>
+                  <h3 className="mt-5 text-xl font-semibold text-white">{t.name}</h3>
+                  <p className="mt-2 flex-1 text-[14px] leading-relaxed text-graphite">{t.neaUse}</p>
+                  <div className="mt-6 flex items-baseline justify-between border-t border-white/[0.07] pt-4">
+                    <span className="stat-label">List price</span>
+                    <span className="tabular font-display text-lg font-semibold text-white">{money(t.price)}</span>
+                  </div>
                 </Link>
               ))}
             </div>
@@ -143,17 +234,18 @@ export default async function ProgramPage({ params }: Props) {
         </section>
       )}
 
+      {/* Treatments */}
       <section className="chapter">
         <div className="container">
           <SectionHead title="Treatments inside this program." />
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {tx.map((t) => (
-              <Link key={t.slug} href={`/treatments/${t.slug}`} className="group flex gap-4 rounded-3xl bg-white p-4 transition hover:shadow-[0_20px_50px_-30px_rgba(21,25,28,0.35)]">
+              <Link key={t.slug} href={`/treatments/${t.slug}`} className="surface group flex gap-4 rounded-[28px] p-4 transition hover:border-white/25">
                 <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-2xl bg-mist">
                   <NeaImage src={t.image} alt="" fill sizes="96px" className="object-cover" />
                 </div>
-                <div>
-                  <h3 className="font-semibold tracking-tight group-hover:underline">{t.title}</h3>
+                <div className="min-w-0">
+                  <h3 className="font-semibold tracking-tight text-white group-hover:underline">{t.title}</h3>
                   <p className="mt-1 text-[14px] leading-relaxed text-graphite">{t.summary}</p>
                 </div>
               </Link>
@@ -161,6 +253,23 @@ export default async function ProgramPage({ params }: Props) {
           </div>
         </div>
       </section>
+
+      {/* AI */}
+      {ins && (
+        <section className="pb-32 pt-4">
+          <div className="container">
+            <div className="aurora-border surface relative rounded-[32px] p-7 md:p-10">
+              <p className="flex items-center gap-2 text-[13px] text-flora">
+                <Sparkles className="h-4 w-4" /> NEA Intelligence
+              </p>
+              <p className="mt-2 font-display text-2xl font-semibold text-white">Questions people ask about the {p.name}</p>
+              <div className="mt-6">
+                <AiQuestionChips questions={ins.questions} context={p.name} />
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
     </>
   );
 }
