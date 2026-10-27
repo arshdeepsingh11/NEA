@@ -3,7 +3,8 @@ import * as THREE from "three";
 import { useThree } from "./use-three";
 import { cn } from "@/lib/utils";
 
-const COLORS = ["#7fe0c8", "#e7c3b5", "#9d9bff", "#ffffff"];
+// Deep tones that read on the light page (premultiplied normal blending, not additive light).
+const COLORS = ["#0A9384", "#D9774F", "#5B5BD6", "#0284C7"];
 
 /**
  * Signal Convergence — streams of light travel along curved lines from
@@ -80,41 +81,43 @@ export function SignalConvergence({ className, lines = 140, offsetX = 0 }: { cla
             float head = fract(uTime*vSpeed + vOff);
             float d = vT - head;
             float pulse = smoothstep(-0.16, 0.0, d) * (1.0 - smoothstep(0.0, 0.012, d));
-            float base = 0.05 + vT*0.08;
-            float a = base + pulse*0.95;
-            gl_FragColor = vec4(vColor * a * 1.4, a);
+            float base = 0.06 + vT*0.10;
+            float a = base + pulse*0.85;
+            gl_FragColor = vec4(vColor * a, a);
           }`,
         transparent: true,
         depthWrite: false,
-        blending: THREE.AdditiveBlending,
+        blending: THREE.CustomBlending,
+        blendSrc: THREE.OneFactor,
+        blendDst: THREE.OneMinusSrcAlphaFactor,
       });
       group.add(new THREE.LineSegments(geo, mat));
 
       // source nodes
       const nodeGeo = new THREE.BufferGeometry().setFromPoints(sources);
-      const nodes = new THREE.Points(nodeGeo, new THREE.PointsMaterial({ size: 0.06, color: 0xffffff, transparent: true, opacity: 0.8, depthWrite: false, blending: THREE.AdditiveBlending }));
+      const nodes = new THREE.Points(nodeGeo, new THREE.PointsMaterial({ size: 0.06, color: 0x334155, transparent: true, opacity: 0.45, depthWrite: false }));
       group.add(nodes);
 
       // hub: core + glow sprite + expanding rings
-      const core = new THREE.Mesh(new THREE.SphereGeometry(0.26, 48, 48), new THREE.MeshBasicMaterial({ color: 0xffffff }));
+      const core = new THREE.Mesh(new THREE.SphereGeometry(0.26, 48, 48), new THREE.MeshBasicMaterial({ color: 0x0a9384 }));
       group.add(core);
       const glowTex = (() => {
         const cv = document.createElement("canvas");
         cv.width = cv.height = 128;
         const g = cv.getContext("2d")!;
         const grd = g.createRadialGradient(64, 64, 0, 64, 64, 64);
-        grd.addColorStop(0, "rgba(160,255,225,0.95)");
-        grd.addColorStop(0.35, "rgba(110,107,245,0.35)");
-        grd.addColorStop(1, "rgba(0,0,0,0)");
+        grd.addColorStop(0, "rgba(124,231,216,0.75)");
+        grd.addColorStop(0.4, "rgba(180,188,253,0.3)");
+        grd.addColorStop(1, "rgba(180,188,253,0)");
         g.fillStyle = grd;
         g.fillRect(0, 0, 128, 128);
         return new THREE.CanvasTexture(cv);
       })();
-      const glow = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending }));
+      const glow = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex, transparent: true, depthWrite: false }));
       glow.scale.set(2.6, 2.6, 1);
       group.add(glow);
       const rings = [0, 1, 2].map(() => {
-        const m = new THREE.Mesh(new THREE.RingGeometry(0.3, 0.315, 96), new THREE.MeshBasicMaterial({ color: 0x9fd3c1, transparent: true, opacity: 0.5, side: THREE.DoubleSide, depthWrite: false }));
+        const m = new THREE.Mesh(new THREE.RingGeometry(0.3, 0.315, 96), new THREE.MeshBasicMaterial({ color: 0x0a9384, transparent: true, opacity: 0.5, side: THREE.DoubleSide, depthWrite: false }));
         group.add(m);
         return m;
       });

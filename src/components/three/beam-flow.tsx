@@ -45,11 +45,13 @@ void main(){
   col *= smoothstep(-1.2, -0.4, q.x);
   // vignette
   col *= 1.0 - 0.45*dot(uv,uv);
-  gl_FragColor = vec4(col, 1.0);
+  // Light page: brightness becomes opacity, so beams tint the page instead of sitting on black.
+  float l = clamp(max(col.r, max(col.g, col.b)), 0.0, 1.0);
+  gl_FragColor = vec4(col / max(l, 0.001), l * 0.9);
 }`;
 
 /** Beam Flow — WebGL laser shader with fog, cursor tilt and wisps. */
-export function BeamFlow({ className, colorA = [0.43, 0.42, 0.96], colorB = [0.5, 0.88, 0.78] }: { className?: string; colorA?: [number, number, number]; colorB?: [number, number, number] }) {
+export function BeamFlow({ className, colorA = [0.36, 0.36, 0.84], colorB = [0.04, 0.58, 0.52] }: { className?: string; colorA?: [number, number, number]; colorB?: [number, number, number] }) {
   const canvas = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
