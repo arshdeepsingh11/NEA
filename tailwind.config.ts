@@ -6,14 +6,17 @@ const config: Config = {
     container: { center: true, padding: { DEFAULT: "1.25rem", md: "2rem" }, screens: { "2xl": "1240px" } },
     extend: {
       colors: {
-        porcelain: "#F5F6F3",
-        mist: "#E8EBE7",
-        ink: "#15191C",
-        graphite: "#596167",
-        flora: { DEFAULT: "#2F7D6D", soft: "#DCEDE7", deep: "#1D5A4E" },
-        dermis: { DEFAULT: "#E7C3B5", deep: "#B9826F" },
-        lumen: { DEFAULT: "#6E6BF5", soft: "#E6E5FD" },
-        abyss: "#0C1214",
+        // v2 "NEA Intelligence": deep night base, aurora accents, glass surfaces
+        porcelain: "#060912", // page background
+        mist: "#0D1322", // subtle raised surface
+        ink: "#EEF2FA", // primary text
+        graphite: "#9AA6BC", // secondary text
+        abyss: "#03050A", // deepest background
+        flora: { DEFAULT: "#5EEAD4", soft: "rgba(94,234,212,0.10)", deep: "#2DD4BF" }, // aqua: biology, health
+        sky: { DEFAULT: "#7DD3FC", soft: "rgba(125,211,252,0.10)" }, // data, signals
+        lumen: { DEFAULT: "#A5B4FC", soft: "rgba(165,180,252,0.12)" }, // AI, laser
+        orchid: { DEFAULT: "#E9A8F5", soft: "rgba(233,168,245,0.10)" }, // hormones, feminine health
+        dermis: { DEFAULT: "#FDBA94", deep: "#F59E7A" }, // skin warmth
       },
       fontFamily: {
         display: ["var(--font-display)", "system-ui", "sans-serif"],
@@ -36,12 +39,22 @@ const config: Config = {
           "100%": { backgroundPosition: "0% 0%" },
         },
         blink: { "0%,100%": { opacity: "1" }, "50%": { opacity: "0" } },
+        aurora: {
+          "0%": { transform: "translate3d(0,0,0) scale(1)" },
+          "50%": { transform: "translate3d(4%,-3%,0) scale(1.08)" },
+          "100%": { transform: "translate3d(0,0,0) scale(1)" },
+        },
+        scan: { "0%": { transform: "translateY(-100%)" }, "100%": { transform: "translateY(100%)" } },
+        pulseglow: { "0%,100%": { opacity: "0.55" }, "50%": { opacity: "1" } },
       },
       animation: {
         marquee: "marquee var(--duration) linear infinite",
         "marquee-vertical": "marquee-vertical var(--duration) linear infinite",
         shine: "shine var(--shine-duration) infinite linear",
         blink: "blink 1.1s step-end infinite",
+        aurora: "aurora 22s ease-in-out infinite",
+        scan: "scan 3.2s cubic-bezier(0.65,0,0.35,1) infinite",
+        pulseglow: "pulseglow 2.6s ease-in-out infinite",
       },
       transitionTimingFunction: { apple: "cubic-bezier(0.25, 0.1, 0.25, 1)", spring: "cubic-bezier(0.32, 0.72, 0, 1)" },
     },

@@ -3,13 +3,18 @@
 @tailwind utilities;
 
 :root {
-  --porcelain: #f5f6f3;
-  --ink: #15191c;
-  --flora: #2f7d6d;
-  --lumen: #6e6bf5;
-  --dermis: #e7c3b5;
-  --header-h: 64px;
-  color-scheme: light;
+  --bg: #060912;
+  --ink: #eef2fa;
+  --aqua: #5eead4;
+  --sky: #7dd3fc;
+  --iris: #a5b4fc;
+  --orchid: #e9a8f5;
+  --peach: #fdba94;
+  --aurora: linear-gradient(115deg, var(--aqua) 0%, var(--sky) 32%, var(--iris) 64%, var(--orchid) 100%);
+  --dock-h: 84px;
+  /* kept for components that offset content under a fixed bar */
+  --header-h: 24px;
+  color-scheme: dark;
 }
 
 @layer base {
@@ -17,6 +22,7 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
+    background: var(--bg);
   }
   html.lenis,
   html.lenis body {
@@ -29,16 +35,17 @@
     overflow: hidden;
   }
   body {
-    @apply bg-porcelain font-sans text-ink;
+    @apply min-h-screen bg-porcelain font-sans text-ink;
     font-feature-settings: "ss01", "cv11";
   }
   ::selection {
-    background: rgba(47, 125, 109, 0.22);
+    background: rgba(94, 234, 212, 0.28);
+    color: #fff;
   }
   :focus-visible {
-    outline: 2px solid var(--flora);
+    outline: 2px solid var(--aqua);
     outline-offset: 3px;
-    border-radius: 6px;
+    border-radius: 8px;
   }
   h1,
   h2,
@@ -50,39 +57,98 @@
   p {
     text-wrap: pretty;
   }
+  input,
+  select,
+  textarea {
+    color-scheme: dark;
+  }
+  option {
+    background: #0d1322;
+    color: var(--ink);
+  }
 }
 
 @layer components {
+  /* ---------- Layout rhythm ---------- */
   .chapter {
-    @apply relative py-24 md:py-36;
+    @apply relative py-20 md:py-28;
   }
   .chapter-dark {
-    @apply bg-abyss text-white;
+    @apply text-white;
+    background: linear-gradient(180deg, rgba(3, 5, 10, 0.55), rgba(3, 5, 10, 0.25));
   }
   .measure {
     max-width: 66ch;
   }
+
+  /* ---------- Glass ---------- */
+  .glass,
+  .surface {
+    @apply border border-white/[0.09] bg-white/[0.045] backdrop-blur-2xl backdrop-saturate-150;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07), 0 24px 60px -32px rgba(0, 0, 0, 0.8);
+  }
+  .surface-strong {
+    @apply border border-white/[0.12] backdrop-blur-2xl backdrop-saturate-150;
+    background: linear-gradient(160deg, rgba(94, 234, 212, 0.1), rgba(165, 180, 252, 0.08) 45%, rgba(255, 255, 255, 0.04));
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 30px 80px -40px rgba(94, 234, 212, 0.35);
+  }
+  .glass-dark {
+    @apply border border-white/[0.08] bg-white/[0.04] backdrop-blur-2xl;
+  }
+  .aurora-text {
+    background: var(--aurora);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .aurora-border {
+    position: relative;
+  }
+  .aurora-border::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    padding: 1px;
+    border-radius: inherit;
+    background: var(--aurora);
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0.7;
+    pointer-events: none;
+  }
+
+  /* ---------- Buttons ---------- */
   .btn {
     @apply inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-[15px] font-medium transition-all duration-300 ease-apple active:scale-[0.97];
   }
   .btn-primary {
-    @apply btn bg-ink text-white hover:bg-black;
+    @apply btn text-[#04121a];
+    background: var(--aurora);
+    box-shadow: 0 10px 30px -10px rgba(94, 234, 212, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  }
+  .btn-primary:hover {
+    filter: brightness(1.08) saturate(1.1);
   }
   .btn-flora {
-    @apply btn bg-flora text-white hover:bg-flora-deep;
+    @apply btn-primary;
   }
   .btn-ghost {
-    @apply btn border border-ink/15 bg-white/60 text-ink backdrop-blur hover:border-ink/30 hover:bg-white;
+    @apply btn border border-white/15 bg-white/[0.06] text-ink backdrop-blur-xl hover:border-white/30 hover:bg-white/[0.1];
   }
   .btn-light {
-    @apply btn bg-white text-ink hover:bg-porcelain;
+    @apply btn bg-white text-[#060912] hover:bg-white/90;
   }
-  .glass {
-    @apply border border-white/60 bg-white/70 backdrop-blur-xl;
+
+  /* ---------- Data ---------- */
+  .stat-label {
+    @apply text-[12px] text-graphite;
   }
-  .glass-dark {
-    @apply border border-white/10 bg-white/[0.06] backdrop-blur-xl;
+  .chip {
+    @apply inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.05] px-3 py-1 text-[12px] text-ink/80 backdrop-blur;
   }
+
+  /* ---------- Prose ---------- */
   .prose-nea p {
     @apply mb-5 leading-[1.75] text-graphite;
   }
@@ -121,6 +187,52 @@
   .no-scrollbar {
     scrollbar-width: none;
   }
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+/* ---------- Living aurora background (behind everything) ---------- */
+.aurora-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -10;
+  overflow: hidden;
+  pointer-events: none;
+  background: radial-gradient(120% 80% at 50% -10%, #0b1430 0%, #060912 55%, #04060c 100%);
+}
+.aurora-bg::before,
+.aurora-bg::after {
+  content: "";
+  position: absolute;
+  inset: -20%;
+  filter: blur(80px);
+  opacity: 0.55;
+  animation: aurora 26s ease-in-out infinite;
+}
+.aurora-bg::before {
+  background: radial-gradient(35% 30% at 20% 25%, rgba(94, 234, 212, 0.28), transparent 70%),
+    radial-gradient(30% 28% at 78% 18%, rgba(165, 180, 252, 0.26), transparent 70%);
+}
+.aurora-bg::after {
+  background: radial-gradient(32% 30% at 70% 80%, rgba(233, 168, 245, 0.18), transparent 70%),
+    radial-gradient(30% 26% at 15% 85%, rgba(125, 211, 252, 0.16), transparent 70%);
+  animation-duration: 34s;
+  animation-direction: reverse;
+}
+.aurora-grid {
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+  background-size: 72px 72px;
+  mask-image: radial-gradient(70% 60% at 50% 30%, black, transparent);
+}
+.aurora-noise {
+  position: absolute;
+  inset: 0;
+  opacity: 0.06;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
 }
 
 @media (prefers-reduced-motion: reduce) {
