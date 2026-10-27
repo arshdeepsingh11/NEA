@@ -5,8 +5,10 @@ import { labTests } from "@/content/tests";
 import { faqs } from "@/content/faq";
 import { offers } from "@/content/offers";
 import { site } from "@/lib/site";
+import { bodyRegions, faceZones } from "@/content/body";
 
-export type Doc = { id: string; kind: string; title: string; href: string; text: string; keywords: string; aliases?: string };
+export type DocMeta = { price?: number; duration?: string; image?: string; summary?: string };
+export type Doc = { id: string; kind: string; title: string; href: string; text: string; keywords: string; aliases?: string; meta?: DocMeta };
 
 const flatten = (blocks: { text: string }[][]) => blocks.flat().map((b) => b.text).join(" ");
 
@@ -18,6 +20,7 @@ export const docs: Doc[] = [
     href: `/programs/${p.slug}`,
     text: `${p.headline} ${p.summary} ${p.forWho}`,
     keywords: `${p.problem} ${p.rootCauses.join(" ")} ${p.includes.join(" ")}`,
+    meta: { price: p.priceFrom, duration: p.duration, image: p.image, summary: p.headline },
   })),
   ...treatments.map((t) => ({
     id: `treatment-${t.slug}`,
@@ -26,6 +29,7 @@ export const docs: Doc[] = [
     href: `/treatments/${t.slug}`,
     text: `${t.summary} ${t.intro.join(" ")}`,
     keywords: `${t.concerns.join(" ")} ${t.list.join(" ")} ${t.subs.map((s) => s.title).join(" ")} ${flatten(t.subs.map((s) => s.body)).slice(0, 600)} ${flatten(t.more).slice(0, 600)}`,
+    meta: { image: t.image, summary: t.summary },
   })),
   ...wellnessPackages.map((p) => ({
     id: `package-${p.id}`,
@@ -43,6 +47,7 @@ export const docs: Doc[] = [
     text: `${t.name} is a BioAro Labs test, ${t.price.toFixed(2).replace(".00", "")} CAD list price. ${t.neaUse} Best suited for: ${t.bestFor}`,
     keywords: `${t.group} test lab bioaro price cost`,
     aliases: { bioskin: "skin microbiome test acne eczema rosacea", biogut: "gut microbiome test bloating ibs", biofemme: "vaginal microbiome test uti yeast" }[t.slug] ?? "",
+    meta: { price: t.price, summary: t.bestFor },
   })),
   ...faqs.map((f, i) => ({ id: `faq-${i}`, kind: "FAQ", title: f.q, href: `/faq#q-${i}`, text: f.a, keywords: f.topic })),
   ...offers.map((o) => ({
@@ -52,6 +57,15 @@ export const docs: Doc[] = [
     href: o.slug === "skin-scan" ? "/skin-scan" : `/experiences/${o.slug}`,
     text: `${o.headline} ${o.summary}`,
     keywords: `${o.kicker} ${o.audience} ${o.leadsTo.join(" ")}`,
+  })),
+  ...[...bodyRegions, ...faceZones].map((r) => ({
+    id: `body-${r.id}`,
+    kind: "Body",
+    title: r.name,
+    href: `/body?focus=${r.id}`,
+    text: `${r.headline} ${r.madeOf.join(" ")} ${r.improve}`,
+    keywords: `${r.disruptors.join(" ")} ${r.tracks.join(" ")}`,
+    meta: { summary: r.headline },
   })),
   {
     id: "visit",
@@ -123,20 +137,50 @@ export function search(query: string, limit = 6) {
     .map((r) => r.d);
 }
 
-export type Answer = { text: string; sources: Doc[] };
+export type PlanItem = { title: string; href: string; price: number; duration: string; why: string };
+export type Plan = { items: PlanItem[]; total: number; budget?: number; note: string };
+export type Answer = { text: string; sources: Doc[]; plan?: Plan; steps: string[] };
+
+const CONCERN_TO_PROGRAM: [RegExp, string][] = [
+  [/acne|breakout|pimple|zit|blackhead|rosacea|oily|pores?/i, "clear-skin"],
+  [/pigment|melasma|dark spot|uneven|sun ?spot|discolou?r|tone/i, "even-tone"],
+  [/hair|bald|thinning|alopecia|scalp|receding/i, "hair-regrowth"],
+  [/wrinkle|line|aging|ageing|sag|loose skin|firm|collagen|40\+|menopause/i, "healthy-aging"],
+];
+
+/** Turns "acne and dark spots, budget $2000" into a priced plan from real programs. */
+export function buildPlan(question: string): Plan | undefined {
+  const slugs = [...new Set(CONCERN_TO_PROGRAM.filter(([re]) => re.test(question)).map(([, s]) => s))];
+  if (!slugs.length) return undefined;
+  const budgetMatch = question.replace(/,/g, "").match(/\$?\s?(\d{3,6})\s?(k)?/i);
+  const budget = budgetMatch ? Number(budgetMatch[1]) * (budgetMatch[2] ? 1000 : 1) : undefined;
+  const items = slugs
+    .map((s) => programs.find((p) => p.slug === s)!)
+    .map((p) => ({ title: p.name, href: `/programs/${p.slug}`, price: p.priceFrom, duration: p.duration, why: p.headline }))
+    .sort((a, b) => a.price - b.price);
+  const total = items.reduce((s, i) => s + i.price, 0);
+  const note =
+    budget && total > budget
+      ? `That is above your budget of $${budget.toLocaleString("en-CA")}. Start with the ${items[0].title} and add the rest after your 90-day re-scan, or ask about monthly payment plans.`
+      : "Every plan starts with a free Skin Health Report, so the tests and treatments are matched to what your scan actually shows.";
+  return { items, total, budget, note };
+}
 
 /** A grounded answer built only from NEA's own content. Swap for an LLM via /api/ask when ready. */
 export function answer(question: string): Answer {
   const hits = search(question, 4);
+  const plan = buildPlan(question);
+  const steps = [`Read your question`, `Searched ${docs.length} NEA programs, treatments, tests and answers`, hits.length ? `Matched ${hits.length} relevant sources` : "No exact match found", ...(plan ? [`Priced a plan from ${plan.items.length} program${plan.items.length > 1 ? "s" : ""}`] : [])];
   if (!hits.length) {
     return {
       text: `I could not find that in NEA’s information yet. The team can answer it directly: call ${site.phone}, email ${site.email}, or book a free 15-minute consultation.`,
       sources: [],
+      steps,
     };
   }
   const top = hits[0];
   const sentences = top.text.split(/(?<=[.!?])\s+/).slice(0, 3).join(" ");
   const more = hits.slice(1, 3).map((h) => h.title);
   const tail = more.length ? ` You may also want to look at ${more.join(" and ")}.` : "";
-  return { text: `${sentences}${tail}`, sources: hits };
+  return { text: `${sentences}${tail}`, sources: hits, plan, steps };
 }
