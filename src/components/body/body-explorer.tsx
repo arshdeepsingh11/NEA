@@ -67,7 +67,7 @@ export function BodyExplorer({ body, face, links }: { body: Region[]; face: Regi
         <div className="grid gap-5 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)]">
           {/* Viewer */}
           <div className="surface relative h-[62dvh] min-h-[460px] overflow-hidden rounded-[32px] lg:h-[calc(100dvh-235px)] lg:min-h-[560px]">
-            <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(60%_50%_at_50%_45%,rgba(94,234,212,0.10),transparent_70%)]" />
+            <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(60%_50%_at_50%_45%,rgb(var(--c-accent) / 0.10),transparent_70%)]" />
             <LazyAnatomy key={mode} compact={small} mode={mode} regions={regions} view={view} selected={sel} onSelect={(id) => setSel((s) => (s === id ? null : id))} className="absolute inset-0" />
 
             <div className="absolute inset-x-4 top-4 flex flex-wrap items-center justify-between gap-3">

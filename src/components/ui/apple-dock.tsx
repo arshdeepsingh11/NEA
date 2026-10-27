@@ -25,7 +25,7 @@ export function AppleDock({ items, className }: { items: DockItem[]; className?:
       onMouseLeave={() => mouseX.set(Infinity)}
       className={cn(
         "flex items-end gap-1.5 rounded-[26px] border border-white/90 bg-white/65 px-2.5 pb-2 pt-2 backdrop-blur-2xl backdrop-saturate-150",
-        "shadow-[inset_0_1px_0_rgba(255,255,255,0.95),0_1px_2px_rgba(11,19,36,0.06),0_24px_60px_-24px_rgba(30,64,110,0.35)]",
+        "shadow-[inset_0_1px_0_rgba(255,255,255,0.95),0_1px_2px_rgb(var(--c-ink) / 0.06),0_24px_60px_-24px_rgba(var(--shadow-tint),0.35)]",
         className
       )}
     >
@@ -54,10 +54,10 @@ function DockIcon({ mouseX, item }: { mouseX: MotionValue<number>; item: DockIte
         className={cn(
           "relative grid place-items-center rounded-[16px] transition-colors",
           item.featured
-            ? "text-ink shadow-[0_8px_24px_-8px_rgba(13,148,136,0.55)]"
+            ? "text-ink shadow-[0_8px_24px_-8px_rgb(var(--c-accent) / 0.55)]"
             : item.active
-              ? "bg-ink text-white shadow-[0_6px_16px_-8px_rgba(11,19,36,0.6)]"
-              : "border border-ink/[0.06] bg-white/90 text-ink/75 shadow-[0_1px_2px_rgba(11,19,36,0.06)] hover:text-ink"
+              ? "bg-ink text-white shadow-[0_6px_16px_-8px_rgb(var(--c-ink) / 0.6)]"
+              : "border border-ink/[0.06] bg-white/90 text-ink/75 shadow-[0_1px_2px_rgb(var(--c-ink) / 0.06)] hover:text-ink"
         )}
       >
         {item.featured && <span aria-hidden className="absolute inset-0 rounded-[16px] [background:var(--aurora)]" />}

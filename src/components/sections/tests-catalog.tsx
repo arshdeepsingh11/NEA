@@ -131,7 +131,7 @@ function PriceMap({ tests, hot, setHot }: { tests: LabTest[]; hot: string | null
               className="absolute grid h-6 w-6 -translate-x-1/2 place-items-center"
               style={{ left: `${(t.price / max) * 100}%`, top: 6 + rows[t.slug] * 20 }}
             >
-              <span className="rounded-full transition-all" style={{ width: on ? 14 : 10, height: on ? 14 : 10, background: VIZ.series[0], boxShadow: `0 0 0 2px ${VIZ.surface}${on ? ", 0 0 14px rgba(20,168,148,0.8)" : ""}`, opacity: hot && !on ? 0.45 : 1 }} />
+              <span className="rounded-full transition-all" style={{ width: on ? 14 : 10, height: on ? 14 : 10, background: VIZ.series[0], boxShadow: `0 0 0 2px ${VIZ.surface}${on ? ", 0 0 14px rgb(var(--c-accent) / 0.8)" : ""}`, opacity: hot && !on ? 0.45 : 1 }} />
             </a>
           );
         })}

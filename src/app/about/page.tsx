@@ -69,7 +69,7 @@ export default function AboutPage() {
           <SectionHead title="What makes NEA different." />
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {DIFFERENT.map((d) => (
-              <Link key={d.title} href={d.href} className="group rounded-4xl surface p-7 transition hover:shadow-[0_20px_50px_-30px_rgba(21,25,28,0.35)]">
+              <Link key={d.title} href={d.href} className="group rounded-4xl surface p-7 transition hover:shadow-[0_20px_50px_-30px_rgb(var(--c-ink) / 0.35)]">
                 <h3 className="text-lg font-semibold tracking-tight group-hover:underline">{d.title}</h3>
                 <p className="mt-2 text-[15px] leading-relaxed text-graphite">{d.text}</p>
               </Link>

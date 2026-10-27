@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 type Props = { value: number; max?: number; size?: number; stroke?: number; label?: string; color?: string; track?: string; className?: string };
 
 /** Animated circular gauge (Magic UI "Animated Circular Progress Bar"). */
-export function CircularProgress({ value, max = 100, size = 120, stroke = 9, label, color = "#2F7D6D", track = "rgba(21,25,28,0.08)", className }: Props) {
+export function CircularProgress({ value, max = 100, size = 120, stroke = 9, label, color = "rgb(var(--c-accent))", track = "rgb(var(--c-ink) / 0.08)", className }: Props) {
   const r = (size - stroke) / 2;
   const c = 2 * Math.PI * r;
   const pct = Math.max(0, Math.min(1, value / max));

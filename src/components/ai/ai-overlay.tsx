@@ -116,7 +116,7 @@ export function AiOverlay({ open, onClose, initialQuery, context, nonce }: { ope
             animate={{ y: 0, opacity: 1, scale: 1 }}
             exit={{ y: 30, opacity: 0, scale: 0.98 }}
             transition={{ type: "spring", stiffness: 320, damping: 32 }}
-            className="aurora-border relative flex h-[92dvh] w-full max-w-3xl flex-col overflow-hidden rounded-t-[32px] border border-ink/10 bg-white/80 shadow-[0_60px_160px_-40px_rgba(30,64,110,0.35)] backdrop-blur-2xl sm:h-[82vh] sm:rounded-[32px]"
+            className="aurora-border relative flex h-[92dvh] w-full max-w-3xl flex-col overflow-hidden rounded-t-[32px] border border-ink/10 bg-white/80 shadow-[0_60px_160px_-40px_rgba(var(--shadow-tint),0.35)] backdrop-blur-2xl sm:h-[82vh] sm:rounded-[32px]"
           >
             <header className="flex items-center justify-between gap-4 border-b border-ink/10 px-5 py-4 sm:px-7">
               <div className="flex items-center gap-3">

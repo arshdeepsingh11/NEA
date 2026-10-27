@@ -27,13 +27,13 @@ export function HeroBody({ regions }: { regions: ScanRegion[] }) {
 
   return (
     <div className="relative h-full w-full" onPointerEnter={() => setPaused(true)} onPointerLeave={() => setPaused(false)}>
-      <div aria-hidden className="absolute inset-[8%] rounded-full bg-[radial-gradient(circle,rgba(94,234,212,0.16),transparent_65%)] blur-2xl" />
+      <div aria-hidden className="absolute inset-[8%] rounded-full bg-[radial-gradient(circle,rgb(var(--c-accent) / 0.16),transparent_65%)] blur-2xl" />
       <LazyAnatomy mode="body" view="holo" compact focus={false} regions={regions} selected={r.id} onSelect={(id) => router.push(`/body?focus=${id}`)} className="absolute inset-0" />
 
       {/* Scan progress across the ten systems */}
       <div className="absolute left-1/2 top-2 flex -translate-x-1/2 items-center gap-1.5" aria-hidden>
         {regions.map((x, k) => (
-          <button key={x.id} onClick={() => setI(k)} className="pointer-events-auto h-1.5 rounded-full transition-all" style={{ width: k === i ? 22 : 6, background: k === i ? x.color : "rgba(11,19,36,0.2)" }} tabIndex={-1} />
+          <button key={x.id} onClick={() => setI(k)} className="pointer-events-auto h-1.5 rounded-full transition-all" style={{ width: k === i ? 22 : 6, background: k === i ? x.color : "rgb(var(--c-ink) / 0.2)" }} tabIndex={-1} />
         ))}
       </div>
 

@@ -42,7 +42,7 @@ export function ScanOffer() {
           </Link>
         </div>
       </div>
-      <ShineBorder radius={36} className="surface p-3 shadow-[0_40px_90px_-50px_rgba(21,25,28,0.5)]">
+      <ShineBorder radius={36} className="surface p-3 shadow-[0_40px_90px_-50px_rgb(var(--c-ink) / 0.5)]">
         <div className="rounded-[28px] bg-porcelain p-5 sm:p-7">
           <div className="mb-5 flex items-center justify-between">
             <p className="font-display text-lg font-semibold">What the scan maps</p>

@@ -40,10 +40,10 @@ export function WorldMap({ hub, points, className, dark = true }: { hub: MapPoin
       <svg viewBox={`0 0 ${W} ${H}`} className="absolute inset-0 h-full w-full" role="img" aria-label={`Map of connections from ${hub.name}`}>
         <defs>
           <linearGradient id="arc-grad" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="#7fe0c8" stopOpacity="0" />
-            <stop offset="12%" stopColor="#7fe0c8" stopOpacity="1" />
-            <stop offset="88%" stopColor="#9d9bff" stopOpacity="1" />
-            <stop offset="100%" stopColor="#9d9bff" stopOpacity="0" />
+            <stop offset="0%" stopColor="rgb(var(--c-accent))" stopOpacity="0" />
+            <stop offset="12%" stopColor="rgb(var(--c-accent))" stopOpacity="1" />
+            <stop offset="88%" stopColor="rgb(var(--c-accent2))" stopOpacity="1" />
+            <stop offset="100%" stopColor="rgb(var(--c-accent2))" stopOpacity="0" />
           </linearGradient>
         </defs>
         {points.map((p, i) => {
@@ -61,7 +61,7 @@ export function WorldMap({ hub, points, className, dark = true }: { hub: MapPoin
                 style={{ transition: `stroke-dashoffset 1.6s cubic-bezier(0.65,0,0.35,1) ${0.25 * i}s` }}
               />
               {!reduce && (
-                <circle r={2.2} fill="#fff">
+                <circle r={2.2} fill="rgb(var(--c-ink) / 0.6)">
                   <animateMotion dur={`${3.2 + i * 0.35}s`} repeatCount="indefinite" path={d} begin={`${0.25 * i + 1.6}s`} />
                 </circle>
               )}
@@ -73,8 +73,8 @@ export function WorldMap({ hub, points, className, dark = true }: { hub: MapPoin
           const isHub = i === 0;
           return (
             <g key={p.name} onMouseEnter={() => setHover(p)} onMouseLeave={() => setHover(null)} onFocus={() => setHover(p)} onBlur={() => setHover(null)} tabIndex={0} className="cursor-pointer outline-none">
-              <circle cx={x} cy={y} r={isHub ? 4.2 : 2.8} fill={isHub ? "#7fe0c8" : "#fff"} />
-              <circle cx={x} cy={y} r={isHub ? 4.2 : 2.8} fill="none" stroke={isHub ? "#7fe0c8" : "#fff"} strokeOpacity={0.6}>
+              <circle cx={x} cy={y} r={isHub ? 4.2 : 2.8} fill={isHub ? "rgb(var(--c-accent))" : "rgb(var(--c-ink) / 0.6)"} />
+              <circle cx={x} cy={y} r={isHub ? 4.2 : 2.8} fill="none" stroke={isHub ? "rgb(var(--c-accent))" : "rgb(var(--c-ink) / 0.5)"} strokeOpacity={0.6}>
                 {!reduce && (
                   <>
                     <animate attributeName="r" from={isHub ? 4 : 2.6} to={isHub ? 16 : 10} dur="2.2s" begin={`${i * 0.3}s`} repeatCount="indefinite" />

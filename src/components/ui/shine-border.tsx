@@ -12,7 +12,7 @@ type Props = {
 };
 
 /** Animated gradient border (Magic UI "Shine Border"). */
-export function ShineBorder({ children, className, borderWidth = 1.5, duration = 12, colors = ["#2F7D6D", "#E7C3B5", "#6E6BF5"], radius = 28 }: Props) {
+export function ShineBorder({ children, className, borderWidth = 1.5, duration = 12, colors = ["rgb(var(--c-accent))", "rgb(var(--c-warm))", "rgb(var(--c-accent2))"], radius = 28 }: Props) {
   return (
     <div className={cn("relative rounded-[var(--r)]", className)} style={{ "--r": `${radius}px` } as CSSProperties}>
       <div

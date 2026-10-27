@@ -28,7 +28,7 @@ export function EvervaultCard({ children, className }: { children: ReactNode; cl
     <div onMouseMove={onMove} className={cn("group/ev relative overflow-hidden surface rounded-3xl", className)}>
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute inset-0 [mask-image:linear-gradient(white,transparent)] group-hover/ev:opacity-50" />
-        <motion.div className="absolute inset-0 bg-gradient-to-br from-[#7CE7D8] to-[#B4BCFD] opacity-0 transition duration-500 group-hover/ev:opacity-100" style={style} />
+        <motion.div className="absolute inset-0 bg-gradient-to-br from-[var(--fill-a)] to-[var(--fill-c)] opacity-0 transition duration-500 group-hover/ev:opacity-100" style={style} />
         <motion.div className="absolute inset-0 opacity-0 group-hover/ev:opacity-60" style={style}>
           <p className="absolute inset-x-0 h-full whitespace-pre-wrap break-words font-mono text-[11px] font-bold leading-4 text-ink/40">{str}</p>
         </motion.div>

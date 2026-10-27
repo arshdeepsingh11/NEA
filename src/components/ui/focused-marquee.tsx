@@ -82,7 +82,7 @@ export function FocusedMarquee({ items, className, speed = 38, tile = 104, gap =
         className="relative h-[230px] overflow-hidden [perspective:1100px] mask-fade-x"
       >
         {/* the lens */}
-        <div aria-hidden className="pointer-events-none absolute left-1/2 top-1/2 h-[176px] w-[176px] -translate-x-1/2 -translate-y-1/2 rounded-[44px] border border-white/70 bg-white/30 shadow-[0_30px_80px_-30px_rgba(47,125,109,0.55)] backdrop-blur-[2px]" />
+        <div aria-hidden className="pointer-events-none absolute left-1/2 top-1/2 h-[176px] w-[176px] -translate-x-1/2 -translate-y-1/2 rounded-[44px] border border-white/70 bg-white/30 shadow-[0_30px_80px_-30px_rgb(var(--c-accent) / 0.55)] backdrop-blur-[2px]" />
         <div className="absolute inset-0 preserve-3d">
           {loop.map((it, i) => (
             <Link
@@ -97,7 +97,7 @@ export function FocusedMarquee({ items, className, speed = 38, tile = 104, gap =
               style={{ width: tile, height: tile }}
             >
               <span
-                className="relative grid h-full w-full place-items-center rounded-[28%] text-white shadow-[0_22px_30px_-18px_rgba(21,25,28,0.6),inset_0_1.5px_0_rgba(255,255,255,0.55),inset_0_-6px_14px_rgba(0,0,0,0.18)]"
+                className="relative grid h-full w-full place-items-center rounded-[28%] text-white shadow-[0_22px_30px_-18px_rgb(var(--c-ink) / 0.6),inset_0_1.5px_0_rgba(255,255,255,0.55),inset_0_-6px_14px_rgba(0,0,0,0.18)]"
                 style={{ background: it.tint }}
               >
                 <span className="absolute inset-x-[12%] top-[6%] h-[38%] rounded-[40%] bg-gradient-to-b from-white/45 to-transparent" />
