@@ -3,6 +3,8 @@ import { PageHero, SectionHead } from "@/components/sections/page-hero";
 import { TestsCatalog } from "@/components/sections/tests-catalog";
 import { LazySignal } from "@/components/three/lazy";
 import { labTests, testGroups } from "@/content/tests";
+import { bodyRegions } from "@/content/body";
+import { AiQuestionChips } from "@/components/ai/ai-question-chips";
 import { pageMeta } from "@/lib/seo";
 import { site } from "@/lib/site";
 
@@ -13,6 +15,8 @@ export const metadata = pageMeta({
 });
 
 export default function TestsPage() {
+  const regionsByTest: Record<string, { id: string; name: string }[]> = {};
+  for (const r of bodyRegions) for (const t of r.tests) (regionsByTest[t] ??= []).push({ id: r.id, name: r.name });
   return (
     <>
       <section className="chapter-dark relative overflow-hidden">
@@ -26,12 +30,15 @@ export default function TestsPage() {
             lede="Skin, gut and vaginal microbiome, hormones, vitamins, inflammation and DNA. Fulfilled by BioAro Labs in CLIA-registered laboratories and explained by your NEA team."
           >
             <div className="flex flex-wrap gap-3">
-              <Link href="/book?topic=Microbiome%20testing" className="btn-light">
+              <Link href="/book?topic=Microbiome%20testing" className="btn-primary">
                 Ask which test fits
               </Link>
-              <a href={site.ecosystem.bioaroShop} target="_blank" rel="noreferrer" className="btn border border-white/20 text-white hover:bg-white/10">
+              <a href={site.ecosystem.bioaroShop} target="_blank" rel="noreferrer" className="btn-ghost">
                 Full BioAro catalog
               </a>
+            </div>
+            <div className="mt-6">
+              <AiQuestionChips questions={["Which test explains my acne?", "BioGut vs BioSkin", "Tests for hair loss"]} />
             </div>
           </PageHero>
         </div>
@@ -46,7 +53,7 @@ export default function TestsPage() {
               ["Analyse", "Processed by BioAro Labs using validated methods."],
               ["Understand", "Results on your secure dashboard, reviewed with you at NEA."],
             ].map(([t, d], i) => (
-              <li key={t} className="rounded-4xl bg-white p-7">
+              <li key={t} className="surface rounded-[28px] p-7">
                 <span className="font-display text-sm text-flora">{i + 1}</span>
                 <h3 className="mt-3 text-2xl font-semibold tracking-tight">{t}</h3>
                 <p className="mt-2 leading-relaxed text-graphite">{d}</p>
@@ -57,7 +64,7 @@ export default function TestsPage() {
       </section>
       <section className="pb-28">
         <div className="container">
-          <TestsCatalog tests={labTests} groups={testGroups} />
+          <TestsCatalog tests={labTests} groups={testGroups} regionsByTest={regionsByTest} />
           <p className="mt-10 max-w-3xl text-[13px] leading-relaxed text-graphite">
             Prices are BioAro Labs list prices in CAD and may change; consultation fees are separate. These tests are not intended to diagnose, treat, cure, or prevent any disease. Results should be discussed with a qualified healthcare provider.
           </p>
