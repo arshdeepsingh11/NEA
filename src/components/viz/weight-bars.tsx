@@ -15,7 +15,7 @@ export function WeightBars({ items }: { items: { label: string; weight: number; 
               <span className="text-[15px] text-ink">{it.label}</span>
               <span className="tabular text-[13px] text-graphite">{it.weight}</span>
             </div>
-            <div className="mt-2 h-2 rounded-full bg-white/[0.06]">
+            <div className="mt-2 h-2 rounded-full bg-ink/[0.07]">
               <motion.div
                 className="h-full rounded-full"
                 style={{ background: VIZ.series[0] }}

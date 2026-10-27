@@ -23,14 +23,14 @@ export function RangeBars({ markers, className }: { markers: Marker[]; className
                   {m.value}
                   <span className="text-graphite"> {m.unit}</span>
                 </span>
-                <span className={cn("flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px]", ok ? "bg-[#14A894]/15 text-[#7FE3D3]" : "bg-[#D9A43A]/15 text-[#F2CF8A]")}>
+                <span className={cn("flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px]", ok ? "bg-[#0A9384]/12 text-[#0B6F65]" : "bg-[#D9A43A]/15 text-[#8A5A00]")}>
                   {ok ? <CircleCheck className="h-3 w-3" /> : <TriangleAlert className="h-3 w-3" />}
                   {ok ? "Optimal" : "Watch"}
                 </span>
               </span>
             </div>
-            <div className="relative h-2.5 rounded-full bg-white/[0.06]">
-              <div className="absolute inset-y-0 rounded-full bg-white/[0.12]" style={{ left: `${pct(m.optimal[0])}%`, width: `${pct(m.optimal[1]) - pct(m.optimal[0])}%` }} />
+            <div className="relative h-2.5 rounded-full bg-ink/[0.07]">
+              <div className="absolute inset-y-0 rounded-full bg-ink/[0.06]" style={{ left: `${pct(m.optimal[0])}%`, width: `${pct(m.optimal[1]) - pct(m.optimal[0])}%` }} />
               <motion.span
                 className="absolute top-1/2 h-4 w-4 -translate-x-1/2 -translate-y-1/2 rounded-full border-2"
                 style={{ background: ok ? VIZ.good : VIZ.watch, borderColor: VIZ.surface }}

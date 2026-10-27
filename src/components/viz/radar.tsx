@@ -35,7 +35,7 @@ export function Radar({ axes, className, size = 320, showTarget = true }: { axes
           return (
             <g key={a.label} onPointerEnter={() => setHover(i)} onPointerLeave={() => setHover(null)} className="cursor-default">
               <line x1={c} y1={c} x2={x} y2={y} stroke={VIZ.grid} />
-              <text x={lx} y={ly + 4} textAnchor={Math.abs(lx - c) < 8 ? "middle" : lx > c ? "start" : "end"} fontSize="11.5" fill={hover === i ? "#EEF2FA" : "#9AA6BC"}>
+              <text x={lx} y={ly + 4} textAnchor={Math.abs(lx - c) < 8 ? "middle" : lx > c ? "start" : "end"} fontSize="11.5" fill={hover === i ? "#0B1324" : "#556175"}>
                 {a.label}
               </text>
               <circle cx={x} cy={y} r="22" fill="transparent" />
@@ -45,7 +45,7 @@ export function Radar({ axes, className, size = 320, showTarget = true }: { axes
         {hasTarget && <polygon points={poly(axes.map((a) => a.target ?? a.value))} fill="none" stroke={VIZ.series[2]} strokeWidth="1.5" strokeDasharray="4 4" />}
         <motion.polygon
           points={poly(axes.map((a) => a.value))}
-          fill="rgba(20,168,148,0.22)"
+          fill="rgba(10,147,132,0.16)"
           stroke={VIZ.series[0]}
           strokeWidth="2"
           strokeLinejoin="round"
@@ -71,7 +71,7 @@ export function Radar({ axes, className, size = 320, showTarget = true }: { axes
         </div>
       )}
       {hover !== null && (
-        <div className="pointer-events-none absolute left-1/2 top-1/2 w-48 -translate-x-1/2 -translate-y-1/2 rounded-xl border border-white/10 bg-[#0B1120]/90 px-3 py-2 text-center text-[12px] backdrop-blur">
+        <div className="pointer-events-none absolute left-1/2 top-1/2 w-48 -translate-x-1/2 -translate-y-1/2 rounded-xl border border-ink/10 bg-white/85 px-3 py-2 text-center text-[12px] backdrop-blur">
           <p className="text-graphite">{axes[hover].label}</p>
           <p className="tabular font-display text-xl font-semibold text-ink">
             {axes[hover].value}

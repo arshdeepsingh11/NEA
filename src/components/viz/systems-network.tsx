@@ -42,7 +42,7 @@ export function SystemsNetwork({ className }: { className?: string }) {
       <svg viewBox={`0 0 ${W} ${H}`} className="w-full overflow-visible" role="img" aria-label="Six body systems that feed into skin health">
         <defs>
           <radialGradient id="net-core" cx="50%" cy="50%" r="50%">
-            <stop offset="0" stopColor="#5EEAD4" stopOpacity="0.55" />
+            <stop offset="0" stopColor="#7CE7D8" stopOpacity="0.55" />
             <stop offset="0.6" stopColor="#7DD3FC" stopOpacity="0.12" />
             <stop offset="1" stopColor="#7DD3FC" stopOpacity="0" />
           </radialGradient>
@@ -54,10 +54,10 @@ export function SystemsNetwork({ className }: { className?: string }) {
           const d = `M${x},${y} Q${(x + cx) / 2 + (y - cy) * 0.12},${(y + cy) / 2 - (x - cx) * 0.12} ${cx},${cy}`;
           return (
             <g key={n.id}>
-              <path id={`edge-${n.id}`} d={d} fill="none" stroke={on ? "#5EEAD4" : "rgba(255,255,255,0.14)"} strokeWidth={1 + n.strength * (on ? 3.5 : 2)} strokeLinecap="round" style={{ transition: "stroke 300ms, stroke-width 300ms" }} />
+              <path id={`edge-${n.id}`} d={d} fill="none" stroke={on ? "#0A9384" : "rgba(11,19,36,0.14)"} strokeWidth={1 + n.strength * (on ? 3.5 : 2)} strokeLinecap="round" style={{ transition: "stroke 300ms, stroke-width 300ms" }} />
               {!reduce &&
                 [0, 1, 2].map((k) => (
-                  <circle key={k} r={on ? 3.2 : 2.2} fill={on ? "#CFFAF3" : "#7DD3FC"} opacity={on ? 1 : 0.6}>
+                  <circle key={k} r={on ? 3.2 : 2.2} fill={on ? "#0A9384" : "#0284C7"} opacity={on ? 1 : 0.6}>
                     <animateMotion dur={`${3.4 - n.strength * 1.4}s`} begin={`${k * 1.1 + i * 0.3}s`} repeatCount="indefinite">
                       <mpath href={`#edge-${n.id}`} />
                     </animateMotion>
@@ -67,11 +67,11 @@ export function SystemsNetwork({ className }: { className?: string }) {
           );
         })}
         <g>
-          <circle cx={cx} cy={cy} r="54" fill="rgba(8,14,26,0.85)" stroke="rgba(94,234,212,0.6)" strokeWidth="1.5" />
-          <text x={cx} y={cy - 4} textAnchor="middle" fontSize="18" fontWeight="600" fill="#EEF2FA">
+          <circle cx={cx} cy={cy} r="54" fill="rgba(255,255,255,0.92)" stroke="rgba(10,147,132,0.55)" strokeWidth="1.5" />
+          <text x={cx} y={cy - 4} textAnchor="middle" fontSize="18" fontWeight="600" fill="#0B1324">
             Your skin
           </text>
-          <text x={cx} y={cy + 16} textAnchor="middle" fontSize="11" fill="#9AA6BC">
+          <text x={cx} y={cy + 16} textAnchor="middle" fontSize="11" fill="#556175">
             the visible output
           </text>
         </g>
@@ -81,9 +81,9 @@ export function SystemsNetwork({ className }: { className?: string }) {
           const w = n.label.length * 7.2 + 34;
           return (
             <g key={n.id} onClick={() => setActive(n.id)} onPointerEnter={() => setActive(n.id)} className="cursor-pointer" role="button" tabIndex={0} aria-label={n.label} onKeyDown={(e) => e.key === "Enter" && setActive(n.id)}>
-              <rect x={x - w / 2} y={y - 17} width={w} height="34" rx="17" fill={on ? "rgba(94,234,212,0.16)" : "rgba(255,255,255,0.05)"} stroke={on ? "rgba(94,234,212,0.7)" : "rgba(255,255,255,0.14)"} />
-              <circle cx={x - w / 2 + 16} cy={y} r="4" fill={on ? "#5EEAD4" : "#9AA6BC"} />
-              <text x={x - w / 2 + 26} y={y + 4.5} fontSize="13" fill={on ? "#FFFFFF" : "#C9D2E3"}>
+              <rect x={x - w / 2} y={y - 17} width={w} height="34" rx="17" fill={on ? "rgba(10,147,132,0.12)" : "rgba(255,255,255,0.8)"} stroke={on ? "rgba(10,147,132,0.6)" : "rgba(11,19,36,0.12)"} />
+              <circle cx={x - w / 2 + 16} cy={y} r="4" fill={on ? "#0A9384" : "#556175"} />
+              <text x={x - w / 2 + 26} y={y + 4.5} fontSize="13" fill={on ? "#0B1324" : "#334155"}>
                 {n.label}
               </text>
             </g>
@@ -95,14 +95,14 @@ export function SystemsNetwork({ className }: { className?: string }) {
         <motion.div key={node.id} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.3 }} className="surface rounded-[28px] p-7">
           <p className="stat-label">Signal strength into skin</p>
           <div className="mt-2 flex items-center gap-3">
-            <div className="h-2 flex-1 rounded-full bg-white/[0.06]">
-              <motion.div className="h-full rounded-full bg-[#14A894]" initial={{ width: 0 }} animate={{ width: `${node.strength * 100}%` }} transition={{ duration: 0.8 }} />
+            <div className="h-2 flex-1 rounded-full bg-ink/[0.07]">
+              <motion.div className="h-full rounded-full bg-[#0A9384]" initial={{ width: 0 }} animate={{ width: `${node.strength * 100}%` }} transition={{ duration: 0.8 }} />
             </div>
             <span className="tabular text-[13px] text-ink">{Math.round(node.strength * 100)}</span>
           </div>
-          <h3 className="mt-6 font-display text-2xl font-semibold tracking-tight text-white">{node.label}</h3>
+          <h3 className="mt-6 font-display text-2xl font-semibold tracking-tight text-ink">{node.label}</h3>
           <p className="mt-3 text-[15px] leading-relaxed text-graphite">{node.effect}</p>
-          <div className="mt-6 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+          <div className="mt-6 rounded-2xl border border-ink/10 bg-white/60 p-4">
             <p className="stat-label">How NEA measures it</p>
             <p className="mt-1 text-[15px] text-ink">{node.measure}</p>
           </div>

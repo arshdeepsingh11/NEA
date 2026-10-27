@@ -83,7 +83,7 @@ export function TrendChart({
           ))}
           {projectFrom !== undefined && (
             <span className="flex items-center gap-1.5">
-              <span className="w-4 border-t-2 border-dashed border-white/50" /> Projected
+              <span className="w-4 border-t-2 border-dashed border-ink/20" /> Projected
             </span>
           )}
         </div>
@@ -121,7 +121,7 @@ export function TrendChart({
           ) : null,
         )}
         {projectFrom !== undefined && (
-          <rect x={x(projectFrom)} y={pad.t} width={W - pad.r - x(projectFrom)} height={H - pad.t - pad.b} fill="rgba(255,255,255,0.025)" />
+          <rect x={x(projectFrom)} y={pad.t} width={W - pad.r - x(projectFrom)} height={H - pad.t - pad.b} fill="rgba(11,19,36,0.025)" />
         )}
         {series.map((s, si) => {
           const c = s.color ?? VIZ.series[si];
@@ -166,16 +166,16 @@ export function TrendChart({
                 />
               )}
               <circle cx={x(last)} cy={y(s.values[last])} r="4" fill={c} stroke={VIZ.surface} strokeWidth="2" />
-              <text x={x(last) + 10} y={y(s.values[last]) + 4} fontSize="12" fill="#EEF2FA" className="tabular">
+              <text x={x(last) + 10} y={y(s.values[last]) + 4} fontSize="12" fill="#0B1324" className="tabular">
                 {s.values[last]}
-                {unit} <tspan fill="#9AA6BC">{series.length > 1 ? s.name : ""}</tspan>
+                {unit} <tspan fill="#556175">{series.length > 1 ? s.name : ""}</tspan>
               </text>
             </g>
           );
         })}
         {hover !== null && (
           <g pointerEvents="none">
-            <line x1={x(hover)} x2={x(hover)} y1={pad.t} y2={H - pad.b} stroke="rgba(255,255,255,0.25)" />
+            <line x1={x(hover)} x2={x(hover)} y1={pad.t} y2={H - pad.b} stroke="rgba(11,19,36,0.25)" />
             {series.map((s, si) => (
               <circle key={si} cx={x(hover)} cy={y(s.values[hover])} r="4.5" fill={s.color ?? VIZ.series[si]} stroke={VIZ.surface} strokeWidth="2" />
             ))}
@@ -185,7 +185,7 @@ export function TrendChart({
       </svg>
       {hover !== null && (
         <div
-          className="pointer-events-none absolute top-6 z-10 rounded-xl border border-white/10 bg-[#0B1120]/90 px-3 py-2 text-[12px] shadow-xl backdrop-blur"
+          className="pointer-events-none absolute top-6 z-10 rounded-xl border border-ink/10 bg-white/85 px-3 py-2 text-[12px] shadow-xl backdrop-blur"
           style={{ left: `${(x(hover) / W) * 100}%`, transform: `translateX(${hover > n / 2 ? "-110%" : "10%"})` }}
         >
           <p className="mb-1 text-graphite">
