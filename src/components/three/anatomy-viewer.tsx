@@ -98,15 +98,17 @@ void main() {
   vec3 col = vec3(0.0);
   float a = 0.0;
   if (uHolo > 0.5) {
-    vec3 deep = vec3(0.05, 0.25, 0.32);
-    vec3 aqua = vec3(0.37, 0.92, 0.83);
+    // Light-page hologram: pale frosted aqua body, deeper teal rim, a soft scan sweep.
+    vec3 body = vec3(0.80, 0.95, 0.96);
+    vec3 rimC = vec3(0.04, 0.52, 0.50);
     float scan = 0.5 + 0.5 * sin(vW.y * 220.0 - uTime * 2.0);
     float sweep = smoothstep(0.08, 0.0, abs(vW.y - uScanY));
-    col = mix(deep, aqua, fres) * (0.35 + fres * 1.1) + aqua * scan * 0.05 + vec3(0.6, 1.0, 0.95) * sweep * 0.6;
-    a = 0.18 + fres * 0.7 + sweep * 0.4;
-    col += uActiveColor * isActive * (0.55 + fres) * pulse;
-    col += uHoverColor * isHover * 0.35;
+    col = mix(body, rimC, clamp(fres * 1.15, 0.0, 1.0)) - vec3(0.03) * scan + vec3(0.02, 0.35, 0.45) * sweep * 0.5;
+    a = 0.34 + fres * 0.6 + sweep * 0.18;
+    col = mix(col, uActiveColor, isActive * (0.7 + 0.2 * pulse));
+    col = mix(col, uHoverColor, isHover * 0.45);
     a += isActive * 0.35 + isHover * 0.15;
+    a = min(a, 0.96);
   } else {
     if (isActive + isHover < 0.02) discard;
     col = uActiveColor * isActive * (0.9 + fres * 1.4) * pulse + uHoverColor * isHover * (0.6 + fres);
@@ -139,7 +141,7 @@ export function AnatomyViewer({ mode, regions, view = "skin", selected = null, o
 
       const key = new THREE.DirectionalLight(0xffffff, 2.4);
       key.position.set(2.5, 4, 3);
-      const rim = new THREE.DirectionalLight(0x7dd3fc, 2.2);
+      const rim = new THREE.DirectionalLight(0x93d5fb, 1.6);
       rim.position.set(-3, 2.5, -3);
       const fill = new THREE.DirectionalLight(0xe9a8f5, 0.6);
       fill.position.set(-2, 0.5, 2);
@@ -147,7 +149,7 @@ export function AnatomyViewer({ mode, regions, view = "skin", selected = null, o
 
       const isFace = mode === "face";
       const ids = props.current.regions.map((r) => r.id);
-      const colorOf = (id: string) => new THREE.Color(props.current.regions.find((r) => r.id === id)?.color ?? "#5EEAD4");
+      const colorOf = (id: string) => new THREE.Color(props.current.regions.find((r) => r.id === id)?.color ?? "#14B8A6");
 
       const overlayMat = new THREE.ShaderMaterial({
         vertexShader: VERT,
@@ -156,8 +158,8 @@ export function AnatomyViewer({ mode, regions, view = "skin", selected = null, o
           uTime: { value: 0 },
           uHolo: { value: 0 },
           uScanY: { value: 0 },
-          uActiveColor: { value: new THREE.Color("#5EEAD4") },
-          uHoverColor: { value: new THREE.Color("#ffffff") },
+          uActiveColor: { value: new THREE.Color("#14B8A6") },
+          uHoverColor: { value: new THREE.Color("#0284C7") },
         },
         transparent: true,
         depthWrite: false,
@@ -309,7 +311,7 @@ export function AnatomyViewer({ mode, regions, view = "skin", selected = null, o
         overlay.renderOrder = 2;
         points = new THREE.Points(
           geo,
-          new THREE.PointsMaterial({ size: isFace ? 0.0011 : 0.0045, color: "#9ff5e6", transparent: true, opacity: 0.55, depthWrite: false, blending: THREE.AdditiveBlending, sizeAttenuation: true })
+          new THREE.PointsMaterial({ size: isFace ? 0.0011 : 0.0045, color: "#0A9384", transparent: true, opacity: 0.35, depthWrite: false, sizeAttenuation: true })
         );
         group.add(skinMesh, overlay, points);
 
@@ -434,7 +436,7 @@ export function AnatomyViewer({ mode, regions, view = "skin", selected = null, o
             const x = (tmp.x * 0.5 + 0.5) * size.w;
             const y = (-tmp.y * 0.5 + 0.5) * size.h;
             // Regions anchored on the viewer's left get their label on the left, so labels never stack.
-            const left = an.p.x < -0.005;
+            const left = an.p.x < -0.005 || x > size.w - 200;
             node.dataset.side = left ? "l" : "r";
             node.style.transform = left ? `translate(${x}px, ${y}px) translateX(-100%)` : `translate(${x}px, ${y}px)`;
             const isSel = sel === r.id;
@@ -465,7 +467,7 @@ export function AnatomyViewer({ mode, regions, view = "skin", selected = null, o
       <div ref={ref} className="absolute inset-0" />
       {!loaded && (
         <div className="pointer-events-none absolute inset-0 grid place-items-center">
-          <div className="flex items-center gap-3 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-[13px] text-white/70 backdrop-blur">
+          <div className="flex items-center gap-3 rounded-full border border-ink/10 bg-white/80 px-4 py-2 text-[13px] text-graphite shadow-sm backdrop-blur">
             <span className="h-2 w-2 animate-pulseglow rounded-full bg-flora" /> Loading 3D {mode === "face" ? "face" : "body"} model…
           </div>
         </div>
@@ -485,10 +487,10 @@ export function AnatomyViewer({ mode, regions, view = "skin", selected = null, o
               <span className="relative -ml-2 -mt-2 flex items-center gap-2 group-data-[side=l]/spot:-mr-2 group-data-[side=l]/spot:ml-0 group-data-[side=l]/spot:flex-row-reverse">
                 <span className="relative grid h-4 w-4 place-items-center">
                   <span className="absolute inset-0 animate-ping rounded-full opacity-40" style={{ background: r.color }} />
-                  <span className="h-2.5 w-2.5 rounded-full border border-white/80" style={{ background: r.color, boxShadow: `0 0 14px ${r.color}` }} />
+                  <span className="h-2.5 w-2.5 rounded-full border-2 border-white" style={{ background: r.color, boxShadow: `0 0 14px ${r.color}` }} />
                 </span>
                 {!compact || selected === r.id ? (
-                  <span className={cn("whitespace-nowrap rounded-full border px-2.5 py-1 text-[11.5px] backdrop-blur-md", selected === r.id ? "border-white/40 bg-white/20 text-white" : "border-white/15 bg-black/30 text-white/85")}>{r.name}</span>
+                  <span className={cn("whitespace-nowrap rounded-full border px-2.5 py-1 text-[11.5px] backdrop-blur-md", selected === r.id ? "border-ink bg-ink text-white" : "border-ink/10 bg-white/85 text-ink shadow-sm")}>{r.name}</span>
                 ) : null}
               </span>
             </button>
