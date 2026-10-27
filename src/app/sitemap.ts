@@ -7,7 +7,7 @@ import { posts } from "@/content/blog";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
-  const statics = ["", "/experiences", "/programs", "/treatments", "/packages", "/tests", "/skin-scan", "/membership", "/about", "/nutrition", "/microbiome", "/fotona", "/men", "/weight-loss", "/faq", "/testimonials", "/gallery", "/magazine", "/blog", "/contact", "/book", "/partners", "/finder", "/ask", "/privacy", "/terms", "/accessibility"];
+  const statics = ["", "/body", "/experiences", "/programs", "/treatments", "/packages", "/tests", "/skin-scan", "/membership", "/about", "/nutrition", "/microbiome", "/fotona", "/men", "/weight-loss", "/faq", "/testimonials", "/gallery", "/magazine", "/blog", "/contact", "/book", "/partners", "/finder", "/ask", "/privacy", "/terms", "/accessibility"];
   return [
     ...statics.map((p) => ({ url: `${site.url}${p}`, lastModified: now, changeFrequency: "weekly" as const, priority: p === "" ? 1 : 0.7 })),
     ...programs.map((p) => ({ url: `${site.url}/programs/${p.slug}`, lastModified: now, priority: 0.9 })),

@@ -18,6 +18,8 @@
 - [All treatments](/treatments)
 - [Beauty & wellness packages](/packages)
 - [Lab tests by BioAro Labs, with prices](/tests)
+- [3D Body Explorer: how gut, hormones, nutrition and UV show up in skin, and how NEA measures each](/body)
+- [Ask NEA AI: answers and budget plans grounded in NEA content](/ask)
 - [Microbiome testing](/microbiome)
 - [Fotona laser](/fotona)
 - [FAQ](/faq)
