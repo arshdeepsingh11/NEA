@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
+import { onThemeChange, themeColor } from "./theme-colors";
 
 const VERT = `attribute vec2 p; void main(){ gl_Position = vec4(p,0.0,1.0); }`;
 
@@ -51,7 +52,8 @@ void main(){
 }`;
 
 /** Beam Flow — WebGL laser shader with fog, cursor tilt and wisps. */
-export function BeamFlow({ className, colorA = [0.36, 0.36, 0.84], colorB = [0.04, 0.58, 0.52] }: { className?: string; colorA?: [number, number, number]; colorB?: [number, number, number] }) {
+/** Beam colours follow the theme: --viz-2 and --c-accent. */
+export function BeamFlow({ className }: { className?: string }) {
   const canvas = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -80,8 +82,16 @@ export function BeamFlow({ className, colorA = [0.36, 0.36, 0.84], colorB = [0.0
     const uRes = gl.getUniformLocation(prog, "uRes");
     const uTime = gl.getUniformLocation(prog, "uTime");
     const uMouse = gl.getUniformLocation(prog, "uMouse");
-    gl.uniform3fv(gl.getUniformLocation(prog, "uA"), colorA);
-    gl.uniform3fv(gl.getUniformLocation(prog, "uB"), colorB);
+    const uA = gl.getUniformLocation(prog, "uA");
+    const uB = gl.getUniformLocation(prog, "uB");
+    const tint = () => {
+      const a = themeColor("--viz-2");
+      const b = themeColor("--c-accent");
+      gl.uniform3f(uA, a.r, a.g, a.b);
+      gl.uniform3f(uB, b.r, b.g, b.b);
+    };
+    tint();
+    const offTheme = onThemeChange(tint);
 
     const mouse = { x: 0.5, y: 0.5, tx: 0.5, ty: 0.5 };
     const onMove = (e: PointerEvent) => {
@@ -121,6 +131,7 @@ export function BeamFlow({ className, colorA = [0.36, 0.36, 0.84], colorB = [0.0
     draw();
     return () => {
       cancelAnimationFrame(raf);
+      offTheme();
       ro.disconnect();
       io.disconnect();
       window.removeEventListener("pointermove", onMove);

@@ -38,7 +38,7 @@ export const bodyRegions: Region[] = [
     program: "hair-regrowth",
     tracks: ["Hair density photos", "Shedding", "DHT and vitamin levels"],
     anchor: [0, 1.76, 0],
-    color: "#6366F1",
+    color: "var(--r-2)",
   },
   {
     id: "face",
@@ -58,7 +58,7 @@ export const bodyRegions: Region[] = [
     program: "clear-skin",
     tracks: ["Hydration", "Pigment", "Texture", "Redness", "UV damage"],
     anchor: [0, 1.63, 0.1],
-    color: "#F08A5D",
+    color: "var(--r-3)",
   },
   {
     id: "neck",
@@ -77,7 +77,7 @@ export const bodyRegions: Region[] = [
     program: "clear-skin",
     tracks: ["Cortisol", "Androgens", "Estradiol"],
     anchor: [0, 1.48, 0.06],
-    color: "#C855D8",
+    color: "var(--r-5)",
   },
   {
     id: "chest",
@@ -92,7 +92,7 @@ export const bodyRegions: Region[] = [
     program: "healthy-aging",
     tracks: ["hs-CRP", "Body fat", "Sleep quality"],
     anchor: [0, 1.33, 0.12],
-    color: "#0EA5E9",
+    color: "var(--r-4)",
   },
   {
     id: "arms",
@@ -107,7 +107,7 @@ export const bodyRegions: Region[] = [
     program: "healthy-aging",
     tracks: ["Lean mass (DEXA)", "Fat mass", "Bone density"],
     anchor: [0.27, 1.25, 0],
-    color: "#14B8A6",
+    color: "var(--r-1)",
   },
   {
     id: "gut",
@@ -122,7 +122,7 @@ export const bodyRegions: Region[] = [
     program: "clear-skin",
     tracks: ["Microbial diversity", "Digestive symptoms", "Skin flare-ups"],
     anchor: [0, 1.06, 0.12],
-    color: "#14B8A6",
+    color: "var(--r-1)",
   },
   {
     id: "pelvis",
@@ -136,7 +136,7 @@ export const bodyRegions: Region[] = [
     tests: ["biofemme", "estradiol"],
     tracks: ["Symptoms", "Vaginal microbiome balance"],
     anchor: [0, 0.88, 0.1],
-    color: "#C855D8",
+    color: "var(--r-5)",
   },
   {
     id: "thighs",
@@ -150,7 +150,7 @@ export const bodyRegions: Region[] = [
     tests: [],
     tracks: ["Regional fat (DEXA)", "Circumference"],
     anchor: [0.1, 0.68, 0.06],
-    color: "#F08A5D",
+    color: "var(--r-3)",
   },
   {
     id: "knees",
@@ -164,7 +164,7 @@ export const bodyRegions: Region[] = [
     tests: ["hs-crp", "biogut"],
     tracks: ["Pain score", "Mobility", "hs-CRP"],
     anchor: [0.1, 0.48, 0.06],
-    color: "#0EA5E9",
+    color: "var(--r-4)",
   },
   {
     id: "feet",
@@ -178,7 +178,7 @@ export const bodyRegions: Region[] = [
     tests: [],
     tracks: ["Clear nail growth"],
     anchor: [0.1, 0.05, 0.08],
-    color: "#6366F1",
+    color: "var(--r-2)",
   },
 ];
 
@@ -196,7 +196,7 @@ export const faceZones: Region[] = [
     program: "healthy-aging",
     tracks: ["Line depth", "Texture"],
     anchor: [0, 0, 0],
-    color: "#6366F1",
+    color: "var(--r-2)",
   },
   {
     id: "undereye",
@@ -211,7 +211,7 @@ export const faceZones: Region[] = [
     program: "healthy-aging",
     tracks: ["Volume", "Fine lines"],
     anchor: [0, 0, 0],
-    color: "#0EA5E9",
+    color: "var(--r-4)",
   },
   {
     id: "cheeks",
@@ -226,7 +226,7 @@ export const faceZones: Region[] = [
     program: "even-tone",
     tracks: ["Pigment map", "Redness", "Volume"],
     anchor: [0, 0, 0],
-    color: "#F08A5D",
+    color: "var(--r-3)",
   },
   {
     id: "tzone",
@@ -241,7 +241,7 @@ export const faceZones: Region[] = [
     program: "clear-skin",
     tracks: ["Pore size", "Oil", "Breakouts"],
     anchor: [0, 0, 0],
-    color: "#14B8A6",
+    color: "var(--r-1)",
   },
   {
     id: "mouth",
@@ -256,7 +256,7 @@ export const faceZones: Region[] = [
     program: "healthy-aging",
     tracks: ["Fold depth", "Lip volume"],
     anchor: [0, 0, 0],
-    color: "#C855D8",
+    color: "var(--r-5)",
   },
   {
     id: "jaw",
@@ -271,7 +271,7 @@ export const faceZones: Region[] = [
     program: "clear-skin",
     tracks: ["Breakouts", "Jawline definition"],
     anchor: [0, 0, 0],
-    color: "#0EA5E9",
+    color: "var(--r-4)",
   },
 ];
 

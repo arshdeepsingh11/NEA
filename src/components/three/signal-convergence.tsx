@@ -1,10 +1,11 @@
 "use client";
 import * as THREE from "three";
 import { useThree } from "./use-three";
+import { onThemeChange, themeColor } from "./theme-colors";
 import { cn } from "@/lib/utils";
 
 // Deep tones that read on the light page (premultiplied normal blending, not additive light).
-const COLORS = ["#0A9384", "#D9774F", "#5B5BD6", "#0284C7"];
+const COLORS = ["--viz-1", "--viz-2", "--viz-3", "--c-accent"]; // theme variables
 
 /**
  * Signal Convergence — streams of light travel along curved lines from
@@ -43,7 +44,7 @@ export function SignalConvergence({ className, lines = 140, offsetX = 0 }: { cla
         p1.copy(p0).multiplyScalar(0.45).add(new THREE.Vector3((Math.random() - 0.5) * 2.2, (Math.random() - 0.5) * 2.2, (Math.random() - 0.5) * 2.2));
         const off = Math.random();
         const spd = 0.18 + Math.random() * 0.35;
-        c.set(COLORS[l % COLORS.length]);
+        c.copy(themeColor(COLORS[l % COLORS.length]));
         for (let s = 0; s < SEG; s++) {
           const t = s / (SEG - 1);
           // quadratic bezier
@@ -99,16 +100,16 @@ export function SignalConvergence({ className, lines = 140, offsetX = 0 }: { cla
       group.add(nodes);
 
       // hub: core + glow sprite + expanding rings
-      const core = new THREE.Mesh(new THREE.SphereGeometry(0.26, 48, 48), new THREE.MeshBasicMaterial({ color: 0x0a9384 }));
+      const core = new THREE.Mesh(new THREE.SphereGeometry(0.26, 48, 48), new THREE.MeshBasicMaterial({ color: themeColor("--c-accent") }));
       group.add(core);
       const glowTex = (() => {
         const cv = document.createElement("canvas");
         cv.width = cv.height = 128;
         const g = cv.getContext("2d")!;
         const grd = g.createRadialGradient(64, 64, 0, 64, 64, 64);
-        grd.addColorStop(0, "rgba(124,231,216,0.75)");
-        grd.addColorStop(0.4, "rgba(180,188,253,0.3)");
-        grd.addColorStop(1, "rgba(180,188,253,0)");
+        grd.addColorStop(0, "rgba(255,255,255,0.9)");
+        grd.addColorStop(0.4, "rgba(255,255,255,0.35)");
+        grd.addColorStop(1, "rgba(255,255,255,0)");
         g.fillStyle = grd;
         g.fillRect(0, 0, 128, 128);
         return new THREE.CanvasTexture(cv);
@@ -117,10 +118,21 @@ export function SignalConvergence({ className, lines = 140, offsetX = 0 }: { cla
       glow.scale.set(2.6, 2.6, 1);
       group.add(glow);
       const rings = [0, 1, 2].map(() => {
-        const m = new THREE.Mesh(new THREE.RingGeometry(0.3, 0.315, 96), new THREE.MeshBasicMaterial({ color: 0x0a9384, transparent: true, opacity: 0.5, side: THREE.DoubleSide, depthWrite: false }));
+        const m = new THREE.Mesh(new THREE.RingGeometry(0.3, 0.315, 96), new THREE.MeshBasicMaterial({ color: themeColor("--c-accent"), transparent: true, opacity: 0.5, side: THREE.DoubleSide, depthWrite: false }));
         group.add(m);
         return m;
       });
+
+      const recolor = () => {
+        for (let l = 0; l < lines; l++) {
+          c.copy(themeColor(COLORS[l % COLORS.length]));
+          for (let k = 0; k < SEG; k++) colors.set([c.r, c.g, c.b], (l * SEG + k) * 3);
+        }
+        (geo.getAttribute("aColor") as THREE.BufferAttribute).needsUpdate = true;
+        (core.material as THREE.MeshBasicMaterial).color.copy(themeColor("--c-accent"));
+        rings.forEach((r) => (r.material as THREE.MeshBasicMaterial).color.copy(themeColor("--c-accent")));
+      };
+      const offTheme = onThemeChange(recolor);
 
       camera.position.set(0, 0.4, 9.5);
       camera.lookAt(0, 0, 0);
@@ -143,7 +155,10 @@ export function SignalConvergence({ className, lines = 140, offsetX = 0 }: { cla
             r.lookAt(camera.position);
           });
         },
-        dispose: () => glowTex.dispose(),
+        dispose: () => {
+          offTheme();
+          glowTex.dispose();
+        },
       };
     },
     { fov: 40, z: 9.5 }

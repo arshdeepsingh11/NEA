@@ -5,6 +5,7 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 import { useEffect, useRef, useState } from "react";
 import { useThree } from "./use-three";
+import { onThemeChange, themeColor } from "./theme-colors";
 import { cn } from "@/lib/utils";
 
 export type AnatomyMode = "body" | "face";
@@ -85,6 +86,8 @@ uniform float uHolo;
 uniform float uScanY;
 uniform vec3 uActiveColor;
 uniform vec3 uHoverColor;
+uniform vec3 uBody;
+uniform vec3 uRim;
 varying float vSel;
 varying float vHov;
 varying vec3 vN;
@@ -99,8 +102,8 @@ void main() {
   float a = 0.0;
   if (uHolo > 0.5) {
     // Light-page hologram: pale frosted aqua body, deeper teal rim, a soft scan sweep.
-    vec3 body = vec3(0.80, 0.95, 0.96);
-    vec3 rimC = vec3(0.04, 0.52, 0.50);
+    vec3 body = uBody;
+    vec3 rimC = uRim;
     float scan = 0.5 + 0.5 * sin(vW.y * 220.0 - uTime * 2.0);
     float sweep = smoothstep(0.08, 0.0, abs(vW.y - uScanY));
     col = mix(body, rimC, clamp(fres * 1.15, 0.0, 1.0)) - vec3(0.03) * scan + vec3(0.02, 0.35, 0.45) * sweep * 0.5;
@@ -149,7 +152,18 @@ export function AnatomyViewer({ mode, regions, view = "skin", selected = null, o
 
       const isFace = mode === "face";
       const ids = props.current.regions.map((r) => r.id);
-      const colorOf = (id: string) => new THREE.Color(props.current.regions.find((r) => r.id === id)?.color ?? "#14B8A6");
+      // Re-tint the hologram when the visitor switches theme.
+      const offTheme = onThemeChange(() => {
+        overlayMat.uniforms.uHoverColor.value.copy(themeColor("--c-accent2"));
+        overlayMat.uniforms.uBody.value.copy(themeColor("--holo-body", "#f7e6f2"));
+        overlayMat.uniforms.uRim.value.copy(themeColor("--holo-rim", "#6b4fc7"));
+        if (points) (points.material as THREE.PointsMaterial).color.copy(themeColor("--holo-point", "#8e3fae"));
+      });
+      const colorOf = (id: string) => {
+        const c = props.current.regions.find((r) => r.id === id)?.color ?? "var(--r-1)";
+        const m = c.match(/^var\((--[\w-]+)\)$/);
+        return m ? themeColor(m[1]) : new THREE.Color(c);
+      };
 
       const overlayMat = new THREE.ShaderMaterial({
         vertexShader: VERT,
@@ -158,8 +172,10 @@ export function AnatomyViewer({ mode, regions, view = "skin", selected = null, o
           uTime: { value: 0 },
           uHolo: { value: 0 },
           uScanY: { value: 0 },
-          uActiveColor: { value: new THREE.Color("#14B8A6") },
-          uHoverColor: { value: new THREE.Color("#0284C7") },
+          uActiveColor: { value: themeColor("--c-accent") },
+          uHoverColor: { value: themeColor("--c-accent2") },
+          uBody: { value: themeColor("--holo-body", "#f7e6f2") },
+          uRim: { value: themeColor("--holo-rim", "#6b4fc7") },
         },
         transparent: true,
         depthWrite: false,
@@ -311,7 +327,7 @@ export function AnatomyViewer({ mode, regions, view = "skin", selected = null, o
         overlay.renderOrder = 2;
         points = new THREE.Points(
           geo,
-          new THREE.PointsMaterial({ size: isFace ? 0.0011 : 0.0045, color: "#0A9384", transparent: true, opacity: 0.35, depthWrite: false, sizeAttenuation: true })
+          new THREE.PointsMaterial({ size: isFace ? 0.0011 : 0.0045, color: themeColor("--holo-point", "#8e3fae"), transparent: true, opacity: 0.35, depthWrite: false, sizeAttenuation: true })
         );
         group.add(skinMesh, overlay, points);
 
@@ -445,6 +461,7 @@ export function AnatomyViewer({ mode, regions, view = "skin", selected = null, o
           }
         },
         dispose: () => {
+          offTheme();
           controls.dispose();
           el.removeEventListener("pointerdown", onDown);
           el.removeEventListener("pointerup", onUp);
