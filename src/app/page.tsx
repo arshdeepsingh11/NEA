@@ -17,6 +17,8 @@ import {
   VideoChapter,
   VisitChapter,
 } from "@/components/sections/home-chapters";
+import { FaceMapChapter, SkinReportChapter, SystemsChapter } from "@/components/sections/home-intel";
+import { faceZones } from "@/content/body";
 import { JsonLd, faqSchema } from "@/lib/seo";
 import { faqs } from "@/content/faq";
 
@@ -25,6 +27,8 @@ export default function HomePage() {
     <>
       <JsonLd data={faqSchema(faqs.slice(0, 6))} />
       <HomeHero />
+      <SystemsChapter />
+      <SkinReportChapter />
 
       <section className="chapter" id="finder">
         <div className="container">
@@ -33,7 +37,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="chapter overflow-hidden bg-white">
+      <section className="chapter overflow-hidden">
         <div className="container">
           <SectionHead
             title="Four problems we solve, start to finish."
@@ -49,6 +53,8 @@ export default function HomePage() {
         </div>
       </section>
 
+      <FaceMapChapter zones={faceZones} />
+
       <section className="chapter">
         <div className="container">
           <SectionHead title="The NEA Method." lede="Test, treat, track and maintain. The same four steps in every program, so you always know what happens next." />
@@ -56,7 +62,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="chapter bg-white">
+      <section className="chapter">
         <div className="container">
           <ScanOffer />
         </div>
