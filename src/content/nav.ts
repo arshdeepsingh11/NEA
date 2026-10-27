@@ -15,7 +15,7 @@ export const footerNav: { title: string; links: NavItem[] }[] = [
     links: [
       { label: "Free Skin Health Report", href: "/skin-scan" },
       { label: "Skin Finder", href: "/finder" },
-      { label: "Ask NEA", href: "/ask" },
+      { label: "Ask NEA AI (press N)", href: "/ask" },
       { label: "Book a consultation", href: "/book" },
     ],
   },
@@ -33,6 +33,7 @@ export const footerNav: { title: string; links: NavItem[] }[] = [
   {
     title: "Science",
     links: [
+      { label: "3D Body Explorer", href: "/body" },
       { label: "Microbiome testing", href: "/microbiome" },
       { label: "Lab tests by BioAro", href: "/tests" },
       { label: "BioGut nutrition clinic", href: "/nutrition" },

@@ -1,10 +1,9 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Manrope } from "next/font/google";
 import "./globals.css";
-import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
-import { Dock, MobileBar } from "@/components/layout/dock";
-import { CommandPalette } from "@/components/layout/command-palette";
+import { Dock } from "@/components/layout/dock";
+import { AiProvider } from "@/components/ai/ai-provider";
 import { SmoothScroll } from "@/components/layout/smooth-scroll";
 import { JsonLd, clinicSchema } from "@/lib/seo";
 import { site } from "@/lib/site";
@@ -45,8 +44,8 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#F5F6F3" },
-    { media: "(prefers-color-scheme: dark)", color: "#0C1214" },
+    { media: "(prefers-color-scheme: light)", color: "#060912" },
+    { media: "(prefers-color-scheme: dark)", color: "#060912" },
   ],
   width: "device-width",
   initialScale: 1,
@@ -56,17 +55,20 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en-CA" className={`${display.variable} ${sans.variable}`}>
       <body>
-        <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-full focus:bg-ink focus:px-4 focus:py-2 focus:text-white">
+        <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-full focus:bg-white focus:px-4 focus:py-2 focus:text-[#060912]">
           Skip to content
         </a>
+        <div aria-hidden className="aurora-bg">
+          <div className="aurora-grid" />
+          <div className="aurora-noise" />
+        </div>
         <JsonLd data={clinicSchema()} />
         <SmoothScroll />
-        <Header />
-        <main id="main">{children}</main>
-        <Footer />
-        <Dock />
-        <MobileBar />
-        <CommandPalette />
+        <AiProvider>
+          <main id="main">{children}</main>
+          <Footer />
+          <Dock />
+        </AiProvider>
       </body>
     </html>
   );
