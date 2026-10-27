@@ -23,7 +23,7 @@ export function RangeBars({ markers, className }: { markers: Marker[]; className
                   {m.value}
                   <span className="text-graphite"> {m.unit}</span>
                 </span>
-                <span className={cn("flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px]", ok ? "bg-[#0A9384]/12 text-[#0B6F65]" : "bg-[#D9A43A]/15 text-[#8A5A00]")}>
+                <span className={cn("flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px]", ok ? "bg-[rgb(var(--viz-good)/0.12)] text-[rgb(var(--viz-good))]" : "bg-[rgb(var(--viz-watch)/0.12)] text-[rgb(var(--viz-watch))]")}>
                   {ok ? <CircleCheck className="h-3 w-3" /> : <TriangleAlert className="h-3 w-3" />}
                   {ok ? "Optimal" : "Watch"}
                 </span>

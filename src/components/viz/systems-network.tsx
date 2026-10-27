@@ -42,9 +42,9 @@ export function SystemsNetwork({ className }: { className?: string }) {
       <svg viewBox={`0 0 ${W} ${H}`} className="w-full overflow-visible" role="img" aria-label="Six body systems that feed into skin health">
         <defs>
           <radialGradient id="net-core" cx="50%" cy="50%" r="50%">
-            <stop offset="0" stopColor="#7CE7D8" stopOpacity="0.55" />
-            <stop offset="0.6" stopColor="#7DD3FC" stopOpacity="0.12" />
-            <stop offset="1" stopColor="#7DD3FC" stopOpacity="0" />
+            <stop offset="0" stopColor="var(--fill-a)" stopOpacity="0.55" />
+            <stop offset="0.6" stopColor="var(--fill-c)" stopOpacity="0.12" />
+            <stop offset="1" stopColor="var(--fill-c)" stopOpacity="0" />
           </radialGradient>
         </defs>
         <circle cx={cx} cy={cy} r="120" fill="url(#net-core)" />
@@ -54,10 +54,10 @@ export function SystemsNetwork({ className }: { className?: string }) {
           const d = `M${x},${y} Q${(x + cx) / 2 + (y - cy) * 0.12},${(y + cy) / 2 - (x - cx) * 0.12} ${cx},${cy}`;
           return (
             <g key={n.id}>
-              <path id={`edge-${n.id}`} d={d} fill="none" stroke={on ? "#0A9384" : "rgba(11,19,36,0.14)"} strokeWidth={1 + n.strength * (on ? 3.5 : 2)} strokeLinecap="round" style={{ transition: "stroke 300ms, stroke-width 300ms" }} />
+              <path id={`edge-${n.id}`} d={d} fill="none" stroke={on ? "rgb(var(--viz-1))" : "rgb(var(--c-ink) / 0.14)"} strokeWidth={1 + n.strength * (on ? 3.5 : 2)} strokeLinecap="round" style={{ transition: "stroke 300ms, stroke-width 300ms" }} />
               {!reduce &&
                 [0, 1, 2].map((k) => (
-                  <circle key={k} r={on ? 3.2 : 2.2} fill={on ? "#0A9384" : "#0284C7"} opacity={on ? 1 : 0.6}>
+                  <circle key={k} r={on ? 3.2 : 2.2} fill={on ? "rgb(var(--viz-1))" : "rgb(var(--viz-2))"} opacity={on ? 1 : 0.6}>
                     <animateMotion dur={`${3.4 - n.strength * 1.4}s`} begin={`${k * 1.1 + i * 0.3}s`} repeatCount="indefinite">
                       <mpath href={`#edge-${n.id}`} />
                     </animateMotion>
@@ -67,11 +67,11 @@ export function SystemsNetwork({ className }: { className?: string }) {
           );
         })}
         <g>
-          <circle cx={cx} cy={cy} r="54" fill="rgba(255,255,255,0.92)" stroke="rgba(10,147,132,0.55)" strokeWidth="1.5" />
-          <text x={cx} y={cy - 4} textAnchor="middle" fontSize="18" fontWeight="600" fill="#0B1324">
+          <circle cx={cx} cy={cy} r="54" fill="rgba(255,255,255,0.92)" stroke="rgb(var(--c-accent) / 0.55)" strokeWidth="1.5" />
+          <text x={cx} y={cy - 4} textAnchor="middle" fontSize="18" fontWeight="600" fill="rgb(var(--c-ink))">
             Your skin
           </text>
-          <text x={cx} y={cy + 16} textAnchor="middle" fontSize="11" fill="#556175">
+          <text x={cx} y={cy + 16} textAnchor="middle" fontSize="11" fill="rgb(var(--c-graphite))">
             the visible output
           </text>
         </g>
@@ -81,9 +81,9 @@ export function SystemsNetwork({ className }: { className?: string }) {
           const w = n.label.length * 7.2 + 34;
           return (
             <g key={n.id} onClick={() => setActive(n.id)} onPointerEnter={() => setActive(n.id)} className="cursor-pointer" role="button" tabIndex={0} aria-label={n.label} onKeyDown={(e) => e.key === "Enter" && setActive(n.id)}>
-              <rect x={x - w / 2} y={y - 17} width={w} height="34" rx="17" fill={on ? "rgba(10,147,132,0.12)" : "rgba(255,255,255,0.8)"} stroke={on ? "rgba(10,147,132,0.6)" : "rgba(11,19,36,0.12)"} />
-              <circle cx={x - w / 2 + 16} cy={y} r="4" fill={on ? "#0A9384" : "#556175"} />
-              <text x={x - w / 2 + 26} y={y + 4.5} fontSize="13" fill={on ? "#0B1324" : "#334155"}>
+              <rect x={x - w / 2} y={y - 17} width={w} height="34" rx="17" fill={on ? "rgb(var(--c-accent) / 0.12)" : "rgba(255,255,255,0.8)"} stroke={on ? "rgb(var(--c-accent) / 0.6)" : "rgb(var(--c-ink) / 0.12)"} />
+              <circle cx={x - w / 2 + 16} cy={y} r="4" fill={on ? "rgb(var(--viz-1))" : "rgb(var(--c-graphite))"} />
+              <text x={x - w / 2 + 26} y={y + 4.5} fontSize="13" fill={on ? "rgb(var(--c-ink))" : "rgb(var(--c-ink) / 0.8)"}>
                 {n.label}
               </text>
             </g>
@@ -96,7 +96,7 @@ export function SystemsNetwork({ className }: { className?: string }) {
           <p className="stat-label">Signal strength into skin</p>
           <div className="mt-2 flex items-center gap-3">
             <div className="h-2 flex-1 rounded-full bg-ink/[0.07]">
-              <motion.div className="h-full rounded-full bg-[#0A9384]" initial={{ width: 0 }} animate={{ width: `${node.strength * 100}%` }} transition={{ duration: 0.8 }} />
+              <motion.div className="h-full rounded-full bg-[rgb(var(--viz-1))]" initial={{ width: 0 }} animate={{ width: `${node.strength * 100}%` }} transition={{ duration: 0.8 }} />
             </div>
             <span className="tabular text-[13px] text-ink">{Math.round(node.strength * 100)}</span>
           </div>

@@ -121,7 +121,7 @@ export function TrendChart({
           ) : null,
         )}
         {projectFrom !== undefined && (
-          <rect x={x(projectFrom)} y={pad.t} width={W - pad.r - x(projectFrom)} height={H - pad.t - pad.b} fill="rgba(11,19,36,0.025)" />
+          <rect x={x(projectFrom)} y={pad.t} width={W - pad.r - x(projectFrom)} height={H - pad.t - pad.b} fill="rgb(var(--c-ink) / 0.025)" />
         )}
         {series.map((s, si) => {
           const c = s.color ?? VIZ.series[si];
@@ -166,16 +166,16 @@ export function TrendChart({
                 />
               )}
               <circle cx={x(last)} cy={y(s.values[last])} r="4" fill={c} stroke={VIZ.surface} strokeWidth="2" />
-              <text x={x(last) + 10} y={y(s.values[last]) + 4} fontSize="12" fill="#0B1324" className="tabular">
+              <text x={x(last) + 10} y={y(s.values[last]) + 4} fontSize="12" fill="rgb(var(--c-ink))" className="tabular">
                 {s.values[last]}
-                {unit} <tspan fill="#556175">{series.length > 1 ? s.name : ""}</tspan>
+                {unit} <tspan fill="rgb(var(--c-graphite))">{series.length > 1 ? s.name : ""}</tspan>
               </text>
             </g>
           );
         })}
         {hover !== null && (
           <g pointerEvents="none">
-            <line x1={x(hover)} x2={x(hover)} y1={pad.t} y2={H - pad.b} stroke="rgba(11,19,36,0.25)" />
+            <line x1={x(hover)} x2={x(hover)} y1={pad.t} y2={H - pad.b} stroke="rgb(var(--c-ink) / 0.25)" />
             {series.map((s, si) => (
               <circle key={si} cx={x(hover)} cy={y(s.values[hover])} r="4.5" fill={s.color ?? VIZ.series[si]} stroke={VIZ.surface} strokeWidth="2" />
             ))}

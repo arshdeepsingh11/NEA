@@ -35,7 +35,7 @@ export function Radar({ axes, className, size = 320, showTarget = true }: { axes
           return (
             <g key={a.label} onPointerEnter={() => setHover(i)} onPointerLeave={() => setHover(null)} className="cursor-default">
               <line x1={c} y1={c} x2={x} y2={y} stroke={VIZ.grid} />
-              <text x={lx} y={ly + 4} textAnchor={Math.abs(lx - c) < 8 ? "middle" : lx > c ? "start" : "end"} fontSize="11.5" fill={hover === i ? "#0B1324" : "#556175"}>
+              <text x={lx} y={ly + 4} textAnchor={Math.abs(lx - c) < 8 ? "middle" : lx > c ? "start" : "end"} fontSize="11.5" fill={hover === i ? "rgb(var(--c-ink))" : "rgb(var(--c-graphite))"}>
                 {a.label}
               </text>
               <circle cx={x} cy={y} r="22" fill="transparent" />
@@ -45,7 +45,7 @@ export function Radar({ axes, className, size = 320, showTarget = true }: { axes
         {hasTarget && <polygon points={poly(axes.map((a) => a.target ?? a.value))} fill="none" stroke={VIZ.series[2]} strokeWidth="1.5" strokeDasharray="4 4" />}
         <motion.polygon
           points={poly(axes.map((a) => a.value))}
-          fill="rgba(10,147,132,0.16)"
+          fill="rgb(var(--c-accent) / 0.16)"
           stroke={VIZ.series[0]}
           strokeWidth="2"
           strokeLinejoin="round"
