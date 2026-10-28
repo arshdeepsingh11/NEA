@@ -88,13 +88,15 @@ src/
 - `robots.ts` welcomes GPTBot, ClaudeBot, PerplexityBot and Google-Extended; `public/llms.txt` summarizes NEA for AI tools
 - Permanent redirects keep the old WordPress URLs' search ranking
 
-## NEA SI (Skin Intelligence): Xevyo and Gemini
+## Nea SI (Skin Intelligence): Xevyo and Gemini
 
 Press **N** on any page, tap the SI orb, or any "Ask SI" button. Everything goes through `src/app/api/ask/route.ts`:
 
 1. **NEA's knowledge, always.** `src/lib/knowledge.ts` finds the matching programs, treatments, tests, packages, body regions and FAQs, and prices a plan when a budget is mentioned. These show as cards under each answer.
 2. **The engine writes the answer.** Visitors choose **Xevyo** (NEA's in-house AI) or **Gemini** with the switch at the top of the chat; the choice is remembered. Both get the same education from `src/lib/si/brain.ts`: SI's rules (no diagnosing, no invented prices, link NEA pages, book through Jane), clinic facts and hours, and a catalogue of every program, treatment, Jane service, test, package, membership and FAQ, built from the content files. Edit the content and SI knows it on the next restart.
-3. **It never breaks.** If the chosen engine fails, the other answers; if both fail, the built-in engine answers. Gemini tries each model in `GEMINI_MODELS` in turn, skipping busy ones.
+3. **Fast.** Answers stream word by word (first words in about a second with `gemini-3.5-flash-lite`). Answers can link NEA pages and Glow Feed videos (`#reel-N` links open the video on the site).
+4. **It never breaks.** If the chosen engine fails, the other answers; if both fail, the built-in engine answers (it also handles greetings). Gemini tries each model in `GEMINI_MODELS` in turn, skipping busy ones.
+5. **Setup notice.** In development only, the chat shows an amber note when the server can't see the keys (usually because the file was saved as `env.local` without the dot).
 
 Settings (server only, in `.env.local` and your host's environment variables, never `NEXT_PUBLIC_`):
 
@@ -104,16 +106,24 @@ Settings (server only, in `.env.local` and your host's environment variables, ne
 | `XEVYO_API_URL` | Full Xevyo chat endpoint. Called OpenAI-style: `POST {model, messages:[{role, content}]}` with `Authorization: Bearer <key>`; reads `choices[0].message.content` (also `text`, `output_text`, `response`). Until set, the Xevyo option shows an amber dot and Gemini answers. |
 | `XEVYO_MODEL` | Optional model name for Xevyo |
 | `GEMINI_API_KEY` | Google AI Studio key (aistudio.google.com/apikey) |
-| `GEMINI_MODELS` | Models to try in order (default `gemini-flash-latest,gemini-3.5-flash-lite,gemini-flash-lite-latest`) |
+| `GEMINI_MODELS` | Models to try in order (default `gemini-3.5-flash-lite,gemini-flash-lite-latest,gemini-flash-latest`) |
 | `SI_DEFAULT_ENGINE` | `xevyo` or `gemini`: which one new visitors start with |
 
 `api/ask` allows up to 60 seconds per answer (`maxDuration`). On Vercel's Hobby plan that is the maximum; Gemini usually answers in 3–15 seconds, longer when Google is busy.
 
-## Reels (Instagram and other channels)
+## Smart Search
+
+The search icon top-right (or "/" or Ctrl K) opens an instant search across treatments, programs, tests, packages, Glow Feed videos, answers, body areas and pages (`src/lib/smart-search.ts`, runs in the browser). It fixes typos against NEA's own words ("botoxx" → Botox), drops intent words, and shows what it understood: prices, booking, hours, a budget ("acne under $1500" builds a plan) or a question (then "Ask Nea SI" comes first). The best match shows a photo, price, session time and a Book in Jane button.
+
+## Nea SI Skin Lens (/skin-lens)
+
+Take or upload a selfie; Gemini's vision model marks the visible signs on the photo (breakouts, redness, uneven tone, pores, lines, texture, dryness, under-eye, shine) with how visible each one is, explains them in plain words, and lines up the NEA program, treatments, prices and Jane booking (`src/content/lens.ts`). The visitor must tick consent first. The photo is shrunk to 768 px in the browser, sent once to Gemini through `api/lens`, and never stored by NEA. It never diagnoses and always points to the free in-clinic scan for real measurements. Uses `GEMINI_API_KEY` (optional `GEMINI_LENS_MODELS`).
+
+## Glow Feed (Instagram and other channels)
 
 NEA's videos play on this site through each platform's official embedded player. Nothing is downloaded or stored, and no database is needed.
 
-- **Reels** in the navbar opens a full-screen viewer: one video at a time, arrows or swipe for the next, plus Book (the matching Jane services), Ask SI and a Follow button.
+- **Glow Feed** in the navbar opens a full-screen viewer: one video at a time, arrows or swipe for the next, plus Book (the matching Jane services), Ask SI and a Follow button.
 - The home page shows the latest videos in a "Straight from the clinic floor" strip. They play right in the page.
 
 **To add a video**, paste its link at the top of `socialVideos` in `src/content/reels.ts` (a short caption is optional and helps pick the right Book button). Instagram Reels and posts, YouTube Shorts and videos, and TikTok videos all work. Add NEA's YouTube or TikTok channel link in `src/lib/site.ts` (`social.youtube`, `social.tiktok`) to show a Follow or Subscribe button for those videos.
