@@ -98,9 +98,13 @@ Without a key the built-in engine answers. It never diagnoses or invents prices.
 
 ## Instagram Reels
 
-The **Reels** button in the navbar opens a full-screen viewer with NEA's own Instagram videos. Each video has a "Book" button that opens the matching Jane services; the matching rules are in `src/content/reels.ts`. It uses Instagram's official API, which is free. Only the account that owns the token can be read, so the viewer can only ever show @neaprecisionskin. Until a token is set, the button opens a card that links to the Instagram profile.
+NEA's videos play on this site, never on Instagram: a **Reels** button in the navbar opens a full-screen, swipeable player, and the home page shows the latest videos in a strip that plays silently and opens the player on tap. Each video has a "Book" button that opens the matching Jane services (matching rules: `src/content/reels.ts`).
 
-One-time setup (about 20 minutes, needs someone who can log in to @neaprecisionskin):
+Videos come from two places, mixed together newest first:
+
+**1. Videos hosted on the site (works immediately).** Download a Reel from @neaprecisionskin (Instagram app → the Reel → ⋯ → Download), put the .mp4 in `public/reels/`, and add one line to `localReels` in `src/content/reels.ts`.
+
+**2. Automatic from Instagram (free official API).** New posts appear within an hour with no manual work. One-time setup, about 20 minutes, by someone who can log in to @neaprecisionskin:
 
 1. Make sure the Instagram account is a Professional account (Business or Creator): Instagram → Settings → Account type and tools.
 2. Go to developers.facebook.com → My Apps → Create app. Choose the Instagram use case (manage messaging and content on Instagram) and a Business app type.
@@ -108,7 +112,7 @@ One-time setup (about 20 minutes, needs someone who can log in to @neaprecisions
 4. Click Generate token next to the account and copy it. The app can stay in development mode because it only reads NEA's own account.
 5. Add `INSTAGRAM_ACCESS_TOKEN=<token>` to `.env.local` and to the hosting provider's environment variables, then redeploy.
 
-Tokens last 60 days. `vercel.json` calls `/api/instagram/refresh` every Monday to restart the 60 days (set `CRON_SECRET` in Vercel to protect it). On another host, call that URL weekly with any scheduler. If the refresh response ever shows `"tokenChanged": true`, paste the new token from Meta into `INSTAGRAM_ACCESS_TOKEN`. New posts appear on the site within an hour.
+Tokens last 60 days. `vercel.json` calls `/api/instagram/refresh` every Monday to restart the 60 days (set `CRON_SECRET` in Vercel to protect it). On another host, call that URL weekly with any scheduler. If the refresh response ever shows `"tokenChanged": true`, paste the new token from Meta into `INSTAGRAM_ACCESS_TOKEN`.
 
 ## 3D models and credits
 
