@@ -1,3 +1,4 @@
+"use client";
 import Image, { type ImageLoaderProps, type ImageProps } from "next/image";
 import { nea } from "@/lib/utils";
 
