@@ -1,3 +1,4 @@
+import { NeaSiIcon } from "@/components/brand/nea-si-icon";
 import Link from "next/link";
 import { ArrowRight, ScanFace } from "lucide-react";
 import { AiPromptBar } from "@/components/ai/ai-prompt-bar";
@@ -44,7 +45,10 @@ export function HomeHero() {
             <Link href="/skin-scan" className="btn-light">
               <ScanFace className="h-4 w-4" /> Get my free Skin Health Report
             </Link>
-            <Link href="/body" className="btn-ghost">
+            <Link href="/skin-lens" className="btn-ghost">
+              <NeaSiIcon className="h-4 w-4" /> Scan my selfie with Nea SI
+            </Link>
+            <Link href="/body" className="btn text-graphite hover:text-ink">
               Explore the 3D body <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
