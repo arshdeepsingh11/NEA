@@ -6,8 +6,8 @@ import { LazySignal } from "@/components/three/lazy";
 import { pageMeta } from "@/lib/seo";
 
 export const metadata = pageMeta({
-  title: "Ask NEA AI",
-  description: "NEA Intelligence answers questions about treatments, tests, prices, hours and your visit, builds a plan within your budget, and links every answer to its source.",
+  title: "Ask NEA SI · Skin Intelligence",
+  description: "NEA SI (Skin Intelligence) answers questions about treatments, tests, prices, hours and your visit, builds a plan within your budget, and links every answer to its source.",
   path: "/ask",
 });
 
@@ -20,13 +20,13 @@ const CAN = [
 
 export default function AskPage() {
   return (
-    <section className="relative min-h-screen overflow-hidden pb-40 pt-16 md:pt-24">
+    <section className="relative min-h-screen overflow-hidden pb-40 pt-28 md:pt-32">
       <LazySignal className="pointer-events-none absolute inset-0 opacity-30" lines={90} />
       <AskAutoOpen />
       <div className="container relative">
         <div className="mx-auto max-w-3xl text-center">
           <p className="chip">
-            <Sparkles className="h-3.5 w-3.5 text-flora" /> NEA Intelligence
+            <Sparkles className="h-3.5 w-3.5 text-flora" /> NEA SI · Skin Intelligence
           </p>
           <h1 className="mt-6 text-display-lg font-semibold text-ink">
             Ask <span className="aurora-text">anything.</span>

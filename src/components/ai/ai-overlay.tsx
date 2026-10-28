@@ -2,9 +2,9 @@
 import Link from "next/link";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowUp, Check, Loader2, Mic, ScanFace, Sparkles, X } from "lucide-react";
+import { ArrowUp, CalendarHeart, Check, Loader2, Mic, RotateCcw, ScanFace, Sparkles, X } from "lucide-react";
+import { useBooking } from "@/components/booking/booking";
 import { answer as localAnswer, type DocMeta, type Plan } from "@/lib/knowledge";
-import { site } from "@/lib/site";
 import { cn, money } from "@/lib/utils";
 
 type Source = { title: string; href: string; kind: string; meta?: DocMeta };
@@ -62,6 +62,8 @@ export function AiOverlay({ open, onClose, initialQuery, context, nonce }: { ope
       handled.current = nonce;
       send(initialQuery);
     }
+    // lock page scroll only when the chat covers the screen (phones)
+    if (!window.matchMedia("(max-width: 639px)").matches) return;
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     return () => {
@@ -101,7 +103,7 @@ export function AiOverlay({ open, onClose, initialQuery, context, nonce }: { ope
     <AnimatePresence>
       {open && (
         <motion.div
-          className="fixed inset-0 z-[90] flex items-end justify-center bg-ink/20 p-0 backdrop-blur-xl sm:items-center sm:p-6"
+          className="fixed inset-0 z-[90] flex items-end justify-center bg-ink/15 p-0 backdrop-blur-[2px] sm:items-end sm:justify-end sm:bg-transparent sm:p-6 sm:pb-28 sm:backdrop-blur-0"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -110,35 +112,45 @@ export function AiOverlay({ open, onClose, initialQuery, context, nonce }: { ope
           <motion.div
             role="dialog"
             aria-modal="true"
-            aria-label="NEA Intelligence"
+            aria-label="NEA SI chat"
             onClick={(e) => e.stopPropagation()}
             initial={{ y: 40, opacity: 0, scale: 0.98 }}
             animate={{ y: 0, opacity: 1, scale: 1 }}
             exit={{ y: 30, opacity: 0, scale: 0.98 }}
             transition={{ type: "spring", stiffness: 320, damping: 32 }}
-            className="aurora-border relative flex h-[92dvh] w-full max-w-3xl flex-col overflow-hidden rounded-t-[32px] border border-ink/10 bg-white/80 shadow-[0_60px_160px_-40px_rgba(var(--shadow-tint),0.35)] backdrop-blur-2xl sm:h-[82vh] sm:rounded-[32px]"
+            data-lenis-prevent
+            className="aurora-border relative flex h-[92dvh] w-full flex-col overflow-hidden rounded-t-[32px] border border-ink/10 bg-white/85 shadow-[0_60px_160px_-40px_rgba(var(--shadow-tint),0.45)] backdrop-blur-2xl sm:h-[min(720px,calc(100dvh-150px))] sm:w-[440px] sm:rounded-[28px]"
           >
             <header className="flex items-center justify-between gap-4 border-b border-ink/10 px-5 py-4 sm:px-7">
               <div className="flex items-center gap-3">
                 <Orb active={busy} />
                 <div>
-                  <p className="font-display text-[17px] font-semibold tracking-tight">NEA Intelligence</p>
-                  <p className="text-[12px] text-graphite">Grounded in NEA’s programs, treatments, tests and FAQs{context ? ` · focus: ${context}` : ""}</p>
+                  <p className="font-display text-[20px] leading-none tracking-tight">NEA SI</p>
+                  <p className="mt-1 flex items-center gap-1.5 text-[12px] text-graphite">
+                    <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[rgb(var(--viz-good))]" /> Skin Intelligence · online{context ? ` · ${context}` : ""}
+                  </p>
                 </div>
               </div>
-              <button onClick={onClose} className="grid h-10 w-10 place-items-center rounded-full border border-ink/10 bg-white/60 text-graphite hover:text-ink" aria-label="Close (Esc)">
-                <X className="h-4 w-4" />
-              </button>
+              <div className="flex items-center gap-1.5">
+                {msgs.length > 0 && (
+                  <button onClick={() => setMsgs([])} className="grid h-9 w-9 place-items-center rounded-full text-graphite hover:bg-white hover:text-ink" aria-label="New chat" title="New chat">
+                    <RotateCcw className="h-4 w-4" />
+                  </button>
+                )}
+                <button onClick={onClose} className="grid h-9 w-9 place-items-center rounded-full border border-ink/10 bg-white/60 text-graphite hover:text-ink" aria-label="Close (Esc)">
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
             </header>
 
             <div ref={scroller} className="flex-1 space-y-6 overflow-y-auto px-5 py-6 sm:px-7" aria-live="polite">
               {msgs.length === 0 && (
-                <div className="pt-6">
-                  <h2 className="font-display text-3xl font-semibold tracking-tight sm:text-4xl">
-                    Ask anything about <span className="aurora-text">your skin and body.</span>
-                  </h2>
-                  <p className="mt-3 max-w-lg text-graphite">I can explain the cause behind a concern, match you to a program, price a plan, compare tests, or tell you how to book.</p>
-                  <div className="mt-8 grid gap-2 sm:grid-cols-2">
+                <div className="pt-2">
+                  <div className="max-w-[90%] rounded-3xl rounded-tl-lg bg-white/80 px-5 py-4 text-[15px] leading-relaxed text-ink shadow-sm">
+                    Hi, I’m <strong className="font-semibold">NEA SI</strong>, NEA’s Skin Intelligence. I can explain what is behind a concern, match you to a program, price a plan within your budget, compare tests, and book you into the right service in Jane.
+                  </div>
+                  <p className="mt-6 text-[12.5px] text-graphite">Try one of these</p>
+                  <div className="mt-2 grid gap-2">
                     {STARTERS.map((s) => (
                       <button key={s} onClick={() => send(s)} className="glass rounded-2xl px-4 py-3.5 text-left text-[14px] text-ink/90 transition hover:border-ink/20 hover:bg-white/90">
                         {s}
@@ -150,15 +162,15 @@ export function AiOverlay({ open, onClose, initialQuery, context, nonce }: { ope
               {msgs.map((m, i) =>
                 m.role === "user" ? (
                   <div key={i} className="flex justify-end">
-                    <p className="max-w-[85%] rounded-3xl rounded-br-lg bg-white/60 px-5 py-3 text-[15px]">{m.text}</p>
+                    <p className="max-w-[85%] rounded-3xl rounded-br-lg bg-ink px-5 py-3 text-[15px] text-white">{m.text}</p>
                   </div>
                 ) : (
-                  <AssistantReply key={i} reply={m.reply} onClose={onClose} />
+                  <AssistantReply key={i} reply={m.reply} onClose={onClose} onFollow={send} last={i === msgs.length - 1} />
                 )
               )}
               {busy && (
                 <div className="flex items-center gap-3 text-[14px] text-graphite">
-                  <Loader2 className="h-4 w-4 animate-spin text-flora" /> Thinking through NEA’s data…
+                  <Loader2 className="h-4 w-4 animate-spin text-flora" /> SI is reading NEA’s data…
                 </div>
               )}
             </div>
@@ -166,7 +178,7 @@ export function AiOverlay({ open, onClose, initialQuery, context, nonce }: { ope
             <form onSubmit={onSubmit} className="border-t border-ink/10 p-3 sm:p-4">
               <div className="flex items-end gap-2 rounded-3xl border border-ink/10 bg-white/60 p-2 pl-4 focus-within:border-flora/50">
                 <label htmlFor="nea-ai-input" className="sr-only">
-                  Ask NEA
+                  Ask NEA SI
                 </label>
                 <textarea
                   id="nea-ai-input"
@@ -181,7 +193,7 @@ export function AiOverlay({ open, onClose, initialQuery, context, nonce }: { ope
                       send(q);
                     }
                   }}
-                  placeholder="Describe a concern, a goal or a budget…"
+                  placeholder="Message NEA SI…"
                   className="max-h-32 min-h-[44px] flex-1 resize-none bg-transparent py-2.5 text-[16px] text-ink outline-none placeholder:text-graphite/80"
                 />
                 <button type="button" onClick={toggleMic} className={cn("grid h-11 w-11 place-items-center rounded-full transition", listening ? "bg-orchid/30 text-ink" : "text-graphite hover:text-ink")} aria-label={listening ? "Stop voice input" : "Speak your question"}>
@@ -191,7 +203,7 @@ export function AiOverlay({ open, onClose, initialQuery, context, nonce }: { ope
                   <ArrowUp className="h-5 w-5" />
                 </button>
               </div>
-              <p className="mt-2 px-2 text-center text-[11px] text-graphite/80">Not medical advice. For anything personal, book a free 15-minute consultation. Press Esc to close.</p>
+              <p className="mt-2 px-2 text-center text-[11px] text-graphite/80">SI gives general information, not medical advice. Press N anywhere to open, Esc to close.</p>
             </form>
           </motion.div>
         </motion.div>
@@ -211,7 +223,10 @@ function Orb({ active }: { active?: boolean }) {
   );
 }
 
-function AssistantReply({ reply, onClose }: { reply: Reply; onClose: () => void }) {
+function AssistantReply({ reply, onClose, onFollow, last }: { reply: Reply; onClose: () => void; onFollow: (q: string) => void; last: boolean }) {
+  const book = useBooking();
+  const firstSlug = (reply.plan?.items[0]?.href ?? reply.sources.find((x) => /\/(treatments|programs)\//.test(x.href))?.href ?? "").split("/").pop() || undefined;
+  const follow = followUps(reply);
   const [stepCount, setStepCount] = useState(0);
   const [chars, setChars] = useState(0);
   const doneSteps = stepCount >= reply.steps.length;
@@ -283,7 +298,7 @@ function AssistantReply({ reply, onClose }: { reply: Reply; onClose: () => void 
         </motion.div>
       )}
       {doneText && reply.sources.length > 0 && (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="grid gap-2 sm:grid-cols-2">
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="grid gap-2">
           {reply.sources.map((s) => (
             <Link key={s.href} href={s.href} onClick={onClose} className="glass group rounded-2xl p-4 transition hover:border-ink/20">
               <span className="chip !py-0.5">{s.kind}</span>
@@ -305,12 +320,35 @@ function AssistantReply({ reply, onClose }: { reply: Reply; onClose: () => void 
           <Link href="/skin-scan" onClick={onClose} className="btn-ghost !px-4 !py-2 !text-[13px]">
             <ScanFace className="h-4 w-4" /> Free Skin Health Report
           </Link>
-          <a href={site.bookingUrl} target="_blank" rel="noreferrer" className="btn-ghost !px-4 !py-2 !text-[13px]">
-            Book online
-          </a>
-          {reply.model === "claude" && <span className="chip">Answered with Claude, grounded in NEA data</span>}
+          <button onClick={() => book.open(firstSlug)} className="btn-light !px-4 !py-2 !text-[13px]">
+            <CalendarHeart className="h-4 w-4" /> Book in Jane
+          </button>
+          {reply.model === "claude" && <span className="chip">SI answer grounded in NEA data</span>}
+        </div>
+      )}
+      {doneText && last && follow.length > 0 && (
+        <div className="flex flex-wrap gap-2 pt-1">
+          {follow.map((f) => (
+            <button key={f} onClick={() => onFollow(f)} className="chip !py-1.5 !text-[12.5px] hover:border-ink/20 hover:text-ink">
+              <Sparkles className="h-3 w-3 text-flora" /> {f}
+            </button>
+          ))}
         </div>
       )}
     </div>
   );
+}
+
+/** Smart follow-up questions based on what the answer was about. */
+function followUps(r: Reply): string[] {
+  const kinds = new Set(r.sources.map((s) => s.kind));
+  const top = r.sources[0]?.title;
+  const out: string[] = [];
+  if (r.plan) out.push("Can I spread this over monthly payments?", "What happens at the first visit?");
+  if (kinds.has("Treatment") && top) out.push(`How many sessions of ${top} will I need?`, `What is the downtime for ${top}?`);
+  if (kinds.has("Program") && top) out.push(`What results can I expect from the ${top}?`);
+  if (kinds.has("Test")) out.push("How is the sample collected?", "How long until I get results?");
+  if (kinds.has("Body")) out.push("Which test measures this?");
+  if (!out.length) out.push("What does the free skin scan show?", "Build me a plan under $1,500");
+  return out.slice(0, 3);
 }

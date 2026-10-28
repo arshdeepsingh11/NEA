@@ -2,7 +2,7 @@
 import { Sparkles } from "lucide-react";
 import { useAi } from "./ai-provider";
 
-/** Starter questions that open NEA Intelligence already asking them. */
+/** Starter questions that open NEA SI already asking them. */
 export function AiQuestionChips({ questions, context }: { questions: string[]; context?: string }) {
   const ai = useAi();
   return (

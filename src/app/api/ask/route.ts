@@ -2,12 +2,12 @@ import { NextResponse } from "next/server";
 import { answer } from "@/lib/knowledge";
 
 /**
- * NEA Intelligence.
+ * NEA SI (Skin Intelligence).
  * 1. Retrieves the most relevant NEA programs, treatments, tests and FAQs (always).
  * 2. If ANTHROPIC_API_KEY is set, Claude writes the answer using only that context.
  *    Otherwise the built-in engine answers. Either way, sources and plans come from NEA data.
  */
-const SYSTEM = `You are NEA Intelligence, the assistant for NEA Precision Skin, a physician-managed skin and wellness clinic in NE Calgary.
+const SYSTEM = `You are NEA SI (Skin Intelligence), the assistant for NEA Precision Skin, a physician-managed skin and wellness clinic in NE Calgary.
 Answer only from the CONTEXT provided. If the answer is not in it, say so and suggest a free 15-minute consultation (1-403-230-8812).
 Be warm, specific and brief (2-5 sentences). Never diagnose, never promise results, never invent prices. Mention the free NEA Skin Health Report when relevant.`;
 

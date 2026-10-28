@@ -1,6 +1,7 @@
 "use client";
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
 import { AiOverlay } from "./ai-overlay";
+import { ChatLauncher } from "./chat-launcher";
 
 type OpenOptions = { query?: string; context?: string };
 type Ctx = { open: (o?: OpenOptions) => void; close: () => void; isOpen: boolean };
@@ -13,7 +14,7 @@ const isTyping = (el: EventTarget | null) => {
   return !!t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.tagName === "SELECT" || t.isContentEditable);
 };
 
-/** Makes NEA Intelligence available everywhere. Press N (when not typing) to open it. */
+/** Makes NEA SI (Skin Intelligence) available everywhere. Press N (when not typing) to open it. */
 export function AiProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<{ open: boolean; opts: OpenOptions; nonce: number }>({ open: false, opts: {}, nonce: 0 });
 
@@ -40,6 +41,7 @@ export function AiProvider({ children }: { children: ReactNode }) {
   return (
     <AiContext.Provider value={{ open, close, isOpen: state.open }}>
       {children}
+      <ChatLauncher hidden={state.open} onOpen={() => open()} />
       <AiOverlay open={state.open} onClose={close} initialQuery={state.opts.query} context={state.opts.context} nonce={state.nonce} />
     </AiContext.Provider>
   );

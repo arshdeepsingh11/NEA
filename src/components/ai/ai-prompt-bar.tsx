@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useAi } from "./ai-provider";
 import { cn } from "@/lib/utils";
 
-/** Inline entry point to NEA Intelligence. Typing here and pressing Enter opens the full AI with the question. */
+/** Inline entry point to NEA SI (Skin Intelligence). Typing here and pressing Enter opens NEA SI with the question. */
 export function AiPromptBar({
   placeholder = "Ask anything about your skin, hair or body…",
   suggestions = [],
@@ -37,10 +37,10 @@ export function AiPromptBar({
           value={q}
           onChange={(e) => setQ(e.target.value)}
           placeholder={placeholder}
-          aria-label="Ask NEA Intelligence"
+          aria-label="Ask NEA SI"
           className="min-w-0 flex-1 bg-transparent text-[15px] text-ink placeholder:text-graphite/80 focus:outline-none"
         />
-        <kbd className="hidden rounded-md border border-ink/10 bg-white/60 px-1.5 py-0.5 font-sans text-[11px] text-graphite sm:block" title="Press N anywhere to open the AI">
+        <kbd className="hidden rounded-md border border-ink/10 bg-white/60 px-1.5 py-0.5 font-sans text-[11px] text-graphite sm:block" title="Press N anywhere to open NEA SI">
           N
         </kbd>
         <button type="submit" aria-label="Ask" className="grid h-10 w-10 shrink-0 place-items-center rounded-full text-ink" style={{ background: "var(--aurora)" }}>

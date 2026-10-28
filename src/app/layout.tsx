@@ -4,6 +4,8 @@ import "./globals.css";
 import { Footer } from "@/components/layout/footer";
 import { Dock } from "@/components/layout/dock";
 import { AiProvider } from "@/components/ai/ai-provider";
+import { BookingProvider } from "@/components/booking/booking";
+import { BrandCorner } from "@/components/layout/brand-corner";
 import { SmoothScroll } from "@/components/layout/smooth-scroll";
 import { JsonLd, clinicSchema } from "@/lib/seo";
 import { site } from "@/lib/site";
@@ -69,11 +71,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </div>
         <JsonLd data={clinicSchema()} />
         <SmoothScroll />
-        <AiProvider>
-          <main id="main">{children}</main>
-          <Footer />
-          <Dock />
-        </AiProvider>
+        <BookingProvider>
+          <AiProvider>
+            <BrandCorner />
+            <main id="main">{children}</main>
+            <Footer />
+            <Dock />
+          </AiProvider>
+        </BookingProvider>
       </body>
     </html>
   );
