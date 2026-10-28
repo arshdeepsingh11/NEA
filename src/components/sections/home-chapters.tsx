@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { BookButton } from "@/components/booking/booking";
 import {
   Activity,
   Droplet,
@@ -23,6 +24,7 @@ import { Marquee } from "@/components/ui/marquee";
 import { Text3DFlip } from "@/components/ui/text-3d-flip";
 import { ScrollSphereGallery, type SphereCard } from "@/components/ui/scroll-sphere-gallery";
 import { NeaImage } from "@/components/ui/nea-image";
+import { IMG } from "@/content/media";
 import { VideoSlot } from "@/components/layout/video-slot";
 import { LazyBeam, LazySignal, LazyWorldMap } from "@/components/three/lazy";
 import { ClinicMap } from "@/components/layout/clinic-map";
@@ -198,34 +200,59 @@ export function GalleryChapter() {
   );
 }
 
+/** A photo for each review, matched to the treatment it talks about (photos are illustrative, not the reviewer). */
+function reviewImage(treatment: string, i: number) {
+  const t = treatment.toLowerCase();
+  if (t.includes("microneedling")) return IMG.microneedling;
+  if (t.includes("acne")) return IMG.acne;
+  if (t.includes("nutrition")) return IMG.gutFood;
+  if (t.includes("botox")) return IMG.injector;
+  if (t.includes("oxygen")) return IMG.facialFoam;
+  if (t.includes("laser")) return IMG.laserFace;
+  if (t.includes("sculpt")) return IMG.body;
+  if (t.includes("facial")) return [IMG.facial, IMG.facialMask, IMG.serum][i % 3];
+  return [IMG.consult, IMG.consultTalk, IMG.hero][i % 3];
+}
+
 export function ReviewsChapter() {
   const half = Math.ceil(reviews.length / 2);
-  const Card = ({ r }: { r: (typeof reviews)[number] }) => (
-    <figure className="w-[340px] shrink-0 rounded-3xl border border-ink/[0.06] surface p-6">
-      <blockquote className="line-clamp-6 text-[15px] leading-relaxed text-ink">“{r.text}”</blockquote>
-      <figcaption className="mt-5 flex items-center justify-between text-[13px]">
-        <span className="font-medium">{r.name === "Client" ? "NEA client" : r.name}</span>
-        <span className="text-graphite">
-          {r.treatment}
-          {r.source === "Google" ? " · Google" : ""}
-        </span>
-      </figcaption>
-    </figure>
-  );
+  const Card = ({ r, i }: { r: (typeof reviews)[number]; i: number }) => {
+    const name = r.name === "Client" ? "NEA client" : r.name;
+    const initials = name === "NEA client" ? "N" : name.split(/[\s-]+/).map((x) => x[0]).slice(0, 2).join("");
+    return (
+      <figure className="surface w-[340px] shrink-0 overflow-hidden rounded-3xl">
+        <div className="relative h-36">
+          <NeaImage src={reviewImage(r.treatment, i)} alt="" fill sizes="340px" className="object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-t from-ink/45 to-transparent" />
+          <span className="absolute bottom-3 left-4 rounded-full bg-white/85 px-2.5 py-1 text-[11.5px] text-ink backdrop-blur">{r.treatment}</span>
+        </div>
+        <div className="p-6">
+          <blockquote className="line-clamp-5 text-[15px] leading-relaxed text-ink">“{r.text}”</blockquote>
+          <figcaption className="mt-5 flex items-center gap-3 text-[13px]">
+            <span className="grid h-9 w-9 place-items-center rounded-full text-[12px] font-semibold text-ink [background:var(--aurora)]">{initials}</span>
+            <span>
+              <span className="block font-medium">{name}</span>
+              <span className="block text-graphite">{r.source === "Google" ? "Google review" : "NEA testimonial"}</span>
+            </span>
+          </figcaption>
+        </div>
+      </figure>
+    );
+  };
   return (
     <section className="chapter overflow-hidden">
       <div className="container">
-        <SectionHead title="In their words." lede="Real reviews from NEA clients on Google and our testimonials page." />
+        <SectionHead title="In their words." lede="Real reviews from NEA clients on Google and our testimonials page. Photos show the treatment, not the reviewer." />
       </div>
       <div className="space-y-4 mask-fade-x">
         <Marquee duration={70}>
           {reviews.slice(0, half).map((r, i) => (
-            <Card key={i} r={r} />
+            <Card key={i} r={r} i={i} />
           ))}
         </Marquee>
         <Marquee duration={80} reverse>
           {reviews.slice(half).map((r, i) => (
-            <Card key={i} r={r} />
+            <Card key={i} r={r} i={i + half} />
           ))}
         </Marquee>
       </div>
@@ -360,9 +387,7 @@ export function VisitChapter() {
             Book online any time, or start with a free 15-minute consultation. We will tell you honestly what will help and what will not.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
-            <a href={site.bookingUrl} target="_blank" rel="noreferrer" className="btn-primary">
-              Book online
-            </a>
+            <BookButton>Book online</BookButton>
             <Link href="/book" className="btn-ghost">
               Request a free consultation
             </Link>
@@ -406,7 +431,7 @@ export function VisitChapter() {
             </div>
           </dl>
         </div>
-        <div className="min-h-[380px] overflow-hidden rounded-4xl bg-mist">
+        <div className="min-h-[560px]">
           <ClinicMap query={site.mapsQuery} />
         </div>
       </div>
