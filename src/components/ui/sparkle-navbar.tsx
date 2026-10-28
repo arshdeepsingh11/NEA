@@ -93,8 +93,16 @@ export function SparkleNavbar({
   };
 
   useLayoutEffect(() => {
-    place(active, !first.current);
-    first.current = false;
+    if (first.current) {
+      place(active, false);
+      first.current = false;
+      return;
+    }
+    // the active label opens out over 300 ms; land the strike once it has its final width
+    const t = gsap.delayedCall(0.3, () => place(active, true));
+    return () => {
+      t.kill();
+    };
   }, [active, place, items.length]);
 
   useEffect(() => {
@@ -109,7 +117,7 @@ export function SparkleNavbar({
       ref={nav}
       aria-label="Main"
       className={cn(
-        "relative flex items-center gap-1 rounded-[26px] border border-white/90 bg-white/70 p-1.5 backdrop-blur-2xl backdrop-saturate-150",
+        "relative flex h-12 items-center gap-0.5 rounded-full border border-white/90 bg-white/70 p-1 backdrop-blur-2xl backdrop-saturate-150",
         "shadow-[inset_0_1px_0_rgba(255,255,255,0.95),0_1px_2px_rgb(var(--c-ink)/0.06),0_24px_60px_-24px_rgba(var(--shadow-tint),0.45)]",
         className
       )}
@@ -130,46 +138,30 @@ export function SparkleNavbar({
         const isActive = i === active;
         const body = (
           <>
+            <span className={cn("relative grid h-5 w-5 shrink-0 place-items-center [&>svg]:h-[19px] [&>svg]:w-[19px] [&>svg]:stroke-[1.7]", isActive ? "text-ink" : "text-ink/55 group-hover:text-ink")}>{it.icon}</span>
             <span
+              ref={(el) => {
+                labels.current[i] = el;
+              }}
               className={cn(
-                "relative grid place-items-center rounded-[14px] transition-all duration-300 [&>svg]:h-[18px] [&>svg]:w-[18px] [&>svg]:stroke-[1.75]",
-                it.featured ? "h-11 w-11 text-ink" : "h-9 w-9",
-                isActive && !it.featured ? "text-ink" : !it.featured && "text-ink/55 group-hover:text-ink"
+                "overflow-hidden whitespace-nowrap text-[13px] font-medium leading-none tracking-tight text-ink transition-[max-width,opacity,margin] duration-300 ease-out",
+                isActive ? "ml-2 max-w-[9rem] opacity-100" : "ml-0 max-w-0 opacity-0"
               )}
             >
-              {it.featured && (
-                <>
-                  <span aria-hidden className="absolute inset-0 rounded-[14px] [background:var(--aurora)]" />
-                  <span aria-hidden className="absolute -inset-1 -z-10 animate-pulseglow rounded-[18px] opacity-60 blur-md [background:var(--aurora)]" />
-                </>
-              )}
-              <span className="relative">{it.icon}</span>
+              {it.label}
             </span>
-            {!compact || it.featured ? (
-              <span
-                ref={(el) => {
-                  labels.current[i] = el;
-                }}
-                className={cn("relative whitespace-nowrap text-[11px] font-medium leading-none tracking-tight transition-colors", isActive ? "text-ink" : "text-ink/55 group-hover:text-ink")}
-              >
-                {it.label}
-              </span>
-            ) : (
-              <span
-                ref={(el) => {
-                  labels.current[i] = el;
-                }}
-                className="sr-only"
-              >
-                {it.label}
-              </span>
-            )}
           </>
         );
-        const cls = cn("group relative flex min-w-[52px] flex-col items-center gap-1 rounded-2xl px-1.5 pb-1.5 pt-1 outline-none transition focus-visible:ring-2 focus-visible:ring-ink/20", it.featured && "mx-1");
-        const tip = it.hint ? (
-          <span className="pointer-events-none absolute -top-9 left-1/2 hidden -translate-x-1/2 whitespace-nowrap rounded-lg bg-ink px-2.5 py-1 text-[11px] text-white opacity-0 transition-opacity group-hover:opacity-100 md:block">{it.hint}</span>
-        ) : null;
+        const cls = cn(
+          "group relative flex h-10 items-center rounded-full px-3 outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ink/20",
+          isActive ? "bg-white shadow-[0_6px_18px_-10px_rgba(var(--shadow-tint),0.8)]" : "hover:bg-white/60"
+        );
+        // inactive items show their name on hover
+        const tip = (
+          <span className="pointer-events-none absolute -top-9 left-1/2 hidden -translate-x-1/2 whitespace-nowrap rounded-lg bg-ink px-2.5 py-1 text-[11px] text-white opacity-0 transition-opacity group-hover:opacity-100 md:block">
+            {isActive ? it.hint ?? it.label : it.hint ? `${it.label} · ${it.hint}` : it.label}
+          </span>
+        );
         if (it.onClick)
           return (
             <button key={it.label} type="button" onClick={it.onClick} aria-label={it.label} className={cls}>

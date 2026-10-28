@@ -1,11 +1,10 @@
 "use client";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
-import { CalendarHeart, Clapperboard, House, LayoutGrid, Microscope, Route, ScanFace, Sparkles, Syringe, X } from "lucide-react";
+import { AnimatePresence, motion, useMotionValueEvent, useScroll } from "framer-motion";
+import { Aperture, CalendarHeart, House, LayoutGrid, Microscope, Route, Syringe, X } from "lucide-react";
 import Link from "next/link";
 import { SparkleNavbar, type SparkleItem } from "@/components/ui/sparkle-navbar";
-import { useAi } from "@/components/ai/ai-provider";
 import { useBooking } from "@/components/booking/booking";
 import { useReels } from "@/components/reels/reels";
 import { NeaLogo } from "@/components/brand/nea-logo";
@@ -14,16 +13,24 @@ import { site } from "@/lib/site";
 import { ThemePicker } from "@/components/theme/theme";
 
 /**
- * The only navigation: a Sparkle Navbar fixed at the bottom.
- * Six destinations people actually come for, SI in the centre, and "More" for everything else.
+ * The only navigation: a slim Sparkle Navbar fixed at the bottom.
+ * Icons only; the page you are on opens out with its name under a glowing strike. Hover any icon for its name.
+ * It tucks away while you scroll down and comes back as soon as you scroll up. Nea SI lives in its own orb, bottom-right.
  */
 export function Dock() {
   const pathname = usePathname();
-  const ai = useAi();
   const book = useBooking();
   const reels = useReels();
   const [more, setMore] = useState(false);
   const [small, setSmall] = useState(false);
+  const [hidden, setHidden] = useState(false);
+  const { scrollY } = useScroll();
+  useMotionValueEvent(scrollY, "change", (y) => {
+    const prev = scrollY.getPrevious() ?? 0;
+    const atBottom = window.innerHeight + y >= document.documentElement.scrollHeight - 80;
+    setHidden(y > 320 && y > prev + 2 && !atBottom);
+    if (y < prev - 2 || atBottom) setHidden(false);
+  });
   useEffect(() => {
     const mq = window.matchMedia("(max-width: 767px)");
     const on = () => setSmall(mq.matches);
@@ -31,27 +38,26 @@ export function Dock() {
     mq.addEventListener("change", on);
     return () => mq.removeEventListener("change", on);
   }, []);
+  useEffect(() => setHidden(false), [pathname]);
   const is = (p: string) => (p === "/" ? pathname === "/" : pathname === p || pathname.startsWith(p + "/"));
 
   const all: (SparkleItem & { match?: boolean })[] = [
     { label: "Home", href: "/", icon: <House />, match: is("/") },
     { label: "Programs", href: "/programs", icon: <Route />, match: is("/programs") },
     { label: "Treatments", href: "/treatments", icon: <Syringe />, match: is("/treatments") || is("/fotona") },
-    { label: "Reels", icon: <Clapperboard />, onClick: () => reels.open(), hint: "Watch NEA videos" },
-    { label: "Ask SI", icon: <Sparkles />, featured: true, onClick: () => ai.open(), hint: "Skin Intelligence · press N" },
     { label: "Testing", href: "/tests", icon: <Microscope />, match: is("/tests") || is("/microbiome") },
-    { label: "Free scan", href: "/skin-scan", icon: <ScanFace />, match: is("/skin-scan") },
+    { label: "Glow Feed", icon: <Aperture />, onClick: () => reels.open(), hint: "NEA’s latest from the clinic" },
     { label: "Book", icon: <CalendarHeart />, onClick: () => book.open(), hint: "Book in Jane" },
     { label: "More", icon: <LayoutGrid />, onClick: () => setMore(true), match: more },
   ];
-  const items = small ? [all[0], all[1], all[4], all[3], all[8]] : all;
+  const items = small ? [all[0], all[2], all[4], all[5], all[6]] : all;
   const active = items.findIndex((i) => i.match);
 
   return (
     <>
-      <div className="fixed inset-x-0 bottom-3 z-50 flex justify-center px-3 md:bottom-4">
-        <SparkleNavbar items={items} active={active} compact={false} className={small ? "w-full max-w-sm justify-between" : undefined} />
-      </div>
+      <motion.div className="fixed inset-x-0 bottom-3 z-50 flex justify-center px-3 md:bottom-4" initial={false} animate={{ y: hidden ? 90 : 0, opacity: hidden ? 0 : 1 }} transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}>
+        <SparkleNavbar items={items} active={active} />
+      </motion.div>
       <MoreSheet open={more} onClose={() => setMore(false)} />
     </>
   );
