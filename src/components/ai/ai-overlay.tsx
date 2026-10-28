@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { useEffect, useRef, useState, type FormEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowUp, CalendarHeart, Check, Loader2, Mic, RotateCcw, ScanFace, Sparkles, X } from "lucide-react";
 import { useBooking } from "@/components/booking/booking";
@@ -8,7 +8,12 @@ import { answer as localAnswer, type DocMeta, type Plan } from "@/lib/knowledge"
 import { cn, money } from "@/lib/utils";
 
 type Source = { title: string; href: string; kind: string; meta?: DocMeta };
-type Reply = { text: string; sources: Source[]; plan?: Plan; steps: string[]; model?: string };
+type Reply = { text: string; sources: Source[]; plan?: Plan; steps: string[]; model?: string; fellBack?: boolean };
+type Engine = "xevyo" | "gemini";
+const ENGINES: { id: Engine; label: string }[] = [
+  { id: "xevyo", label: "Xevyo" },
+  { id: "gemini", label: "Gemini" },
+];
 type Msg = { role: "user"; text: string } | { role: "nea"; reply: Reply };
 
 const STARTERS = [
@@ -20,9 +25,9 @@ const STARTERS = [
   "Are you open on Saturday?",
 ];
 
-async function ask(question: string, context?: string): Promise<Reply> {
+async function ask(question: string, context: string | undefined, engine: Engine, history: { role: "user" | "assistant"; text: string }[]): Promise<Reply> {
   try {
-    const res = await fetch("/api/ask", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ question, context }) });
+    const res = await fetch("/api/ask", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ question, context, engine, history }) });
     if (!res.ok) throw new Error(String(res.status));
     return (await res.json()) as Reply;
   } catch {
@@ -43,14 +48,40 @@ export function AiOverlay({ open, onClose, initialQuery, context, nonce }: { ope
   const scroller = useRef<HTMLDivElement>(null);
   const rec = useRef<SpeechRec | null>(null);
   const handled = useRef(0);
+  const [engine, setEngine] = useState<Engine>("xevyo");
+  const [ready, setReady] = useState<Record<Engine, boolean>>({ xevyo: true, gemini: true });
+
+  // which engines are connected, and the visitor's last choice
+  useEffect(() => {
+    let saved: string | null = null;
+    try {
+      saved = localStorage.getItem("nea-si-engine");
+    } catch {}
+    if (saved === "xevyo" || saved === "gemini") setEngine(saved);
+    fetch("/api/ask")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d: { default: Engine; engines: Record<Engine, boolean> } | null) => {
+        if (!d) return;
+        setReady(d.engines);
+        if (saved !== "xevyo" && saved !== "gemini") setEngine(d.default);
+      })
+      .catch(() => {});
+  }, []);
+  const pick = (e: Engine) => {
+    setEngine(e);
+    try {
+      localStorage.setItem("nea-si-engine", e);
+    } catch {}
+  };
 
   const send = async (text: string) => {
     const t = text.trim();
     if (!t || busy) return;
+    const history = msgs.slice(-8).map((m) => (m.role === "user" ? { role: "user" as const, text: m.text } : { role: "assistant" as const, text: m.reply.text }));
     setMsgs((m) => [...m, { role: "user", text: t }]);
     setQ("");
     setBusy(true);
-    const reply = await ask(t, context);
+    const reply = await ask(t, context, engine, history);
     setMsgs((m) => [...m, { role: "nea", reply }]);
     setBusy(false);
   };
@@ -142,6 +173,20 @@ export function AiOverlay({ open, onClose, initialQuery, context, nonce }: { ope
                 </button>
               </div>
             </header>
+            <div className="flex items-center justify-between gap-3 border-b border-ink/10 px-5 py-2.5 sm:px-7">
+              <span className="text-[12px] text-graphite">Answer with</span>
+              <div role="radiogroup" aria-label="Choose the SI engine" className="relative flex rounded-full bg-ink/[0.06] p-1">
+                {ENGINES.map((x) => (
+                  <button key={x.id} role="radio" aria-checked={engine === x.id} onClick={() => pick(x.id)} title={ready[x.id] ? `Answers written by ${x.label}` : `${x.label} is not connected yet; SI will use the other engine`} className={cn("relative rounded-full px-3.5 py-1 text-[12.5px] transition", engine === x.id ? "text-white" : "text-ink/70 hover:text-ink")}>
+                    {engine === x.id && <motion.span layoutId="si-engine" className="absolute inset-0 rounded-full bg-ink" transition={{ type: "spring", stiffness: 400, damping: 34 }} />}
+                    <span className="relative flex items-center gap-1.5">
+                      {x.label}
+                      {!ready[x.id] && <span className="h-1.5 w-1.5 rounded-full bg-amber-400" />}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
 
             <div ref={scroller} className="flex-1 space-y-6 overflow-y-auto px-5 py-6 sm:px-7" aria-live="polite">
               {msgs.length === 0 && (
@@ -170,7 +215,7 @@ export function AiOverlay({ open, onClose, initialQuery, context, nonce }: { ope
               )}
               {busy && (
                 <div className="flex items-center gap-3 text-[14px] text-graphite">
-                  <Loader2 className="h-4 w-4 animate-spin text-flora" /> SI is reading NEA’s data…
+                  <Loader2 className="h-4 w-4 animate-spin text-flora" /> SI is reading NEA’s data with {ENGINES.find((x) => x.id === engine)?.label}…
                 </div>
               )}
             </div>
@@ -230,7 +275,8 @@ function AssistantReply({ reply, onClose, onFollow, last }: { reply: Reply; onCl
   const [stepCount, setStepCount] = useState(0);
   const [chars, setChars] = useState(0);
   const doneSteps = stepCount >= reply.steps.length;
-  const doneText = chars >= reply.text.length;
+  const plainLength = useMemo(() => rich(reply.text).reduce((n, l) => n + l.parts.reduce((k, p) => k + p.t.length, 0), 0), [reply.text]);
+  const doneText = chars >= plainLength;
 
   useEffect(() => {
     if (!doneSteps) {
@@ -238,10 +284,10 @@ function AssistantReply({ reply, onClose, onFollow, last }: { reply: Reply; onCl
       return () => clearTimeout(t);
     }
     if (!doneText) {
-      const t = setTimeout(() => setChars((c) => Math.min(reply.text.length, c + 3)), 12);
+      const t = setTimeout(() => setChars((c) => Math.min(plainLength, c + 4)), 12);
       return () => clearTimeout(t);
     }
-  }, [doneSteps, doneText, reply.text.length, stepCount, chars]);
+  }, [doneSteps, doneText, plainLength, stepCount, chars]);
 
   return (
     <div className="space-y-4">
@@ -254,10 +300,7 @@ function AssistantReply({ reply, onClose, onFollow, last }: { reply: Reply; onCl
         ))}
       </ul>
       {doneSteps && (
-        <p className="text-[16px] leading-relaxed text-ink">
-          {reply.text.slice(0, chars)}
-          {!doneText && <span className="ml-0.5 inline-block h-4 w-1.5 translate-y-0.5 animate-blink bg-flora" />}
-        </p>
+        <RichText text={reply.text} chars={chars} onClose={onClose} typing={!doneText} />
       )}
       {doneText && reply.plan && (
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="surface-strong rounded-3xl p-5">
@@ -323,7 +366,11 @@ function AssistantReply({ reply, onClose, onFollow, last }: { reply: Reply; onCl
           <button onClick={() => book.open(firstSlug)} className="btn-light !px-4 !py-2 !text-[13px]">
             <CalendarHeart className="h-4 w-4" /> Book in Jane
           </button>
-          {reply.model === "claude" && <span className="chip">SI answer grounded in NEA data</span>}
+          {(reply.model === "xevyo" || reply.model === "gemini") && (
+            <span className="chip !text-[11.5px]">
+              {reply.fellBack ? `${reply.model === "xevyo" ? "Gemini" : "Xevyo"} was unavailable · ` : ""}Answered by {reply.model === "xevyo" ? "Xevyo" : "Gemini"} from NEA data
+            </span>
+          )}
         </div>
       )}
       {doneText && last && follow.length > 0 && (
@@ -351,4 +398,83 @@ function followUps(r: Reply): string[] {
   if (kinds.has("Body")) out.push("Which test measures this?");
   if (!out.length) out.push("What does the free skin scan show?", "Build me a plan under $1,500");
   return out.slice(0, 3);
+}
+
+type Part = { t: string; href?: string; b?: boolean };
+type Line = { bullet: boolean; parts: Part[] };
+
+/** Tiny, safe markdown: paragraphs, "- " bullets, **bold** and [links](/path). Everything else stays plain text. */
+function rich(text: string): Line[] {
+  return text
+    .replace(/\r/g, "")
+    .split("\n")
+    .map((raw) => raw.trimEnd())
+    .filter((l, i, a) => l.trim() || (i > 0 && a[i - 1].trim()))
+    .map((raw) => {
+      const bullet = /^\s*([-*•]|\d+\.)\s+/.test(raw);
+      const line = raw.replace(/^\s*([-*•]|\d+\.)\s+/, "").replace(/^#+\s*/, "");
+      const parts: Part[] = [];
+      const re = /\[([^\]]+)\]\(([^)\s]+)\)|\*\*([^*]+)\*\*/g;
+      let at = 0;
+      let m: RegExpExecArray | null;
+      while ((m = re.exec(line))) {
+        if (m.index > at) parts.push({ t: line.slice(at, m.index) });
+        if (m[1]) parts.push({ t: m[1], href: m[2] });
+        else parts.push({ t: m[3], b: true });
+        at = m.index + m[0].length;
+      }
+      if (at < line.length) parts.push({ t: line.slice(at) });
+      return { bullet, parts };
+    });
+}
+
+const safeHref = (h: string) => (h.startsWith("/") && !h.startsWith("//") ? h : /^https:\/\/(neamedicalaesthetic\.janeapp\.com|neaprecisionskin\.com)/.test(h) ? h : null);
+
+function RichText({ text, chars, onClose, typing }: { text: string; chars: number; onClose: () => void; typing: boolean }) {
+  const lines = useMemo(() => rich(text), [text]);
+  let left = chars;
+  return (
+    <div className="space-y-2 text-[16px] leading-relaxed text-ink">
+      {lines.map((l, i) => {
+        if (left <= 0) return null;
+        const shown = l.parts.map((p, j) => {
+          if (left <= 0) return null;
+          const t = p.t.slice(0, left);
+          left -= p.t.length;
+          const href = p.href ? safeHref(p.href) : null;
+          if (href) {
+            const ext = href.startsWith("http");
+            return ext ? (
+              <a key={j} href={href} target="_blank" rel="noreferrer" className="text-flora underline underline-offset-4">
+                {t}
+              </a>
+            ) : (
+              <Link key={j} href={href} onClick={onClose} className="text-flora underline underline-offset-4">
+                {t}
+              </Link>
+            );
+          }
+          return p.b ? (
+            <strong key={j} className="font-semibold">
+              {t}
+            </strong>
+          ) : (
+            <span key={j}>{t}</span>
+          );
+        });
+        const empty = !l.parts.length;
+        return empty ? (
+          <div key={i} className="h-1" />
+        ) : l.bullet ? (
+          <div key={i} className="flex gap-2.5">
+            <span className="mt-[0.7em] h-1.5 w-1.5 shrink-0 rounded-full bg-flora" />
+            <p>{shown}</p>
+          </div>
+        ) : (
+          <p key={i}>{shown}</p>
+        );
+      })}
+      {typing && <span className="inline-block h-4 w-1.5 translate-y-0.5 animate-blink bg-flora" />}
+    </div>
+  );
 }
