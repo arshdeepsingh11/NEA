@@ -2,13 +2,14 @@
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowUp, CalendarHeart, Check, Loader2, Mic, RotateCcw, ScanFace, Sparkles, X } from "lucide-react";
+import { ArrowUp, CalendarHeart, Check, Loader2, Mic, Play, RotateCcw, ScanFace, Sparkles, X } from "lucide-react";
+import { NeaSiIcon } from "@/components/brand/nea-si-icon";
 import { useBooking } from "@/components/booking/booking";
 import { answer as localAnswer, type DocMeta, type Plan } from "@/lib/knowledge";
 import { cn, money } from "@/lib/utils";
 
 type Source = { title: string; href: string; kind: string; meta?: DocMeta };
-type Reply = { text: string; sources: Source[]; plan?: Plan; steps: string[]; model?: string; fellBack?: boolean };
+type Reply = { text: string; sources: Source[]; plan?: Plan; steps: string[]; model?: string; fellBack?: boolean; done?: boolean };
 type Engine = "xevyo" | "gemini";
 const ENGINES: { id: Engine; label: string }[] = [
   { id: "xevyo", label: "Xevyo" },
@@ -25,15 +26,43 @@ const STARTERS = [
   "Are you open on Saturday?",
 ];
 
-async function ask(question: string, context: string | undefined, engine: Engine, history: { role: "user" | "assistant"; text: string }[]): Promise<Reply> {
+type History = { role: "user" | "assistant"; text: string }[];
+
+const localReply = (question: string, context?: string): Reply => {
+  const a = localAnswer(context ? `${context} ${question}` : question);
+  return { text: a.text, plan: a.plan, steps: a.steps, sources: a.sources.map((s) => ({ title: s.title, href: s.href, kind: s.kind, meta: s.meta })), model: "nea-local", done: true };
+};
+
+/** Streams the answer: cards and steps arrive first, then the text word by word. */
+async function ask(question: string, context: string | undefined, engine: Engine, history: History, onUpdate: (r: Reply) => void): Promise<Reply> {
+  let reply: Reply = { text: "", sources: [], steps: [], done: false };
   try {
     const res = await fetch("/api/ask", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ question, context, engine, history }) });
-    if (!res.ok) throw new Error(String(res.status));
-    return (await res.json()) as Reply;
+    if (!res.ok || !res.body) throw new Error(String(res.status));
+    const reader = res.body.getReader();
+    const dec = new TextDecoder();
+    let buf = "";
+    for (;;) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buf += dec.decode(value, { stream: true });
+      let i: number;
+      while ((i = buf.indexOf("\n")) >= 0) {
+        const line = buf.slice(0, i).trim();
+        buf = buf.slice(i + 1);
+        if (!line) continue;
+        const ev = JSON.parse(line) as { t: string; v?: string; sources?: Source[]; plan?: Plan; steps?: string[]; model?: string; fellBack?: boolean };
+        if (ev.t === "meta") reply = { ...reply, sources: ev.sources ?? [], plan: ev.plan, steps: ev.steps ?? [] };
+        else if (ev.t === "d") reply = { ...reply, text: reply.text + (ev.v ?? "") };
+        else if (ev.t === "done") reply = { ...reply, model: ev.model, fellBack: ev.fellBack, done: true };
+        onUpdate(reply);
+      }
+    }
+    if (!reply.text) throw new Error("empty");
+    return { ...reply, done: true };
   } catch {
     // Offline or static preview: answer with the same grounded engine in the browser.
-    const a = localAnswer(context ? `${context} ${question}` : question);
-    return { text: a.text, plan: a.plan, steps: a.steps, sources: a.sources.map((s) => ({ title: s.title, href: s.href, kind: s.kind, meta: s.meta })), model: "nea-local" };
+    return localReply(question, context);
   }
 }
 
@@ -50,6 +79,7 @@ export function AiOverlay({ open, onClose, initialQuery, context, nonce }: { ope
   const handled = useRef(0);
   const [engine, setEngine] = useState<Engine>("xevyo");
   const [ready, setReady] = useState<Record<Engine, boolean>>({ xevyo: true, gemini: true });
+  const [hint, setHint] = useState<string | null>(null);
 
   // which engines are connected, and the visitor's last choice
   useEffect(() => {
@@ -60,9 +90,10 @@ export function AiOverlay({ open, onClose, initialQuery, context, nonce }: { ope
     if (saved === "xevyo" || saved === "gemini") setEngine(saved);
     fetch("/api/ask")
       .then((r) => (r.ok ? r.json() : null))
-      .then((d: { default: Engine; engines: Record<Engine, boolean> } | null) => {
+      .then((d: { default: Engine; engines: Record<Engine, boolean>; hint?: string | null } | null) => {
         if (!d) return;
         setReady(d.engines);
+        setHint(d.hint ?? null);
         if (saved !== "xevyo" && saved !== "gemini") setEngine(d.default);
       })
       .catch(() => {});
@@ -81,8 +112,19 @@ export function AiOverlay({ open, onClose, initialQuery, context, nonce }: { ope
     setMsgs((m) => [...m, { role: "user", text: t }]);
     setQ("");
     setBusy(true);
-    const reply = await ask(t, context, engine, history);
-    setMsgs((m) => [...m, { role: "nea", reply }]);
+    let placed = false;
+    const put = (r: Reply) =>
+      setMsgs((m) => {
+        if (!placed) {
+          placed = true;
+          return [...m, { role: "nea", reply: r }];
+        }
+        const copy = m.slice();
+        copy[copy.length - 1] = { role: "nea", reply: r };
+        return copy;
+      });
+    const reply = await ask(t, context, engine, history, put);
+    put(reply);
     setBusy(false);
   };
 
@@ -143,7 +185,7 @@ export function AiOverlay({ open, onClose, initialQuery, context, nonce }: { ope
           <motion.div
             role="dialog"
             aria-modal="true"
-            aria-label="NEA SI chat"
+            aria-label="Nea SI chat"
             onClick={(e) => e.stopPropagation()}
             initial={{ y: 40, opacity: 0, scale: 0.98 }}
             animate={{ y: 0, opacity: 1, scale: 1 }}
@@ -156,7 +198,7 @@ export function AiOverlay({ open, onClose, initialQuery, context, nonce }: { ope
               <div className="flex items-center gap-3">
                 <Orb active={busy} />
                 <div>
-                  <p className="font-display text-[20px] leading-none tracking-tight">NEA SI</p>
+                  <p className="font-display text-[20px] leading-none tracking-tight">Nea SI</p>
                   <p className="mt-1 flex items-center gap-1.5 text-[12px] text-graphite">
                     <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[rgb(var(--viz-good))]" /> Skin Intelligence · online{context ? ` · ${context}` : ""}
                   </p>
@@ -175,9 +217,9 @@ export function AiOverlay({ open, onClose, initialQuery, context, nonce }: { ope
             </header>
             <div className="flex items-center justify-between gap-3 border-b border-ink/10 px-5 py-2.5 sm:px-7">
               <span className="text-[12px] text-graphite">Answer with</span>
-              <div role="radiogroup" aria-label="Choose the SI engine" className="relative flex rounded-full bg-ink/[0.06] p-1">
+              <div role="radiogroup" aria-label="Choose the Nea SI engine" className="relative flex rounded-full bg-ink/[0.06] p-1">
                 {ENGINES.map((x) => (
-                  <button key={x.id} role="radio" aria-checked={engine === x.id} onClick={() => pick(x.id)} title={ready[x.id] ? `Answers written by ${x.label}` : `${x.label} is not connected yet; SI will use the other engine`} className={cn("relative rounded-full px-3.5 py-1 text-[12.5px] transition", engine === x.id ? "text-white" : "text-ink/70 hover:text-ink")}>
+                  <button key={x.id} role="radio" aria-checked={engine === x.id} onClick={() => pick(x.id)} title={ready[x.id] ? `Answers written by ${x.label}` : `${x.label} is not connected yet; Nea SI will use the other engine`} className={cn("relative rounded-full px-3.5 py-1 text-[12.5px] transition", engine === x.id ? "text-white" : "text-ink/70 hover:text-ink")}>
                     {engine === x.id && <motion.span layoutId="si-engine" className="absolute inset-0 rounded-full bg-ink" transition={{ type: "spring", stiffness: 400, damping: 34 }} />}
                     <span className="relative flex items-center gap-1.5">
                       {x.label}
@@ -188,11 +230,16 @@ export function AiOverlay({ open, onClose, initialQuery, context, nonce }: { ope
               </div>
             </div>
 
+            {hint && (
+              <div role="status" className="border-b border-amber-300/50 bg-amber-50 px-5 py-2.5 text-[12.5px] leading-snug text-amber-900 sm:px-7">
+                <strong className="font-semibold">Setup (only you see this in development):</strong> {hint}
+              </div>
+            )}
             <div ref={scroller} className="flex-1 space-y-6 overflow-y-auto px-5 py-6 sm:px-7" aria-live="polite">
               {msgs.length === 0 && (
                 <div className="pt-2">
                   <div className="max-w-[90%] rounded-3xl rounded-tl-lg bg-white/80 px-5 py-4 text-[15px] leading-relaxed text-ink shadow-sm">
-                    Hi, I’m <strong className="font-semibold">NEA SI</strong>, NEA’s Skin Intelligence. I can explain what is behind a concern, match you to a program, price a plan within your budget, compare tests, and book you into the right service in Jane.
+                    Hi, I’m <strong className="font-semibold">Nea SI</strong>, NEA’s Skin Intelligence. I can explain what is behind a concern, match you to a program, price a plan within your budget, compare tests, and book you into the right service in Jane.
                   </div>
                   <p className="mt-6 text-[12.5px] text-graphite">Try one of these</p>
                   <div className="mt-2 grid gap-2">
@@ -213,9 +260,9 @@ export function AiOverlay({ open, onClose, initialQuery, context, nonce }: { ope
                   <AssistantReply key={i} reply={m.reply} onClose={onClose} onFollow={send} last={i === msgs.length - 1} />
                 )
               )}
-              {busy && (
+              {busy && msgs[msgs.length - 1]?.role === "user" && (
                 <div className="flex items-center gap-3 text-[14px] text-graphite">
-                  <Loader2 className="h-4 w-4 animate-spin text-flora" /> SI is reading NEA’s data with {ENGINES.find((x) => x.id === engine)?.label}…
+                  <NeaSiIcon className="h-4 w-4 text-flora" thinking /> Nea SI is reading NEA’s data with {ENGINES.find((x) => x.id === engine)?.label}…
                 </div>
               )}
             </div>
@@ -223,7 +270,7 @@ export function AiOverlay({ open, onClose, initialQuery, context, nonce }: { ope
             <form onSubmit={onSubmit} className="border-t border-ink/10 p-3 sm:p-4">
               <div className="flex items-end gap-2 rounded-3xl border border-ink/10 bg-white/60 p-2 pl-4 focus-within:border-flora/50">
                 <label htmlFor="nea-ai-input" className="sr-only">
-                  Ask NEA SI
+                  Ask Nea SI
                 </label>
                 <textarea
                   id="nea-ai-input"
@@ -238,7 +285,7 @@ export function AiOverlay({ open, onClose, initialQuery, context, nonce }: { ope
                       send(q);
                     }
                   }}
-                  placeholder="Message NEA SI…"
+                  placeholder="Message Nea SI…"
                   className="max-h-32 min-h-[44px] flex-1 resize-none bg-transparent py-2.5 text-[16px] text-ink outline-none placeholder:text-graphite/80"
                 />
                 <button type="button" onClick={toggleMic} className={cn("grid h-11 w-11 place-items-center rounded-full transition", listening ? "bg-orchid/30 text-ink" : "text-graphite hover:text-ink")} aria-label={listening ? "Stop voice input" : "Speak your question"}>
@@ -248,7 +295,7 @@ export function AiOverlay({ open, onClose, initialQuery, context, nonce }: { ope
                   <ArrowUp className="h-5 w-5" />
                 </button>
               </div>
-              <p className="mt-2 px-2 text-center text-[11px] text-graphite/80">SI gives general information, not medical advice. Press N anywhere to open, Esc to close.</p>
+              <p className="mt-2 px-2 text-center text-[11px] text-graphite/80">Nea SI gives general information, not medical advice. Press N anywhere to open, Esc to close.</p>
             </form>
           </motion.div>
         </motion.div>
@@ -261,8 +308,8 @@ function Orb({ active }: { active?: boolean }) {
   return (
     <span className="relative grid h-10 w-10 place-items-center">
       <span className={cn("absolute inset-0 rounded-full blur-md [background:var(--aurora)]", active ? "animate-pulseglow" : "opacity-60")} />
-      <span className="relative grid h-9 w-9 place-items-center rounded-full text-ink [background:var(--aurora)]">
-        <Sparkles className="h-4 w-4" />
+      <span className="relative grid h-9 w-9 place-items-center rounded-full bg-white/70 text-ink">
+        <NeaSiIcon className="h-6 w-6" thinking={active} />
       </span>
     </span>
   );
@@ -272,36 +319,22 @@ function AssistantReply({ reply, onClose, onFollow, last }: { reply: Reply; onCl
   const book = useBooking();
   const firstSlug = (reply.plan?.items[0]?.href ?? reply.sources.find((x) => /\/(treatments|programs)\//.test(x.href))?.href ?? "").split("/").pop() || undefined;
   const follow = followUps(reply);
-  const [stepCount, setStepCount] = useState(0);
-  const [chars, setChars] = useState(0);
-  const doneSteps = stepCount >= reply.steps.length;
-  const plainLength = useMemo(() => rich(reply.text).reduce((n, l) => n + l.parts.reduce((k, p) => k + p.t.length, 0), 0), [reply.text]);
-  const doneText = chars >= plainLength;
-
-  useEffect(() => {
-    if (!doneSteps) {
-      const t = setTimeout(() => setStepCount((c) => c + 1), 260);
-      return () => clearTimeout(t);
-    }
-    if (!doneText) {
-      const t = setTimeout(() => setChars((c) => Math.min(plainLength, c + 4)), 12);
-      return () => clearTimeout(t);
-    }
-  }, [doneSteps, doneText, plainLength, stepCount, chars]);
+  const doneText = reply.done !== false;
 
   return (
     <div className="space-y-4">
-      <ul className="space-y-1.5">
-        {reply.steps.slice(0, Math.max(1, stepCount)).map((s, i) => (
-          <li key={i} className="flex items-center gap-2 text-[12.5px] text-graphite">
-            {i < stepCount ? <Check className="h-3.5 w-3.5 text-flora" /> : <Loader2 className="h-3.5 w-3.5 animate-spin" />}
-            {s}
-          </li>
-        ))}
+      <ul className="space-y-1">
+        {reply.steps.map((s, i) => {
+          const working = !doneText && i === reply.steps.length - 1;
+          return (
+            <li key={i} className="flex items-center gap-2 text-[12px] text-graphite">
+              {working ? <Loader2 className="h-3.5 w-3.5 animate-spin text-flora" /> : <Check className="h-3.5 w-3.5 text-flora" />}
+              {s}
+            </li>
+          );
+        })}
       </ul>
-      {doneSteps && (
-        <RichText text={reply.text} chars={chars} onClose={onClose} typing={!doneText} />
-      )}
+      {reply.text ? <RichText text={reply.text} onClose={onClose} typing={!doneText} /> : !doneText && <Thinking />}
       {doneText && reply.plan && (
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="surface-strong rounded-3xl p-5">
           <div className="flex items-center justify-between">
@@ -430,9 +463,9 @@ function rich(text: string): Line[] {
 
 const safeHref = (h: string) => (h.startsWith("/") && !h.startsWith("//") ? h : /^https:\/\/(neamedicalaesthetic\.janeapp\.com|neaprecisionskin\.com)/.test(h) ? h : null);
 
-function RichText({ text, chars, onClose, typing }: { text: string; chars: number; onClose: () => void; typing: boolean }) {
+function RichText({ text, onClose, typing }: { text: string; onClose: () => void; typing: boolean }) {
   const lines = useMemo(() => rich(text), [text]);
-  let left = chars;
+  let left = Infinity;
   return (
     <div className="space-y-2 text-[16px] leading-relaxed text-ink">
       {lines.map((l, i) => {
@@ -441,6 +474,14 @@ function RichText({ text, chars, onClose, typing }: { text: string; chars: numbe
           if (left <= 0) return null;
           const t = p.t.slice(0, left);
           left -= p.t.length;
+          const reel = p.href?.match(/^#reel-(\d+)$/);
+          if (reel) {
+            return (
+              <button key={j} onClick={() => window.dispatchEvent(new CustomEvent("nea:reels", { detail: { index: Number(reel[1]) } }))} className="inline-flex items-center gap-1 rounded-full bg-flora/10 px-2 py-0.5 align-baseline text-[0.92em] text-flora hover:bg-flora/20">
+                <Play className="h-3 w-3" /> {t}
+              </button>
+            );
+          }
           const href = p.href ? safeHref(p.href) : null;
           if (href) {
             const ext = href.startsWith("http");
@@ -475,6 +516,16 @@ function RichText({ text, chars, onClose, typing }: { text: string; chars: numbe
         );
       })}
       {typing && <span className="inline-block h-4 w-1.5 translate-y-0.5 animate-blink bg-flora" />}
+    </div>
+  );
+}
+
+function Thinking() {
+  return (
+    <div className="flex items-center gap-1.5 py-1" aria-label="Nea SI is writing">
+      {[0, 1, 2].map((i) => (
+        <motion.span key={i} className="h-2 w-2 rounded-full bg-flora/70" animate={{ opacity: [0.25, 1, 0.25], y: [0, -3, 0] }} transition={{ duration: 0.9, repeat: Infinity, delay: i * 0.15 }} />
+      ))}
     </div>
   );
 }
