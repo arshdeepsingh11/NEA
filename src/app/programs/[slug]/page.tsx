@@ -1,13 +1,14 @@
 import Link from "next/link";
+import { BookButton } from "@/components/booking/booking";
 import { notFound } from "next/navigation";
-import { ArrowUpRight, CalendarCheck, Check, FlaskConical, PersonStanding, ScanFace, Sparkles } from "lucide-react";
+import { ArrowUpRight, Check, PersonStanding, ScanFace, Sparkles } from "lucide-react";
 import { NeaImage } from "@/components/ui/nea-image";
 import { ShineBorder } from "@/components/ui/shine-border";
 import { SectionHead } from "@/components/sections/page-hero";
 import { AiPromptBar } from "@/components/ai/ai-prompt-bar";
 import { AiQuestionChips } from "@/components/ai/ai-question-chips";
 import { Radar } from "@/components/viz/radar";
-import { TrendChart } from "@/components/viz/trend-chart";
+import { ProgramJourney } from "@/components/sim/program-journey";
 import { WeightBars } from "@/components/viz/weight-bars";
 import { JsonLd, breadcrumbSchema, pageMeta, procedureSchema } from "@/lib/seo";
 import { getProgram, programs } from "@/content/programs";
@@ -29,8 +30,6 @@ export async function generateMetadata({ params }: Props) {
   return pageMeta({ title: `${p.name}: ${p.problem} treatment in Calgary`, description: `${p.headline} ${p.summary}`, path: `/programs/${p.slug}`, image: nea(p.image) });
 }
 
-const PHASE_ICON = [FlaskConical, Sparkles, ScanFace, CalendarCheck];
-
 export default async function ProgramPage({ params }: Props) {
   const p = getProgram((await params).slug);
   if (!p) notFound();
@@ -47,7 +46,7 @@ export default async function ProgramPage({ params }: Props) {
 
       {/* Hero */}
       <section className="relative overflow-hidden">
-        <div className="container grid items-center gap-10 pb-16 pt-10 md:pt-14 lg:grid-cols-[1.1fr_1fr] lg:pb-24">
+        <div className="container grid items-center gap-10 pb-16 pt-28 md:pt-32 lg:grid-cols-[1.1fr_1fr] lg:pb-24">
           <div>
             <Link href="/programs" className="chip transition hover:text-ink">
               ← All programs
@@ -72,9 +71,7 @@ export default async function ProgramPage({ params }: Props) {
             <AiPromptBar className="mt-8 max-w-xl" context={p.name} placeholder={`Ask about the ${p.name}…`} />
 
             <div className="mt-6 flex flex-wrap gap-3">
-              <a href={site.bookingUrl} target="_blank" rel="noreferrer" className="btn-primary">
-                Book this program
-              </a>
+              <BookButton slug={p.slug} title={p.name}>Book this program</BookButton>
               <Link href="/skin-scan" className="btn-ghost">
                 <ScanFace className="h-4 w-4" /> Start with a free scan
               </Link>
@@ -83,8 +80,8 @@ export default async function ProgramPage({ params }: Props) {
 
           <div className="relative">
             <div className="surface relative aspect-[4/5] overflow-hidden rounded-[36px]">
-              <NeaImage src={p.image} alt={p.name} fill priority sizes="(min-width:1024px) 45vw, 100vw" className="object-cover opacity-90" />
-              <div className="absolute inset-0 bg-gradient-to-t from-white/70 via-white/0 to-transparent" />
+              <NeaImage src={p.image} alt={p.name} fill priority sizes="(min-width:1024px) 45vw, 100vw" className="object-cover" />
+              <div className="absolute inset-0 bg-gradient-to-t from-ink/40 via-transparent to-transparent" />
               <div className="absolute inset-x-5 bottom-5 grid gap-2">
                 {p.rootCauses.slice(0, 3).map((c, i) => (
                   <div key={c} className="flex items-center gap-3 rounded-2xl border border-ink/10 bg-white/85 px-4 py-2.5 text-[13px] text-ink backdrop-blur-xl">
@@ -138,33 +135,19 @@ export default async function ProgramPage({ params }: Props) {
       <section className="chapter">
         <div className="container">
           <SectionHead title="How the program runs, and what we track." lede="The NEA Method: test, treat, track, maintain. Every checkpoint is a re-scan, so progress is measured, not guessed." />
-          {ins && (
-            <div className="surface mb-5 rounded-[32px] p-7 md:p-9">
-              <div className="mb-4 flex flex-wrap items-baseline justify-between gap-2">
-                <p className="font-display text-lg font-semibold text-ink">{ins.metric.name}</p>
-                <span className="chip">Illustrative trajectory · {ins.metric.better === "up" ? "higher is better" : "lower is better"}</span>
-              </div>
-              <TrendChart series={[{ name: ins.metric.name, values: ins.metric.values }]} labels={ins.metric.labels} projectFrom={ins.metric.projectFrom} min={ins.metric.better === "down" ? 0 : undefined} caption="Solid line: checkpoints in the first phase. Dashed: where the plan aims. Real results vary from person to person." />
-            </div>
-          )}
-          <ol className="grid gap-4 md:grid-cols-4">
-            {p.phases.map((ph, i) => {
-              const Icon = PHASE_ICON[i % PHASE_ICON.length];
-              return (
-                <li key={ph.name} className="surface relative overflow-hidden rounded-[28px] p-7">
-                  <div className="flex items-center justify-between">
-                    <span className="grid h-10 w-10 place-items-center rounded-2xl bg-white/60 text-flora">
-                      <Icon className="h-5 w-5" />
-                    </span>
-                    <span className="tabular font-display text-sm text-graphite">0{i + 1}</span>
-                  </div>
-                  <h3 className="mt-5 text-2xl font-semibold tracking-tight text-ink">{ph.name}</h3>
+          {ins ? (
+            <ProgramJourney phases={p.phases} insight={ins} />
+          ) : (
+            <ol className="grid gap-4 md:grid-cols-4">
+              {p.phases.map((ph, i) => (
+                <li key={ph.name} className="surface rounded-[28px] p-7">
+                  <span className="tabular font-display text-sm text-graphite">0{i + 1}</span>
+                  <h3 className="mt-3 text-2xl font-semibold tracking-tight text-ink">{ph.name}</h3>
                   <p className="mt-2 text-[15px] leading-relaxed text-graphite">{ph.detail}</p>
-                  <div aria-hidden className="absolute inset-x-0 bottom-0 h-[3px]" style={{ background: "var(--aurora)", opacity: 0.25 + i * 0.2 }} />
                 </li>
-              );
-            })}
-          </ol>
+              ))}
+            </ol>
+          )}
         </div>
       </section>
 
@@ -197,9 +180,7 @@ export default async function ProgramPage({ params }: Props) {
               ))}
             </ul>
             <div className="mt-8 flex flex-col gap-3">
-              <a href={site.bookingUrl} target="_blank" rel="noreferrer" className="btn-primary">
-                Book online
-              </a>
+              <BookButton slug={p.slug} title={p.name}>Book online</BookButton>
               <Link href="/book" className="btn-ghost">
                 Ask a question first
               </Link>
@@ -260,7 +241,7 @@ export default async function ProgramPage({ params }: Props) {
           <div className="container">
             <div className="aurora-border surface relative rounded-[32px] p-7 md:p-10">
               <p className="flex items-center gap-2 text-[13px] text-flora">
-                <Sparkles className="h-4 w-4" /> NEA Intelligence
+                <Sparkles className="h-4 w-4" /> NEA SI · Skin Intelligence
               </p>
               <p className="mt-2 font-display text-2xl font-semibold text-ink">Questions people ask about the {p.name}</p>
               <div className="mt-6">

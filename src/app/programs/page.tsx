@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { Check } from "lucide-react";
 import { PageHero, SectionHead } from "@/components/sections/page-hero";
-import { ProgramCard } from "@/components/sections/program-card";
+import { ProgramLab } from "@/components/sections/program-lab";
+import { programInsights } from "@/content/program-insights";
 import { SkinFinder } from "@/components/sections/skin-finder";
 import { programs } from "@/content/programs";
 import { pageMeta } from "@/lib/seo";
@@ -22,10 +23,8 @@ export default function ProgramsPage() {
         lede="Customers do not buy PRP or an oxygen facial. They want clear skin, even tone, fuller hair or to age well. Every NEA treatment now sits inside one of these four programs."
       />
       <section className="pb-24">
-        <div className="container grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {programs.map((p) => (
-            <ProgramCard key={p.slug} p={p} />
-          ))}
+        <div className="container">
+          <ProgramLab programs={programs} insights={programInsights} />
         </div>
       </section>
       <section className="chapter">
