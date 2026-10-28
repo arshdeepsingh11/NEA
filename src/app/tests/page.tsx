@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { TestJourney } from "@/components/sections/test-journey";
 import { PageHero, SectionHead } from "@/components/sections/page-hero";
 import { TestsCatalog } from "@/components/sections/tests-catalog";
 import { LazySignal } from "@/components/three/lazy";
@@ -45,21 +46,8 @@ export default function TestsPage() {
       </section>
       <section className="chapter">
         <div className="container">
-          <SectionHead title="How testing works." />
-          <ol className="grid gap-4 md:grid-cols-4">
-            {[
-              ["Choose", "Your NEA practitioner suggests only tests that would change your plan."],
-              ["Collect", "A quick swab or sample at the clinic, or an at-home kit."],
-              ["Analyse", "Processed by BioAro Labs using validated methods."],
-              ["Understand", "Results on your secure dashboard, reviewed with you at NEA."],
-            ].map(([t, d], i) => (
-              <li key={t} className="surface rounded-[28px] p-7">
-                <span className="font-display text-sm text-flora">{i + 1}</span>
-                <h3 className="mt-3 text-2xl font-semibold tracking-tight">{t}</h3>
-                <p className="mt-2 leading-relaxed text-graphite">{d}</p>
-              </li>
-            ))}
-          </ol>
+          <SectionHead title="How testing works." lede="Four steps, from the first conversation to a plan that changes because of your results. Tap a step to see what happens and why." />
+          <TestJourney />
         </div>
       </section>
       <section className="pb-28">
