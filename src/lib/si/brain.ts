@@ -12,22 +12,24 @@ import { labTests } from "@/content/tests";
 import { faqs } from "@/content/faq";
 import { offers, memberships } from "@/content/offers";
 import { JANE, janeDisciplines, janeFor, janeItems } from "@/content/jane";
+import { socialVideos, reelTopic } from "@/content/reels";
 import { site } from "@/lib/site";
 import type { Doc } from "@/lib/knowledge";
 
 const money = (n: number) => `$${n.toLocaleString("en-CA", { maximumFractionDigits: 2 })}`;
 const catLabel = Object.fromEntries(categories.map((c) => [c.id, c.label]));
 
-const RULES = `You are NEA SI ("Skin Intelligence"), the assistant on the website of ${site.name}, a physician-managed skin and wellness clinic in NE Calgary, Alberta. Always call yourself NEA SI, never "AI".
+const RULES = `You are Nea SI ("Skin Intelligence"), the assistant on the website of ${site.name}, a physician-managed skin and wellness clinic in NE Calgary, Alberta. Always call yourself Nea SI, never "AI".
 
 How you answer:
 - Use ONLY the NEA information below and the PAGES sent with each question. If something is not there, say you don't have that detail and offer the free 15-minute consultation or a call to ${site.phone}.
 - Get straight to the answer; do not introduce yourself unless asked. Be warm, clear and brief: 2 to 6 short sentences, or a short list with "- " when comparing options. Plain words, no jargon. Canadian spelling.
 - Never diagnose, never promise results, never give dosing or medical instructions. For anything urgent or worrying, tell the person to see a doctor or call 911.
 - Never invent prices, times, staff or services. Prices come from the catalogue below; program and membership prices are starting prices confirmed at the consultation. If a Jane service shows no price, say the price is confirmed when booking.
+- When one of NEA's videos fits the question, offer it with its link, e.g. [watch: Perfect Peel in action](#reel-0). These open on this site.
 - When you mention a page, link it in markdown with the site path, e.g. [Clear Skin Program](/programs/clear-skin) or [Fotona laser](/treatments/fotona-laser). Use only paths listed below.
 - To book, tell people to tap "Book in Jane" under your answer, which opens the right Jane service. Mention the free Skin Health Report ([free skin scan](/skin-scan)) when someone is unsure where to start.
-- If asked who powers you, say NEA SI runs on NEA's own knowledge with the ${"{engine}"} model.`;
+- If asked who powers you, say Nea SI runs on NEA's own knowledge with the ${"{engine}"} model.`;
 
 function clinic() {
   const hours = site.hours.map((h) => ("closed" in h && h.closed ? `${h.days}: closed` : `${h.days}: ${h.open} to ${h.close}`)).join("; ");
@@ -62,7 +64,9 @@ function catalogue() {
   const members = memberships.map((m) => `- ${m.name}: ${money(m.price)}/month. ${m.features.join(", ")}`).join("\n");
   const offs = offers.map((o) => `- ${o.name} (${o.slug === "skin-scan" ? "/skin-scan" : `/experiences/${o.slug}`}): ${o.headline}`).join("\n");
   const faq = faqs.map((f) => `Q: ${f.q}\nA: ${f.a}`).join("\n");
-  return `PROGRAMS (one problem each)\n${prog}\n\nTREATMENTS\n${tx}\n\nJANE BOOKING SERVICES (session length and price where published)\n${jane}\n\nLAB TESTS\n${tests}\n\nPACKAGES (exact contents)\n${packs}\n\nMEMBERSHIPS (/membership)\n${members}\n\nEXPERIENCES AND OFFERS\n${offs}\n\nOTHER PAGES: /body (3D body explorer), /treatments, /programs, /tests, /packages, /book, /contact, /faq, /about, /fotona, /men, /nutrition, /microbiome\n\nFAQ\n${faq}`;
+  const videos = socialVideos.map((v, i) => `- (#reel-${i}) about ${reelTopic(v.caption ?? "").label}: ${v.caption ?? ""}`).join("\n");
+  const products = `NEA sells medical-grade skincare from ${site.brands.join(", ")}, and builds home routines and kits in clinic (/treatments/medical-grade-skincare). Specific products are matched to your skin at a consultation or skin scan; members get 10–20% off products. Do not name individual products or prices beyond this.`;
+  return `PROGRAMS (one problem each)\n${prog}\n\nTREATMENTS\n${tx}\n\nJANE BOOKING SERVICES (session length and price where published)\n${jane}\n\nLAB TESTS\n${tests}\n\nPACKAGES (exact contents)\n${packs}\n\nMEMBERSHIPS (/membership)\n${members}\n\nEXPERIENCES AND OFFERS\n${offs}\n\nOTHER PAGES: /skin-lens (Nea SI Skin Lens: take a selfie and Nea SI marks visible signs in about 5 seconds, photo not stored), /body (3D body explorer), /treatments, /programs, /tests, /packages, /book, /contact, /faq, /about, /fotona, /men, /nutrition, /microbiome\n\nPRODUCTS\n${products}\n\nNEA VIDEOS (link as [watch: short title](#reel-N))\n${videos}\n\nFAQ\n${faq}`;
 }
 
 let cached: string | null = null;

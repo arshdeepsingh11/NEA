@@ -1,20 +1,24 @@
 import { NextResponse } from "next/server";
 import { answer, search } from "@/lib/knowledge";
 import { brief, pagesFor } from "@/lib/si/brain";
-import { ENGINE_LABEL, configured, defaultEngine, run, type Engine, type Turn } from "@/lib/si/engines";
+import { ENGINE_LABEL, configured, defaultEngine, setupHint, stream, type Engine, type Turn } from "@/lib/si/engines";
 
 /**
- * NEA SI (Skin Intelligence).
+ * Nea SI (Skin Intelligence).
  * 1. Finds the NEA pages that match the question and prices a plan (always, from NEA's own data).
- * 2. The chosen engine (Xevyo or Gemini) writes the answer from NEA's brief plus those pages.
+ * 2. The chosen engine (Xevyo or Gemini) writes the answer from NEA's brief plus those pages, streamed word by word.
  * 3. If that engine is down, the other one answers; if both are, the built-in engine does. The chat never breaks.
+ *
+ * Response: newline-delimited JSON events
+ *   {"t":"meta", sources, plan, steps}  → {"t":"d","v":"text…"} (many) → {"t":"done", model, fellBack}
  */
 export const maxDuration = 60;
 export const dynamic = "force-dynamic";
 
 /** Which engines are connected, for the switch in the chat. */
 export function GET() {
-  return NextResponse.json({ default: defaultEngine(), engines: { xevyo: configured("xevyo"), gemini: configured("gemini") } });
+  const dev = process.env.NODE_ENV !== "production";
+  return NextResponse.json({ default: defaultEngine(), engines: { xevyo: configured("xevyo"), gemini: configured("gemini") }, hint: dev ? setupHint() : null });
 }
 
 export async function POST(req: Request) {
@@ -22,30 +26,50 @@ export async function POST(req: Request) {
   const { question, context } = body;
   if (!question || question.length > 500) return NextResponse.json({ error: "Ask a question up to 500 characters" }, { status: 400 });
 
-  const local = answer(context ? `${context} ${question}` : question);
+  const full = context ? `${context} ${question}` : question;
+  const local = answer(full);
   const sources = local.sources.map((s) => ({ title: s.title, href: s.href, kind: s.kind, meta: s.meta }));
-  const base = { text: local.text, sources, plan: local.plan, steps: local.steps, model: "nea-local" as string, fellBack: false };
 
   const wanted: Engine = body.engine === "gemini" || body.engine === "xevyo" ? body.engine : defaultEngine();
   const order = ([wanted, wanted === "xevyo" ? "gemini" : "xevyo"] as Engine[]).filter(configured);
-  if (!order.length) return NextResponse.json(base);
 
   const history = (Array.isArray(body.history) ? body.history : [])
     .filter((t) => (t.role === "user" || t.role === "assistant") && typeof t.text === "string")
     .slice(-8)
     .map((t) => ({ role: t.role, text: t.text.slice(0, 1500) }));
-  const pages = search(context ? `${context} ${question}` : question, 6);
-  const turn: Turn = { role: "user", text: `${pagesFor(pages)}\n\n${context ? `The visitor is looking at: ${context}\n` : ""}QUESTION: ${question}` };
+  const turn: Turn = { role: "user", text: `${pagesFor(search(full, 6))}\n\n${context ? `The visitor is looking at: ${context}\n` : ""}QUESTION: ${question}` };
 
-  const deadline = Date.now() + 54000;
-  for (const e of order) {
-    if (deadline - Date.now() < 4000) break;
-    try {
-      const text = await run(e, brief(ENGINE_LABEL[e]), [...history, turn], deadline);
-      return NextResponse.json({ ...base, text, model: e, fellBack: e !== wanted, steps: [...local.steps, `${ENGINE_LABEL[e]} wrote the answer from NEA's knowledge`] });
-    } catch (err) {
-      console.error(`[si] ${e} failed:`, (err as Error).message);
-    }
-  }
-  return NextResponse.json({ ...base, fellBack: true });
+  const enc = new TextEncoder();
+  const body$ = new ReadableStream<Uint8Array>({
+    async start(ctrl) {
+      const send = (o: object) => ctrl.enqueue(enc.encode(JSON.stringify(o) + "\n"));
+      send({ t: "meta", sources, plan: local.plan, steps: local.steps.concat(order.length ? [`${ENGINE_LABEL[order[0]]} is writing the answer from NEA's knowledge`] : []) });
+      const deadline = Date.now() + 54000;
+      for (const e of order) {
+        if (deadline - Date.now() < 4000) break;
+        let wrote = false;
+        try {
+          for await (const chunk of stream(e, brief(ENGINE_LABEL[e]), [...history, turn], deadline)) {
+            wrote = true;
+            send({ t: "d", v: chunk });
+          }
+          send({ t: "done", model: e, fellBack: e !== wanted });
+          ctrl.close();
+          return;
+        } catch (err) {
+          console.error(`[nea-si] ${e} failed:`, (err as Error).message);
+          if (wrote) {
+            // cut off mid-answer: keep what was written
+            send({ t: "done", model: e, fellBack: e !== wanted });
+            ctrl.close();
+            return;
+          }
+        }
+      }
+      send({ t: "d", v: local.text });
+      send({ t: "done", model: "nea-local", fellBack: order.length > 0 });
+      ctrl.close();
+    },
+  });
+  return new Response(body$, { headers: { "content-type": "application/x-ndjson; charset=utf-8", "cache-control": "no-store", "x-accel-buffering": "no" } });
 }

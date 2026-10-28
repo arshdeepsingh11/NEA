@@ -81,7 +81,7 @@ const STOP = new Set(
   "a an and are as at be by can do does for from have how i if in is it me my of on or should the to was what when where which who why will with you your about get even after keep keeps kept coming come still also just like want need think please tell help could would really suggest roughly any some".split(" ")
 );
 
-const SYN: Record<string, string> = {
+export const SYN: Record<string, string> = {
   pimples: "acne", pimple: "acne", breakouts: "acne", zits: "acne", spots: "pigmentation", melasma: "pigmentation", "dark": "pigmentation",
   wrinkles: "wrinkle", lines: "wrinkle", aging: "aging", ageing: "aging", balding: "hair", thinning: "hair", "hairloss": "hair",
   botox: "neuromodulator", dysport: "neuromodulator", snore: "snoring", gut: "microbiome", bloating: "microbiome", weight: "weight",
@@ -168,6 +168,14 @@ export function buildPlan(question: string): Plan | undefined {
 
 /** A grounded answer built only from NEA's own content. Swap for an LLM via /api/ask when ready. */
 export function answer(question: string): Answer {
+  // greetings and thanks get a friendly reply, not "not found"
+  const small = question.trim().toLowerCase().replace(/[!.?,]+$/g, "");
+  if (/^(hi|hii+|hello|hey|hey there|good (morning|afternoon|evening)|yo|hola|namaste|sat sri akal)$/.test(small)) {
+    return { text: `Hi! I’m Nea SI, NEA’s Skin Intelligence. Tell me what is bothering your skin, hair or body, and I’ll explain what is likely behind it, match you to a program, price it, and book the right service in Jane.`, sources: [], steps: ["Read your message"] };
+  }
+  if (/^(thanks|thank you|thx|ty|great|perfect|ok|okay|cool|awesome)( so much| a lot)?$/.test(small)) {
+    return { text: `You’re welcome! Anything else about your skin, a treatment or a price I can check for you?`, sources: [], steps: ["Read your message"] };
+  }
   const hits = search(question, 4);
   const plan = buildPlan(question);
   const steps = [`Read your question`, `Searched ${docs.length} NEA programs, treatments, tests and answers`, hits.length ? `Matched ${hits.length} relevant sources` : "No exact match found", ...(plan ? [`Priced a plan from ${plan.items.length} program${plan.items.length > 1 ? "s" : ""}`] : [])];
