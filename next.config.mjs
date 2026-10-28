@@ -5,6 +5,7 @@ const nextConfig = {
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "neaprecisionskin.com", pathname: "/wp-content/**" },
+      { protocol: "https", hostname: "images.unsplash.com" },
     ],
   },
   async redirects() {

@@ -1,3 +1,4 @@
+import { IMG } from "./media";
 /**
  * The four flagship programs. Every existing NEA treatment still exists;
  * programs simply group them around the problem a client actually has.
@@ -59,7 +60,7 @@ export const programs: Program[] = [
     treatments: ["active-acne", "acne-scarring", "rosacea", "large-pores", "medical-grade-skincare"],
     priceFrom: 1200,
     duration: "90 days",
-    image: "2025/07/pexels-anna-nekrashevich-6476081-b-scaled.jpg",
+    image: IMG.acne,
     accent: "flora",
   },
   {
@@ -96,7 +97,7 @@ export const programs: Program[] = [
     treatments: ["hyperpigmentation-melasma", "perfect-derma-peel", "facials", "stretch-marks-and-scars"],
     priceFrom: 950,
     duration: "90 days",
-    image: "2025/04/w4dj3mshhq0.jpg",
+    image: IMG.brownSkin,
     accent: "dermis",
   },
   {
@@ -132,7 +133,7 @@ export const programs: Program[] = [
     treatments: ["hair-restoration", "prp-injections"],
     priceFrom: 2400,
     duration: "6 months",
-    image: "2024/06/q-kkmb8go1e-683x1024.jpg",
+    image: IMG.hair,
     accent: "ink",
   },
   {
@@ -173,7 +174,7 @@ export const programs: Program[] = [
     treatments: ["lines-wrinkles-sun-damage", "facial-laser", "neuromodulators", "dermal-fillers", "muscle-sculpting", "fotona-laser"],
     priceFrom: 3900,
     duration: "12 months",
-    image: "2025/08/cherrydeck-4p77t8fzGFo-unsplash-3-2-scaled.jpg",
+    image: IMG.aging,
     accent: "lumen",
   },
 ];

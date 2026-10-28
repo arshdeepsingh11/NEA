@@ -1,3 +1,4 @@
+import { treatmentImage } from "./media";
 import raw from "./generated/treatments.json";
 import pages from "./generated/pages.json";
 
@@ -326,7 +327,8 @@ const extra: Treatment[] = [
   },
 ];
 
-export const treatments: Treatment[] = [...fromSite, ...extra];
+// 4K photography per treatment (falls back to the original NEA image)
+export const treatments: Treatment[] = [...fromSite, ...extra].map((t) => ({ ...t, image: treatmentImage[t.slug] ?? t.image }));
 
 export function getTreatment(slug: string) {
   return treatments.find((t) => t.slug === slug);
