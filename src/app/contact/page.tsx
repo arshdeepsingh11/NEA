@@ -52,7 +52,7 @@ export default function ContactPage() {
                 Get directions
               </a>
             </div>
-            <div className="h-[340px] overflow-hidden rounded-4xl bg-mist">
+            <div className="h-[520px]">
               <ClinicMap query={site.mapsQuery} />
             </div>
           </div>
