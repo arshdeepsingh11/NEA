@@ -1,79 +1,216 @@
 "use client";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search } from "lucide-react";
+import { ArrowUpRight, CalendarHeart, Clock3, Search, Sparkles } from "lucide-react";
 import { NeaImage } from "@/components/ui/nea-image";
+import { useBooking } from "@/components/booking/booking";
+import { useAi } from "@/components/ai/ai-provider";
 import type { TreatmentCategory } from "@/content/treatments";
-import { cn } from "@/lib/utils";
+import { revealOnMobile } from "@/lib/reveal";
+import { cn, money } from "@/lib/utils";
 
-type Item = { slug: string; title: string; summary: string; image: string; category: TreatmentCategory; concerns: string[] };
+export type TreatmentItem = {
+  slug: string;
+  title: string;
+  summary: string;
+  image: string;
+  category: TreatmentCategory;
+  concerns: string[];
+  jane: { services: number; min: number | null; price: number | null };
+  regions: { id: string; name: string; face: boolean }[];
+};
 
 const FOCUS_MAP: Record<string, TreatmentCategory | "all"> = { skin: "skin", wellness: "wellness", body: "body", injectables: "injectables", laser: "laser", hair: "hair", feminine: "feminine" };
+const QUICK = ["acne", "melasma", "wrinkles", "hair loss", "redness", "double chin", "scars", "pores", "snoring", "weight"];
 
-export function TreatmentsBrowser({ items, categories }: { items: Item[]; categories: { id: TreatmentCategory; label: string; blurb: string }[] }) {
+/** Simple, explainable relevance: words in the title count most, then concerns, then summary. */
+function score(t: TreatmentItem, q: string) {
+  const words = q.toLowerCase().split(/\s+/).filter(Boolean);
+  if (!words.length) return 1;
+  let s = 0;
+  for (const w of words) {
+    if (t.title.toLowerCase().includes(w)) s += 3;
+    if (t.concerns.join(" ").toLowerCase().includes(w)) s += 2;
+    if (t.summary.toLowerCase().includes(w)) s += 1;
+  }
+  return s / (words.length * 3);
+}
+
+/**
+ * Treatment Navigator: one list, one live preview. Type a concern and SI ranks every treatment by fit,
+ * showing session time and price straight from NEA's Jane booking system.
+ */
+export function TreatmentsBrowser({ items, categories }: { items: TreatmentItem[]; categories: { id: TreatmentCategory; label: string; blurb: string }[] }) {
   const params = useSearchParams();
   const initial = FOCUS_MAP[params.get("focus") ?? ""] ?? "all";
   const [cat, setCat] = useState<TreatmentCategory | "all">(initial);
   const [q, setQ] = useState("");
+  const [active, setActive] = useState<string>(items[0]?.slug ?? "");
+  const book = useBooking();
+  const ai = useAi();
 
   const list = useMemo(() => {
-    const s = q.trim().toLowerCase();
-    return items.filter((t) => (cat === "all" || t.category === cat) && (!s || `${t.title} ${t.summary} ${t.concerns.join(" ")}`.toLowerCase().includes(s)));
+    return items
+      .map((t) => ({ t, s: score(t, q) }))
+      .filter(({ t, s }) => (cat === "all" || t.category === cat) && s > 0)
+      .sort((a, b) => b.s - a.s);
   }, [items, cat, q]);
+
+  useEffect(() => {
+    if (list.length && !list.some((x) => x.t.slug === active)) setActive(list[0].t.slug);
+  }, [list, active]);
+
+  const cur = items.find((t) => t.slug === active) ?? list[0]?.t;
+  const catLabel = (id: TreatmentCategory) => categories.find((c) => c.id === id)?.label;
 
   return (
     <div>
-      <div className="sticky top-[var(--header-h)] z-30 -mx-5 mb-10 border-b border-ink/[0.06] bg-porcelain/85 px-5 py-4 backdrop-blur-xl md:mx-0 md:rounded-full md:border md:px-3 md:py-2">
-        <div className="flex flex-col gap-3 md:flex-row md:items-center">
-          <div className="no-scrollbar flex gap-1 overflow-x-auto">
-            {[{ id: "all" as const, label: "All" }, ...categories].map((c) => (
-              <button
-                key={c.id}
-                onClick={() => setCat(c.id)}
-                aria-pressed={cat === c.id}
-                className={cn("shrink-0 rounded-full px-4 py-2 text-[14px] transition", cat === c.id ? "surface-strong text-ink" : "text-graphite hover:bg-ink/5 hover:text-ink")}
-              >
-                {c.label}
-              </button>
-            ))}
-          </div>
-          <label className="relative md:ml-auto md:w-72">
-            <span className="sr-only">Search treatments</span>
-            <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-graphite" />
-            <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search a concern, e.g. melasma" className="w-full rounded-full border border-ink/10 surface py-2.5 pl-10 pr-4 text-[14px] outline-none focus:border-flora" />
-          </label>
+      {/* SI search */}
+      <div className="surface rounded-[28px] p-3">
+        <label className="flex items-center gap-3 rounded-2xl bg-white/70 px-4 py-3">
+          <Sparkles className="h-4 w-4 shrink-0 text-flora" />
+          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Describe what you want to fix, e.g. dark spots on my cheeks" className="min-w-0 flex-1 bg-transparent text-[15px] text-ink placeholder:text-graphite/70 focus:outline-none" aria-label="Search treatments" />
+          <Search className="h-4 w-4 shrink-0 text-graphite" />
+        </label>
+        <div className="no-scrollbar mt-3 flex gap-1.5 overflow-x-auto px-1 pb-1">
+          {[{ id: "all" as const, label: "All" }, ...categories].map((c) => (
+            <button key={c.id} onClick={() => setCat(c.id)} aria-pressed={cat === c.id} className={cn("shrink-0 rounded-full px-3.5 py-1.5 text-[13px] transition", cat === c.id ? "bg-ink text-white" : "bg-ink/[0.05] text-ink/70 hover:text-ink")}>
+              {c.label}
+            </button>
+          ))}
+          <span className="mx-1 w-px shrink-0 bg-ink/10" />
+          {QUICK.map((w) => (
+            <button key={w} onClick={() => setQ(w)} className={cn("shrink-0 rounded-full border px-3 py-1.5 text-[12.5px] transition", q === w ? "border-ink text-ink" : "border-ink/10 text-graphite hover:text-ink")}>
+              {w}
+            </button>
+          ))}
         </div>
       </div>
-      {cat !== "all" && <p className="mb-8 text-lede text-graphite">{categories.find((c) => c.id === cat)?.blurb}</p>}
-      <motion.div layout className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-        <AnimatePresence mode="popLayout">
-          {list.map((t) => (
-            <motion.div key={t.slug} layout initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.96 }} transition={{ type: "spring", stiffness: 300, damping: 30 }}>
-              <Link href={`/treatments/${t.slug}`} className="group block overflow-hidden rounded-4xl surface">
-                <div className="relative aspect-[4/3] overflow-hidden bg-mist">
-                  <NeaImage src={t.image} alt="" fill sizes="(max-width: 640px) 100vw, 33vw" className="object-cover transition-transform duration-700 ease-spring group-hover:scale-105" />
+
+      <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
+        {/* ranked list */}
+        <div>
+          <p className="mb-2 px-1 text-[12.5px] text-graphite">
+            {list.length} treatments{q ? ` ranked by fit for “${q}”` : cat !== "all" ? ` in ${catLabel(cat)}` : ""}
+          </p>
+          <ul className="space-y-1.5">
+            {list.map(({ t, s }, i) => {
+              const on = t.slug === cur?.slug;
+              return (
+                <li key={t.slug}>
+                  <button
+                    onMouseEnter={() => setActive(t.slug)}
+                    onFocus={() => setActive(t.slug)}
+                    onClick={() => (setActive(t.slug), revealOnMobile("treatment-preview"))}
+                    className={cn("group flex w-full items-center gap-4 rounded-2xl border px-4 py-3 text-left transition", on ? "border-ink/15 bg-white shadow-[0_12px_30px_-20px_rgba(var(--shadow-tint),0.6)]" : "border-transparent hover:bg-white/60")}
+                  >
+                    <span className="tabular w-6 shrink-0 text-[12px] text-graphite">{String(i + 1).padStart(2, "0")}</span>
+                    <span className="relative h-12 w-12 shrink-0 overflow-hidden rounded-xl bg-mist">
+                      <NeaImage src={t.image} alt="" fill sizes="48px" className="object-cover" />
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate text-[15px] text-ink">{t.title}</span>
+                      <span className="flex items-center gap-2 text-[12px] text-graphite">
+                        {catLabel(t.category)}
+                        {t.jane.min && (
+                          <span className="flex items-center gap-1">
+                            · <Clock3 className="h-3 w-3" /> {t.jane.min} min
+                          </span>
+                        )}
+                      </span>
+                    </span>
+                    {q && (
+                      <span className="hidden w-20 shrink-0 sm:block" title="How well it fits your search">
+                        <span className="block h-1.5 rounded-full bg-ink/[0.07]">
+                          <motion.span className="block h-full rounded-full bg-[rgb(var(--viz-1))]" animate={{ width: `${Math.round(Math.min(1, s) * 100)}%` }} />
+                        </span>
+                        <span className="tabular mt-0.5 block text-right text-[10.5px] text-graphite">{Math.round(Math.min(1, s) * 100)}% fit</span>
+                      </span>
+                    )}
+                    <ArrowUpRight className={cn("h-4 w-4 shrink-0 transition", on ? "text-ink" : "text-graphite/50")} />
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+          {list.length === 0 && (
+            <div className="rounded-3xl border border-dashed border-ink/15 p-10 text-center">
+              <p className="text-lg">Nothing matches “{q}”.</p>
+              <button onClick={() => ai.open({ query: q })} className="btn-light mt-5">
+                <Sparkles className="h-4 w-4" /> Ask SI instead
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* live preview */}
+        <div id="treatment-preview" className="scroll-mt-20 lg:sticky lg:top-24 lg:h-fit">
+          <AnimatePresence mode="wait">
+            {cur && (
+              <motion.article key={cur.slug} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.3 }} className="surface overflow-hidden rounded-[32px]">
+                <div className="relative aspect-[16/10]">
+                  <NeaImage src={cur.image} alt={cur.title} fill sizes="(min-width:1024px) 50vw, 100vw" className="object-cover" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-ink/55 via-transparent to-transparent" />
+                  <span className="absolute left-5 top-5 rounded-full bg-white/85 px-3 py-1 text-[12px] text-ink backdrop-blur">{catLabel(cur.category)}</span>
+                  <h3 className="absolute inset-x-6 bottom-5 font-display text-[clamp(2rem,3.4vw,2.8rem)] leading-[1] text-white">{cur.title}</h3>
                 </div>
                 <div className="p-6">
-                  <p className="text-[13px] text-graphite">{categories.find((c) => c.id === t.category)?.label}</p>
-                  <h3 className="mt-1 text-xl font-semibold tracking-tight">{t.title}</h3>
-                  <p className="mt-2 text-[15px] leading-relaxed text-graphite">{t.summary}</p>
+                  <p className="text-[16px] leading-relaxed text-ink">{cur.summary}</p>
+                  <dl className="mt-5 grid grid-cols-3 gap-2.5">
+                    <Stat k="Session" v={cur.jane.min ? `${cur.jane.min} min` : "Varies"} />
+                    <Stat k="From" v={cur.jane.price ? money(cur.jane.price) : "Ask"} />
+                    <Stat k="Options in Jane" v={String(cur.jane.services)} />
+                  </dl>
+                  {cur.concerns.length > 0 && (
+                    <div className="mt-5">
+                      <p className="mb-2 text-[12.5px] text-graphite">Helps with</p>
+                      <div className="flex flex-wrap gap-1.5">
+                        {cur.concerns.slice(0, 8).map((c) => (
+                          <button key={c} onClick={() => setQ(c)} className="chip !text-[12.5px] hover:text-ink">
+                            {c}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  {cur.regions.length > 0 && (
+                    <div className="mt-4 flex flex-wrap items-center gap-2 text-[12.5px] text-graphite">
+                      Works on:
+                      {cur.regions.map((r) => (
+                        <Link key={r.id} href={`/body?${r.face ? "mode=face&" : ""}focus=${r.id}`} className="underline-offset-4 hover:text-ink hover:underline">
+                          {r.name}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                  <div className="mt-6 flex flex-wrap gap-2">
+                    <button onClick={() => book.open(cur.slug, cur.title.split(" (")[0])} className="btn-light">
+                      <CalendarHeart className="h-4 w-4" /> Book in Jane
+                    </button>
+                    <Link href={`/treatments/${cur.slug}`} className="btn-ghost">
+                      Full details <ArrowUpRight className="h-4 w-4" />
+                    </Link>
+                    <button onClick={() => ai.open({ context: cur.title, query: `Is ${cur.title} right for me?` })} className="btn-ghost">
+                      <Sparkles className="h-4 w-4" /> Ask SI
+                    </button>
+                  </div>
                 </div>
-              </Link>
-            </motion.div>
-          ))}
-        </AnimatePresence>
-      </motion.div>
-      {list.length === 0 && (
-        <div className="rounded-4xl border border-dashed border-ink/15 p-12 text-center">
-          <p className="text-lg">No treatment matches “{q}”.</p>
-          <p className="mt-2 text-graphite">Try a simpler word, or ask the team directly.</p>
-          <Link href={`/ask?q=${encodeURIComponent(q)}`} className="btn-primary mt-6">
-            Ask NEA
-          </Link>
+              </motion.article>
+            )}
+          </AnimatePresence>
         </div>
-      )}
+      </div>
+    </div>
+  );
+}
+
+function Stat({ k, v }: { k: string; v: string }) {
+  return (
+    <div className="rounded-2xl border border-ink/[0.07] bg-white/70 p-3">
+      <dt className="text-[11.5px] text-graphite">{k}</dt>
+      <dd className="tabular mt-1 font-display text-[1.35rem] leading-none text-ink">{v}</dd>
     </div>
   );
 }
