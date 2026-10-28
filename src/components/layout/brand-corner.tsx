@@ -1,13 +1,12 @@
 "use client";
 import Link from "next/link";
 import { motion, useMotionValueEvent, useScroll } from "framer-motion";
-import { Phone } from "lucide-react";
 import { useState } from "react";
 import { NeaLogo } from "@/components/brand/nea-logo";
-import { site } from "@/lib/site";
+import { SmartSearch } from "@/components/search/smart-search";
 
 /**
- * Not a navbar: just the brand, top-left, so every page carries the NEA logo.
+ * Not a navbar: the brand top-left, and Smart Search top-right (an icon that opens into a search bar).
  * It tucks away while you scroll down and returns when you scroll up.
  */
 export function BrandCorner() {
@@ -34,9 +33,7 @@ export function BrandCorner() {
         >
           <NeaLogo className={`w-auto transition-all duration-500 ${compact ? "h-8" : "h-11"}`} />
         </Link>
-        <a href={site.phoneHref} className={`pointer-events-auto hidden items-center gap-2 rounded-full px-4 py-2 text-[13px] text-ink/80 transition hover:text-ink md:flex ${compact ? "glass" : ""}`}>
-          <Phone className="h-3.5 w-3.5" /> {site.phone}
-        </a>
+        <SmartSearch />
       </div>
     </motion.div>
   );
