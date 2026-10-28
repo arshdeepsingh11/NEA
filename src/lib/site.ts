@@ -30,6 +30,9 @@ export const site = {
   ],
   social: {
     instagram: "https://www.instagram.com/neaprecisionskin/",
+    // add NEA's channel links here when they exist; the Reels viewer shows a Follow button for each
+    youtube: "",
+    tiktok: "",
     facebook: "https://www.facebook.com/Neamedaestheticsca",
     linkedinFounder: "https://www.linkedin.com/in/raman-kapoor-b227a211/",
     googleReviews:

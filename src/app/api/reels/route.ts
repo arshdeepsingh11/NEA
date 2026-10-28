@@ -1,20 +1,18 @@
 import { NextResponse } from "next/server";
-import { getReels, type Reel } from "@/lib/instagram";
-import { localReels } from "@/content/reels";
+import { getInstagramVideos } from "@/lib/instagram";
+import { embedFor, socialVideos } from "@/content/reels";
 
-/** NEA's videos for the Reels viewer: Instagram (when connected) plus videos hosted on this site. Rebuilt at most once an hour. */
+/** NEA's videos for the Reels viewer: newest Instagram Reels (when connected) plus the links in content/reels.ts. */
 export const revalidate = 3600;
 
 export async function GET() {
-  const hosted: Reel[] = localReels.map((r) => ({
-    id: `site-${r.file}`,
-    video: `/reels/${r.file}`,
-    poster: r.poster ? `/reels/${r.poster}` : null,
-    caption: r.caption,
-    permalink: "",
-    date: new Date(r.date).toISOString(),
-  }));
-  const instagram = await getReels();
-  const reels = [...instagram, ...hosted].sort((a, b) => +new Date(b.date) - +new Date(a.date));
-  return NextResponse.json({ reels, connected: Boolean(process.env.INSTAGRAM_ACCESS_TOKEN) });
+  const auto = await getInstagramVideos();
+  const seen = new Set<string>();
+  const videos = [...auto, ...socialVideos].filter((v) => {
+    const e = embedFor(v.url);
+    if (!e || seen.has(e.platform + e.id)) return false;
+    seen.add(e.platform + e.id);
+    return true;
+  });
+  return NextResponse.json({ videos });
 }

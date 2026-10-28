@@ -1,37 +1,20 @@
 /**
- * NEA's own Instagram videos, read with Instagram's official API (Instagram API with Instagram Login).
- * Free to use. Needs INSTAGRAM_ACCESS_TOKEN (see README → "Instagram Reels").
- * Only the account that owns the token is ever read, so the site can only show @neaprecisionskin.
+ * Optional: picks up NEA's newest Instagram Reels automatically with Instagram's free official API.
+ * Without INSTAGRAM_ACCESS_TOKEN the site simply uses the links in content/reels.ts.
+ * Only links and captions are read; videos always play through Instagram's own embedded player.
  */
-export type Reel = {
-  id: string;
-  video: string;
-  poster: string | null;
-  caption: string;
-  permalink: string;
-  date: string;
-};
+import type { SocialVideo } from "@/content/reels";
 
-type Media = {
-  id: string;
-  caption?: string;
-  media_type: "IMAGE" | "VIDEO" | "CAROUSEL_ALBUM";
-  media_product_type?: string;
-  media_url?: string;
-  thumbnail_url?: string;
-  permalink: string;
-  timestamp: string;
-};
+type Media = { id: string; caption?: string; media_type: "IMAGE" | "VIDEO" | "CAROUSEL_ALBUM"; permalink: string; timestamp: string };
 
 const API = "https://graph.instagram.com";
-const FIELDS = "id,caption,media_type,media_product_type,media_url,thumbnail_url,permalink,timestamp";
 
-/** Latest videos, newest first. Cached for an hour so visitors never wait on Instagram. Returns [] when not set up. */
-export async function getReels(max = 30): Promise<Reel[]> {
+/** Newest Instagram videos as embeddable links. Cached for an hour. Returns [] when not set up. */
+export async function getInstagramVideos(max = 30): Promise<SocialVideo[]> {
   const token = process.env.INSTAGRAM_ACCESS_TOKEN;
   if (!token) return [];
-  const out: Reel[] = [];
-  let url: string | null = `${API}/me/media?fields=${FIELDS}&limit=50&access_token=${encodeURIComponent(token)}`;
+  const out: SocialVideo[] = [];
+  let url: string | null = `${API}/me/media?fields=id,caption,media_type,permalink,timestamp&limit=50&access_token=${encodeURIComponent(token)}`;
   try {
     for (let page = 0; url && page < 4 && out.length < max; page++) {
       const res: Response = await fetch(url, { next: { revalidate: 3600, tags: ["instagram"] } });
@@ -41,8 +24,8 @@ export async function getReels(max = 30): Promise<Reel[]> {
       }
       const data = (await res.json()) as { data?: Media[]; paging?: { next?: string } };
       for (const m of data.data ?? []) {
-        if (m.media_type !== "VIDEO" || !m.media_url) continue;
-        out.push({ id: m.id, video: m.media_url, poster: m.thumbnail_url ?? null, caption: m.caption ?? "", permalink: m.permalink, date: m.timestamp });
+        if (m.media_type !== "VIDEO") continue;
+        out.push({ url: m.permalink, caption: m.caption ?? "", date: m.timestamp });
         if (out.length >= max) break;
       }
       url = data.paging?.next ?? null;
@@ -60,10 +43,5 @@ export async function refreshToken() {
   const res = await fetch(`${API}/refresh_access_token?grant_type=ig_refresh_token&access_token=${encodeURIComponent(token)}`, { cache: "no-store" });
   const data = (await res.json().catch(() => ({}))) as { access_token?: string; expires_in?: number; error?: { message?: string } };
   if (!res.ok || !data.access_token) return { ok: false, error: data.error?.message ?? `HTTP ${res.status}` };
-  return {
-    ok: true,
-    expiresInDays: Math.round((data.expires_in ?? 0) / 86400),
-    // If Instagram ever hands back a different token, it has to be pasted into INSTAGRAM_ACCESS_TOKEN.
-    tokenChanged: data.access_token !== token,
-  };
+  return { ok: true, expiresInDays: Math.round((data.expires_in ?? 0) / 86400), tokenChanged: data.access_token !== token };
 }
