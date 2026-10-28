@@ -11,10 +11,10 @@ import { cn } from "@/lib/utils";
  * the way the free NEA Skin Health Report reads a face. Values are a labelled sample.
  */
 const READOUTS = [
-  { icon: Droplets, label: "Hydration", value: "58%", at: { x: 64, y: 46 }, side: "r" as const },
-  { icon: Sun, label: "UV damage", value: "Early", at: { x: 37, y: 40 }, side: "l" as const },
-  { icon: Activity, label: "Pigment", value: "3 zones", at: { x: 62, y: 60 }, side: "r" as const },
-  { icon: ScanFace, label: "Pores", value: "Refined", at: { x: 42, y: 57 }, side: "l" as const },
+  { icon: Sun, label: "UV damage", value: "Early", at: { x: 58, y: 14 }, side: "r" as const },
+  { icon: Droplets, label: "Hydration", value: "58%", at: { x: 53, y: 38 }, side: "r" as const },
+  { icon: Activity, label: "Pigment", value: "3 spots", at: { x: 36, y: 36 }, side: "l" as const },
+  { icon: ScanFace, label: "Pores", value: "Refined", at: { x: 31, y: 50 }, side: "l" as const },
 ];
 
 export function HeroScan({ image, alt, className }: { image: string; alt: string; className?: string }) {
@@ -77,7 +77,7 @@ export function HeroScan({ image, alt, className }: { image: string; alt: string
           ))}
           <div className="absolute bottom-5 left-1/2 flex -translate-x-1/2 items-center gap-2 rounded-full border border-white/70 bg-white/70 px-3.5 py-1.5 text-[11.5px] text-ink backdrop-blur-md">
             <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-flora" />
-            {step < READOUTS.length ? "AI skin scan running…" : "Scan complete · sample"}
+            {step < READOUTS.length ? "SI skin scan running…" : "Scan complete · sample"}
           </div>
         </div>
 
@@ -86,7 +86,7 @@ export function HeroScan({ image, alt, className }: { image: string; alt: string
           <motion.div
             key={r.label}
             initial={false}
-            animate={{ opacity: i < step ? 1 : 0, x: i < step ? 0 : r.side === "r" ? 12 : -12, filter: i < step ? "blur(0px)" : "blur(4px)" }}
+            animate={{ opacity: i < step ? 1 : 0, x: i < step ? 0 : r.side === "r" ? 12 : -12 }}
             transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
             className={cn("glass absolute hidden items-center gap-3 rounded-2xl px-3.5 py-2.5 sm:flex", r.side === "r" ? "-right-8 lg:-right-14" : "-left-8 lg:-left-14")}
             style={{ top: `${r.at.y - 4}%` }}

@@ -35,7 +35,7 @@ export default function HomePage() {
 
       <section className="chapter" id="finder">
         <div className="container">
-          <SectionHead title={<>Two questions. The <em className="aurora-text">right</em> place to start.</>} lede="Tell us what is bothering you most. We will point you to one program instead of fifty services." />
+          <SectionHead title={<>Seven questions. <em className="aurora-text">One</em> plan from SI.</>} lede="Answer like you would at a consultation. NEA SI explains what is most likely going on, which program, tests and first treatments fit you, what it costs against your budget, and books it in Jane." />
           <SkinFinder />
         </div>
       </section>

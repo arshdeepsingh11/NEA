@@ -7,8 +7,10 @@ import { NumberTicker } from "@/components/ui/number-ticker";
 import { treatments } from "@/content/treatments";
 import { labTests } from "@/content/tests";
 import { site } from "@/lib/site";
+import { IMG } from "@/content/media";
+import { TypingAnimation } from "@/components/motion/typing-animation";
 
-export const HERO_IMAGE = "2025/07/pexels-anna-nekrashevich-6476080-b-scaled.jpg";
+export const HERO_IMAGE = IMG.hero;
 
 /**
  * Home hero, v4: editorial serif headline, a real face in an arch with a live AI skin scan,
@@ -22,13 +24,17 @@ export function HomeHero() {
   ];
   return (
     <section className="relative isolate overflow-hidden">
-      <div className="container grid min-h-[100svh] items-center gap-12 pb-32 pt-12 lg:grid-cols-[1.08fr_0.92fr] lg:gap-6 lg:pb-24">
+      <div className="container grid min-h-[100svh] items-center gap-12 pb-32 pt-24 lg:grid-cols-[1.08fr_0.92fr] lg:gap-6 lg:pb-24">
         <div className="relative z-10 order-2 lg:order-1">
           <p className="eyebrow flex items-center gap-2">
             <span className="h-px w-8 bg-ink/30" /> Physician-managed skin clinic · Calgary
           </p>
           <SplitReveal as="h1" text={"Healthy skin\nstarts *inside.*"} className="mt-6 font-display text-[clamp(3.4rem,7vw,7rem)] leading-[0.92] tracking-[-0.025em] text-ink" />
-          <p className="mt-7 max-w-[32rem] text-[18px] leading-relaxed text-graphite">
+          <p className="mt-6 flex flex-wrap items-baseline gap-x-2 text-[17px] text-graphite">
+            <span>We measure your</span>
+            <TypingAnimation className="font-medium text-ink" caretClassName="bg-flora" words={["gut microbiome.", "hormones.", "vitamins and nutrition.", "skin, layer by layer.", "biological age."]} />
+          </p>
+          <p className="mt-4 max-w-[32rem] text-[18px] leading-relaxed text-graphite">
             Your skin is the visible result of your gut, hormones, nutrition and environment. We measure all of them, treat the cause, and show you the change in numbers.
           </p>
 

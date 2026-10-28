@@ -7,6 +7,7 @@ import { NeaImage } from "@/components/ui/nea-image";
 import { SplitReveal } from "@/components/motion/split-reveal";
 import { HeroBody } from "./hero-body";
 import { cn, money } from "@/lib/utils";
+import { IMG } from "@/content/media";
 
 /* ------------------------------------------------------------------ */
 /* Concerns marquee: two rows of large serif words, opposite directions */
@@ -46,7 +47,7 @@ const STEPS: Step[] = [
     kicker: "Measure what is underneath",
     text: "A 15-minute advanced skin scan maps UV damage, hidden pigment, pores, redness and hydration. Where it matters, BioAro tests read your skin and gut microbiome, hormones and vitamins.",
     chips: ["Advanced skin scan", "BioSkin microbiome", "Hormones & vitamins"],
-    image: "2023/12/Precision-Skin-Care-Testing-scaled.jpeg",
+    image: IMG.labPipette,
     metric: { label: "Skin layers mapped", value: "6" },
   },
   {
@@ -55,7 +56,7 @@ const STEPS: Step[] = [
     kicker: "In clinic and at home",
     text: "Fotona laser, medical peels and injectables work in clinic. A medical-grade routine and a Registered Dietitian's plan work on the cause at home.",
     chips: ["Fotona laser", "Medical peels", "Dietitian plan"],
-    image: "2023/11/Photo-2023-08-10-12-08-42-PM-scaled.jpg",
+    image: IMG.laserFace,
     metric: { label: "Treatments in one plan", value: "29" },
   },
   {
@@ -64,7 +65,7 @@ const STEPS: Step[] = [
     kicker: "Progress you can see in numbers",
     text: "We re-scan at day 45 and day 90 and put the results side by side, so you can see the change, not just feel it.",
     chips: ["Day 45 re-scan", "Day 90 re-scan", "Before / after report"],
-    image: "2025/09/manmit-consultation.jpeg",
+    image: IMG.consult,
     metric: { label: "Re-scans per program", value: "2" },
   },
   {
@@ -73,7 +74,7 @@ const STEPS: Step[] = [
     kicker: "Keep the result",
     text: "A simple monthly plan and a quarterly re-scan keep breakouts, pigment and ageing from creeping back.",
     chips: ["Monthly plan", "Quarterly re-scan", "Glow membership"],
-    image: "2024/06/javlgc_muw4.jpg",
+    image: IMG.serum,
     metric: { label: "Re-scan every", value: "3 mo" },
   },
 ];
