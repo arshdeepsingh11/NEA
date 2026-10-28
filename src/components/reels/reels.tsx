@@ -1,4 +1,5 @@
 "use client";
+import { NeaSiIcon } from "@/components/brand/nea-si-icon";
 import { AnimatePresence, motion } from "framer-motion";
 import { CalendarHeart, ChevronLeft, ChevronRight, Instagram, Sparkles, UserPlus, X, Youtube } from "lucide-react";
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from "react";
@@ -40,6 +41,13 @@ export function ReelsProvider({ children }: { children: ReactNode }) {
     },
     [load],
   );
+
+  // Nea SI answers can link straight to a video: [watch: …](#reel-3)
+  useEffect(() => {
+    const on = (e: Event) => open((e as CustomEvent<{ index?: number }>).detail?.index ?? 0);
+    window.addEventListener("nea:reels", on);
+    return () => window.removeEventListener("nea:reels", on);
+  }, [open]);
 
   return (
     <ReelsCtx.Provider value={{ open, load, videos }}>
@@ -119,7 +127,7 @@ function Viewer({ videos, start, onClose }: { videos: SocialVideo[]; start: numb
     <motion.div
       role="dialog"
       aria-modal="true"
-      aria-label="NEA Reels"
+      aria-label="Glow Feed"
       className="fixed inset-0 z-[88] flex flex-col bg-[rgb(12_10_16/0.94)] text-white backdrop-blur-xl"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
@@ -135,7 +143,10 @@ function Viewer({ videos, start, onClose }: { videos: SocialVideo[]; start: numb
     >
       {/* top bar */}
       <div className="flex shrink-0 items-center justify-between gap-3 p-3 md:p-5">
-        <FollowButton platform={e.platform} />
+        <div className="flex items-center gap-3">
+          <p className="hidden font-display text-[22px] leading-none md:block">Glow Feed</p>
+          <FollowButton platform={e.platform} />
+        </div>
         <div className="flex items-center gap-2">
           <span className="tabular rounded-full bg-white/10 px-3 py-1.5 text-[12.5px] text-white/80">
             {i + 1} / {videos.length}
@@ -169,7 +180,7 @@ function Viewer({ videos, start, onClose }: { videos: SocialVideo[]; start: numb
               <CalendarHeart className="h-4 w-4" /> {topic.key === "popular" ? "Book a visit" : `Book ${topic.label}`}
             </button>
             <button onClick={askIt} className="flex items-center justify-center gap-2 rounded-full bg-white/10 px-5 py-3 text-[14px] text-white transition hover:bg-white/20">
-              <Sparkles className="h-4 w-4" /> Ask SI about this
+              <NeaSiIcon className="h-4 w-4" /> Ask Nea SI about this
             </button>
           </div>
           <p className="mt-5 text-[12px] text-white/45">Tap the video to play. Arrows or keyboard for the next one.</p>
@@ -190,7 +201,7 @@ function Viewer({ videos, start, onClose }: { videos: SocialVideo[]; start: numb
           <button onClick={bookIt} className="flex min-w-0 flex-1 items-center justify-center gap-2 rounded-full bg-white px-4 py-3 text-[13.5px] font-medium text-ink">
             <CalendarHeart className="h-4 w-4 shrink-0" /> <span className="truncate">{topic.key === "popular" ? "Book a visit" : `Book ${topic.label}`}</span>
           </button>
-          <button onClick={askIt} aria-label="Ask SI" className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-white/10">
+          <button onClick={askIt} aria-label="Ask Nea SI" className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-white/10">
             <Sparkles className="h-5 w-5" />
           </button>
           <button onClick={() => go(1)} aria-label="Next video" className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-white/10">

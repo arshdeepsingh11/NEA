@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import { CalendarHeart, Play } from "lucide-react";
+import { Aperture, CalendarHeart } from "lucide-react";
 import { FollowButton, useReels } from "@/components/reels/reels";
 import { useBooking } from "@/components/booking/booking";
 import { cleanCaption, embedFor, embedHeight, reelTopic } from "@/content/reels";
@@ -38,18 +38,18 @@ export function ReelsStrip() {
   const list = videos.slice(0, 12);
 
   return (
-    <section ref={root} className="chapter" aria-label="NEA Reels">
+    <section ref={root} className="chapter" aria-label="Glow Feed">
       <div className="container">
         <div className="mb-8 flex flex-wrap items-end justify-between gap-4 md:mb-10">
           <div>
-            <p className="text-[13px] text-graphite">@neaprecisionskin</p>
+            <p className="text-[13px] text-graphite">Glow Feed · @neaprecisionskin</p>
             <h2 className="mt-2 max-w-2xl text-display-md font-semibold">
               Straight from the <em className="aurora-text">clinic floor.</em>
             </h2>
           </div>
           <div className="flex flex-wrap gap-2">
             <button onClick={() => open(0)} className="btn-primary">
-              <Play className="h-4 w-4" /> Watch reels
+              <Aperture className="h-4 w-4" /> Open Glow Feed
             </button>
             <FollowButton />
           </div>
