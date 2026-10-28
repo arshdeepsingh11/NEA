@@ -2,11 +2,12 @@
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { CalendarHeart, House, LayoutGrid, Microscope, Route, ScanFace, Sparkles, Syringe, X } from "lucide-react";
+import { CalendarHeart, Clapperboard, House, LayoutGrid, Microscope, Route, ScanFace, Sparkles, Syringe, X } from "lucide-react";
 import Link from "next/link";
 import { SparkleNavbar, type SparkleItem } from "@/components/ui/sparkle-navbar";
 import { useAi } from "@/components/ai/ai-provider";
 import { useBooking } from "@/components/booking/booking";
+import { useReels } from "@/components/reels/reels";
 import { NeaLogo } from "@/components/brand/nea-logo";
 import { footerNav } from "@/content/nav";
 import { site } from "@/lib/site";
@@ -20,6 +21,7 @@ export function Dock() {
   const pathname = usePathname();
   const ai = useAi();
   const book = useBooking();
+  const reels = useReels();
   const [more, setMore] = useState(false);
   const [small, setSmall] = useState(false);
   useEffect(() => {
@@ -35,13 +37,14 @@ export function Dock() {
     { label: "Home", href: "/", icon: <House />, match: is("/") },
     { label: "Programs", href: "/programs", icon: <Route />, match: is("/programs") },
     { label: "Treatments", href: "/treatments", icon: <Syringe />, match: is("/treatments") || is("/fotona") },
+    { label: "Reels", icon: <Clapperboard />, onClick: () => reels.open(), hint: "NEA on Instagram" },
     { label: "Ask SI", icon: <Sparkles />, featured: true, onClick: () => ai.open(), hint: "Skin Intelligence · press N" },
     { label: "Testing", href: "/tests", icon: <Microscope />, match: is("/tests") || is("/microbiome") },
     { label: "Free scan", href: "/skin-scan", icon: <ScanFace />, match: is("/skin-scan") },
     { label: "Book", icon: <CalendarHeart />, onClick: () => book.open(), hint: "Book in Jane" },
     { label: "More", icon: <LayoutGrid />, onClick: () => setMore(true), match: more },
   ];
-  const items = small ? [all[0], all[1], all[3], all[6], all[7]] : all;
+  const items = small ? [all[0], all[1], all[4], all[3], all[8]] : all;
   const active = items.findIndex((i) => i.match);
 
   return (
