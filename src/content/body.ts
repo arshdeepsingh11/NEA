@@ -6,7 +6,7 @@
 export type Region = {
   id: string;
   name: string;
-  system: "Skin" | "Hair" | "Hormones" | "Heart" | "Muscle" | "Gut" | "Pelvic" | "Body" | "Joints" | "Nails";
+  system: "Skin" | "Hair" | "Hormones" | "Heart" | "Muscle" | "Gut" | "Pelvic" | "Body" | "Joints" | "Nails" | "Brain" | "Liver" | "Adrenals";
   headline: string;
   madeOf: string[];
   disruptors: string[];
@@ -18,6 +18,8 @@ export type Region = {
   /** Hotspot position on the 1.8 m body model (metres, model space) */
   anchor: [number, number, number];
   color: string;
+  /** an organ inside the body (shown in the Inside view) rather than an area of skin */
+  inside?: boolean;
 };
 
 export const bodyRegions: Region[] = [
@@ -179,6 +181,62 @@ export const bodyRegions: Region[] = [
     tracks: ["Clear nail growth"],
     anchor: [0.1, 0.05, 0.08],
     color: "var(--r-2)",
+  },
+  {
+    id: "brain",
+    name: "Brain, sleep & stress",
+    system: "Brain",
+    headline: "Your stress and sleep centre, wired straight to your skin.",
+    madeOf: [
+      "The hypothalamus and pituitary, which set off the body’s stress response (the HPA axis)",
+      "Sleep cycles: most skin and hair repair happens in deep sleep",
+      "The gut–brain axis: the vagus nerve carries signals both ways between brain and gut",
+    ],
+    disruptors: ["Long-term stress", "Less than 7 hours of sleep", "Snoring and sleep apnea", "Migraines"],
+    improve: "Cortisol testing puts a number on stress. NightLase treats snoring for better sleep without surgery, and therapeutic Botox can reduce migraine days.",
+    treatments: ["snoring-sleep-apnea", "migraine-treatment", "botox-dysport"],
+    tests: ["cortisol"],
+    tracks: ["Cortisol", "Sleep quality", "Migraine days"],
+    anchor: [0, 1.7, 0.02],
+    color: "var(--r-2)",
+    inside: true,
+  },
+  {
+    id: "liver",
+    name: "Liver & detox",
+    system: "Liver",
+    headline: "The body’s filter, and it clears used-up hormones too.",
+    madeOf: [
+      "Liver cells that process nutrients, medicines and alcohol",
+      "Hormone clearance: the liver breaks down estrogen so it does not build up",
+      "Bile, which carries waste out through the gut",
+    ],
+    disruptors: ["Alcohol", "High-sugar, ultra-processed diets", "Excess body fat around the organs", "Some medications"],
+    improve: "Inflammation markers and a dietitian-led plan support the liver and hormone balance, which matters for melasma and hormonal acne.",
+    treatments: ["weight-loss-programs"],
+    tests: ["core-inflammation-aging", "hs-crp"],
+    tracks: ["hs-CRP", "Visceral fat (DEXA)"],
+    anchor: [-0.05, 1.17, 0.04],
+    color: "var(--r-3)",
+    inside: true,
+  },
+  {
+    id: "adrenals",
+    name: "Adrenals & kidneys",
+    system: "Adrenals",
+    headline: "Two small glands that make your stress hormones.",
+    madeOf: [
+      "Adrenal glands, sitting on top of each kidney, that make cortisol, adrenaline and DHEA-S",
+      "Kidneys, which balance water and minerals and keep skin hydrated from the inside",
+    ],
+    disruptors: ["Chronic stress", "Poor sleep", "Not drinking enough water"],
+    improve: "Cortisol and DHEA-S tests show whether stress hormones are behind breakouts, oil or shedding. Nutrition and sleep work bring them back into range.",
+    treatments: ["active-acne"],
+    tests: ["cortisol", "dhea-s"],
+    tracks: ["Cortisol", "DHEA-S", "Hydration"],
+    anchor: [0.055, 1.12, -0.03],
+    color: "var(--r-4)",
+    inside: true,
   },
 ];
 

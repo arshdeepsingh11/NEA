@@ -9,8 +9,8 @@ import { onThemeChange, themeColor } from "./theme-colors";
 import { cn } from "@/lib/utils";
 
 export type AnatomyMode = "body" | "face";
-export type AnatomyView = "skin" | "holo";
-export type AnatomyRegion = { id: string; name: string; color: string };
+export type AnatomyView = "skin" | "holo" | "inside" | "systems";
+export type AnatomyRegion = { id: string; name: string; color: string; inside?: boolean };
 
 type Props = {
   mode: AnatomyMode;
@@ -64,14 +64,20 @@ function classifyFace(u: number, v: number, w: number): string | null {
 const VERT = /* glsl */ `
 attribute float aSel;
 attribute float aHov;
+attribute float aRegion;
+attribute vec3 aCol;
 varying float vSel;
 varying float vHov;
+varying float vReg;
+varying vec3 vCol;
 varying vec3 vN;
 varying vec3 vV;
 varying vec3 vW;
 void main() {
   vSel = aSel;
   vHov = aHov;
+  vReg = aRegion;
+  vCol = aCol;
   vec4 wp = modelMatrix * vec4(position, 1.0);
   vW = wp.xyz;
   vec4 mv = viewMatrix * wp;
@@ -83,6 +89,7 @@ void main() {
 const FRAG = /* glsl */ `
 uniform float uTime;
 uniform float uHolo;
+uniform float uSystems;
 uniform float uScanY;
 uniform vec3 uActiveColor;
 uniform vec3 uHoverColor;
@@ -90,6 +97,8 @@ uniform vec3 uBody;
 uniform vec3 uRim;
 varying float vSel;
 varying float vHov;
+varying float vReg;
+varying vec3 vCol;
 varying vec3 vN;
 varying vec3 vV;
 varying vec3 vW;
@@ -100,6 +109,15 @@ void main() {
   float pulse = 0.75 + 0.25 * sin(uTime * 3.0);
   vec3 col = vec3(0.0);
   float a = 0.0;
+  if (uSystems > 0.5) {
+    // every system in its own colour, with the selected one brighter
+    if (vReg < -0.5) discard;
+    float lift = 0.55 + 0.45 * isActive + 0.25 * isHover;
+    col = vCol * (0.75 + fres * 0.6) * lift;
+    a = 0.42 + isActive * 0.3 + isHover * 0.12;
+    gl_FragColor = vec4(col * a, a);
+    return;
+  }
   if (uHolo > 0.5) {
     // Light-page hologram: pale frosted aqua body, deeper teal rim, a soft scan sweep.
     vec3 body = uBody;
@@ -126,7 +144,7 @@ void main() {
 /**
  * Anatomy Viewer — a real 3D human you can rotate, zoom and click.
  * Each click maps to a NEA region (skin, gut, hormones, scalp…) and calls onSelect.
- * Two looks: realistic skin with studio light, or an AI hologram with a scanning sweep.
+ * Two looks: realistic skin with studio light, or an SI hologram with a scanning sweep.
  */
 export function AnatomyViewer({ mode, regions, view = "skin", selected = null, onSelect, className, compact, showLabels = true, focus = true }: Props) {
   const [loaded, setLoaded] = useState(false);
@@ -158,7 +176,9 @@ export function AnatomyViewer({ mode, regions, view = "skin", selected = null, o
         overlayMat.uniforms.uBody.value.copy(themeColor("--holo-body", "#f7e6f2"));
         overlayMat.uniforms.uRim.value.copy(themeColor("--holo-rim", "#6b4fc7"));
         if (points) (points.material as THREE.PointsMaterial).color.copy(themeColor("--holo-point", "#8e3fae"));
+        recolour();
       });
+      let recolour = () => {};
       const colorOf = (id: string) => {
         const c = props.current.regions.find((r) => r.id === id)?.color ?? "var(--r-1)";
         const m = c.match(/^var\((--[\w-]+)\)$/);
@@ -171,6 +191,7 @@ export function AnatomyViewer({ mode, regions, view = "skin", selected = null, o
         uniforms: {
           uTime: { value: 0 },
           uHolo: { value: 0 },
+          uSystems: { value: 0 },
           uScanY: { value: 0 },
           uActiveColor: { value: themeColor("--c-accent") },
           uHoverColor: { value: themeColor("--c-accent2") },
@@ -214,6 +235,10 @@ export function AnatomyViewer({ mode, regions, view = "skin", selected = null, o
       let lastInteract = -10;
       controls.addEventListener("start", () => (lastInteract = performance.now() / 1000));
 
+      const organs = new THREE.Group();
+      let skinBase: THREE.Material | null = null;
+      const glassMat = new THREE.MeshPhysicalMaterial({ color: "#ffffff", transparent: true, opacity: 0.14, roughness: 0.12, metalness: 0, clearcoat: 1, depthWrite: false, side: THREE.FrontSide });
+      disposables.push(glassMat);
       const home = { target: new THREE.Vector3(), dist: 3 };
       const goal = { target: new THREE.Vector3(), dist: 3 };
 
@@ -261,6 +286,18 @@ export function AnatomyViewer({ mode, regions, view = "skin", selected = null, o
           }
         }
         geo.setAttribute("aRegion", new THREE.BufferAttribute(region, 1));
+        const colAttr = new THREE.BufferAttribute(new Float32Array(pos.count * 3), 3);
+        geo.setAttribute("aCol", colAttr);
+        const fillCols = () => {
+          const cache = ids.map((id) => colorOf(id));
+          for (let i = 0; i < pos.count; i++) {
+            const k = region[i];
+            const c = k >= 0 ? cache[k] : null;
+            colAttr.setXYZ(i, c ? c.r : 0, c ? c.g : 0, c ? c.b : 0);
+          }
+          colAttr.needsUpdate = true;
+        };
+        fillCols();
         const selAttr = new THREE.BufferAttribute(new Float32Array(pos.count), 1);
         const hovAttr = new THREE.BufferAttribute(new Float32Array(pos.count), 1);
         selAttr.setUsage(THREE.DynamicDrawUsage);
@@ -330,6 +367,80 @@ export function AnatomyViewer({ mode, regions, view = "skin", selected = null, o
           new THREE.PointsMaterial({ size: isFace ? 0.0011 : 0.0045, color: themeColor("--holo-point", "#8e3fae"), transparent: true, opacity: 0.35, depthWrite: false, sizeAttenuation: true })
         );
         group.add(skinMesh, overlay, points);
+        skinBase = skinMat;
+
+        // ---------- Inside view: organs under a glass skin ----------
+        if (!isFace) {
+          const zc = -0.06;
+          const ellipsoid = (rx: number, ry: number, rz: number, wobble = 0, seg = 40) => {
+            const g = new THREE.SphereGeometry(1, seg, Math.round(seg * 0.75));
+            const p = g.attributes.position as THREE.BufferAttribute;
+            for (let i = 0; i < p.count; i++) {
+              const x = p.getX(i), y = p.getY(i), z = p.getZ(i);
+              const w = wobble ? 1 + wobble * Math.sin(x * 17) * Math.sin(y * 15 + 1) * Math.sin(z * 19 + 2) : 1;
+              p.setXYZ(i, x * rx * w, y * ry * w, z * rz * w);
+            }
+            g.computeVertexNormals();
+            return g;
+          };
+          const gut = new THREE.CatmullRomCurve3(
+            [[-0.075, 1.1], [0.07, 1.09], [0.075, 1.05], [-0.07, 1.04], [-0.075, 1.0], [0.07, 0.99], [0.06, 0.955], [-0.04, 0.95]].map(([x, y], i) => new THREE.Vector3(x, y, zc + 0.03 + (i % 2) * 0.012))
+          );
+          const defs: { id: string; geo: THREE.BufferGeometry; at: [number, number, number]; rot?: [number, number, number] }[] = [
+            { id: "brain", geo: ellipsoid(0.06, 0.048, 0.07, 0.05, 64), at: [0, 1.712, zc] },
+            { id: "neck", geo: ellipsoid(0.024, 0.012, 0.012), at: [0, 1.462, zc + 0.03] },
+            { id: "chest", geo: ellipsoid(0.052, 0.095, 0.058), at: [-0.066, 1.335, zc - 0.005] },
+            { id: "chest", geo: ellipsoid(0.048, 0.09, 0.055), at: [0.068, 1.335, zc - 0.005] },
+            { id: "chest", geo: ellipsoid(0.036, 0.044, 0.032), at: [0.016, 1.29, zc + 0.03], rot: [0, 0, -0.5] },
+            { id: "liver", geo: ellipsoid(0.085, 0.038, 0.055), at: [-0.04, 1.18, zc + 0.01], rot: [0, 0, 0.18] },
+            { id: "gut", geo: ellipsoid(0.044, 0.032, 0.034), at: [0.052, 1.165, zc + 0.02], rot: [0, 0, -0.4] },
+            { id: "gut", geo: new THREE.TubeGeometry(gut, 140, 0.016, 12, false), at: [0, 0, 0] },
+            { id: "adrenals", geo: ellipsoid(0.021, 0.04, 0.018), at: [-0.058, 1.12, zc - 0.05], rot: [0, 0, 0.25] },
+            { id: "adrenals", geo: ellipsoid(0.021, 0.04, 0.018), at: [0.058, 1.12, zc - 0.05], rot: [0, 0, -0.25] },
+            { id: "adrenals", geo: ellipsoid(0.014, 0.01, 0.012), at: [-0.052, 1.168, zc - 0.05] },
+            { id: "adrenals", geo: ellipsoid(0.014, 0.01, 0.012), at: [0.052, 1.168, zc - 0.05] },
+            { id: "pelvis", geo: ellipsoid(0.032, 0.026, 0.026), at: [0, 0.925, zc + 0.02] },
+          ];
+          const mats: Record<string, THREE.MeshPhysicalMaterial> = {};
+          const matFor = (id: string) => {
+            if (mats[id]) return mats[id];
+            const c = colorOf(id);
+            mats[id] = new THREE.MeshPhysicalMaterial({ color: c, emissive: c.clone().multiplyScalar(0.35), roughness: 0.32, clearcoat: 1, clearcoatRoughness: 0.2, sheen: 0.6, sheenColor: new THREE.Color("#ffffff") });
+            disposables.push(mats[id]);
+            return mats[id];
+          };
+          const sums2: Record<string, { v: THREE.Vector3; n: number }> = {};
+          for (const d of defs) {
+            if (!ids.includes(d.id)) continue;
+            const m = new THREE.Mesh(d.geo, matFor(d.id));
+            m.position.set(...d.at);
+            if (d.rot) m.rotation.set(...d.rot);
+            m.userData.region = d.id;
+            organs.add(m);
+            disposables.push(d.geo);
+            const c = d.id === "gut" && d.geo instanceof THREE.TubeGeometry ? new THREE.Vector3(0, 1.03, zc + 0.03) : new THREE.Vector3(...d.at);
+            const sm = (sums2[d.id] ??= { v: new THREE.Vector3(), n: 0 });
+            sm.v.add(c);
+            sm.n++;
+          }
+          // Organs-only regions (brain, liver, adrenals) get their hotspot on the organ itself.
+          for (const id of Object.keys(sums2)) {
+            const r = props.current.regions.find((x) => x.id === id);
+            if (r?.inside) anchors[id] = { p: sums2[id].v.divideScalar(sums2[id].n), n: new THREE.Vector3(0, 0, 1) };
+          }
+          organs.visible = false;
+          group.add(organs);
+          recolour = () => {
+            fillCols();
+            for (const [id, m] of Object.entries(mats)) {
+              const c = colorOf(id);
+              m.color.copy(c);
+              m.emissive.copy(c).multiplyScalar(0.35);
+            }
+          };
+        } else {
+          recolour = fillCols;
+        }
 
         const centre = bounds.getCenter(new THREE.Vector3());
         const height = bounds.max.y - bounds.min.y;
@@ -355,6 +466,10 @@ export function AnatomyViewer({ mode, regions, view = "skin", selected = null, o
         const r = renderer.domElement.getBoundingClientRect();
         ndc.set(((cx - r.left) / r.width) * 2 - 1, -((cy - r.top) / r.height) * 2 + 1);
         ray.setFromCamera(ndc, camera);
+        if (organs.visible) {
+          const o = ray.intersectObjects(organs.children, false)[0];
+          if (o) return props.current.regions.findIndex((x) => x.id === o.object.userData.region);
+        }
         const hit = ray.intersectObject(skinMesh, false)[0];
         if (!hit || !hit.face) return -1;
         const attr = (skinMesh.geometry as THREE.BufferGeometry).attributes.aRegion as THREE.BufferAttribute;
@@ -390,12 +505,32 @@ export function AnatomyViewer({ mode, regions, view = "skin", selected = null, o
       return {
         tick: (t, dt) => {
           overlayMat.uniforms.uTime.value = t;
-          const { view: v, selected: sel } = props.current;
+          const { view: v0, selected: sel } = props.current;
+          // Picking an organ-only region opens the body automatically.
+          const selInside = !!sel && !!props.current.regions.find((r) => r.id === sel)?.inside;
+          const v = selInside && v0 !== "holo" ? "inside" : v0;
           const holo = v === "holo";
+          const inside = v === "inside";
           overlayMat.uniforms.uHolo.value = holo ? 1 : 0;
-          if (skinMesh) skinMesh.visible = !holo;
+          overlayMat.uniforms.uSystems.value = v === "systems" ? 1 : 0;
+          if (skinMesh) {
+            skinMesh.visible = !holo;
+            const want = inside ? glassMat : skinBase;
+            if (want && skinMesh.material !== want) skinMesh.material = want;
+            skinMesh.renderOrder = inside ? 3 : 0;
+          }
+          organs.visible = inside || (holo && !isFace);
           if (points) points.visible = holo;
-          if (overlay) overlay.visible = true;
+          if (overlay) overlay.visible = !inside;
+          if (organs.visible) {
+            for (const o of organs.children) {
+              const m = (o as THREE.Mesh).material as THREE.MeshPhysicalMaterial;
+              const on = o.userData.region === sel;
+              m.emissiveIntensity = on ? 1.5 + 0.5 * Math.sin(t * 3) : sel ? 0.6 : 1;
+              m.transparent = true;
+              m.opacity = !sel || on ? 1 : 0.35;
+            }
+          }
           const h = bounds.max.y - bounds.min.y || 1;
           overlayMat.uniforms.uScanY.value = bounds.min.y + ((t * 0.18) % 1) * h * 1.1;
 
@@ -420,7 +555,7 @@ export function AnatomyViewer({ mode, regions, view = "skin", selected = null, o
           const a = sel && props.current.focus ? anchors[sel] : undefined;
           if (a) {
             goal.target.copy(a.p);
-            goal.dist = mode === "face" ? 0.36 : sel === "face" || sel === "scalp" || sel === "neck" ? 1.0 : sel === "feet" ? 1.3 : 1.6;
+            goal.dist = mode === "face" ? 0.36 : sel === "face" || sel === "scalp" || sel === "neck" || sel === "brain" ? 1.0 : sel === "feet" ? 1.3 : selInside ? 1.25 : 1.6;
           } else {
             goal.target.copy(home.target);
             goal.dist = home.dist;

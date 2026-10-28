@@ -36,7 +36,7 @@ export default function BodyPage() {
   return (
     <>
       <JsonLd data={breadcrumbSchema([{ name: "Home", path: "/" }, { name: "Body Explorer", path: "/body" }])} />
-      <header className="container flex flex-wrap items-end justify-between gap-4 pb-5 pt-8 md:pt-10">
+      <header className="container flex flex-wrap items-end justify-between gap-4 pb-5 pt-24 md:pt-28">
         <h1 className="max-w-4xl font-display text-[clamp(1.8rem,3.4vw,2.9rem)] font-semibold leading-[1.05] tracking-tight text-ink">
           Skin is the surface. <span className="aurora-text">Here is what is underneath.</span>
         </h1>

@@ -9,7 +9,7 @@ import { LazyAnatomy } from "@/components/three/lazy";
 type ScanRegion = { id: string; name: string; system: string; headline: string; color: string; tests: string[]; tracks: string[] };
 
 /**
- * Hero visual: an AI hologram of the body that "scans" one system at a time.
+ * Hero visual: an SI hologram of the body that "scans" one system at a time.
  * The readout explains what that system does for your skin and how NEA measures it.
  * Clicking any part opens the full Body Explorer on that region.
  */
@@ -28,7 +28,7 @@ export function HeroBody({ regions }: { regions: ScanRegion[] }) {
   return (
     <div className="relative h-full w-full" onPointerEnter={() => setPaused(true)} onPointerLeave={() => setPaused(false)}>
       <div aria-hidden className="absolute inset-[8%] rounded-full bg-[radial-gradient(circle,rgb(var(--c-accent) / 0.16),transparent_65%)] blur-2xl" />
-      <LazyAnatomy mode="body" view="holo" compact focus={false} regions={regions} selected={r.id} onSelect={(id) => router.push(`/body?focus=${id}`)} className="absolute inset-0" />
+      <LazyAnatomy mode="body" view="skin" compact focus={false} regions={regions} selected={r.id} onSelect={(id) => router.push(`/body?focus=${id}`)} className="absolute inset-0" />
 
       {/* Scan progress across the ten systems */}
       <div className="absolute left-1/2 top-2 flex -translate-x-1/2 items-center gap-1.5" aria-hidden>
@@ -43,7 +43,7 @@ export function HeroBody({ regions }: { regions: ScanRegion[] }) {
           <motion.div key={r.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.35 }} className="glass rounded-3xl p-5">
             <div className="flex items-center justify-between">
               <span className="flex items-center gap-1.5 text-[11.5px] text-flora">
-                <Activity className="h-3.5 w-3.5" /> AI body scan · {String(i + 1).padStart(2, "0")}/{regions.length}
+                <Activity className="h-3.5 w-3.5" /> SI body scan · {String(i + 1).padStart(2, "0")}/{regions.length}
               </span>
               <span className="chip !px-2 !py-0.5 !text-[11px]">{r.system}</span>
             </div>
