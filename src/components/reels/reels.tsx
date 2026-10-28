@@ -1,24 +1,26 @@
 "use client";
 import { AnimatePresence, motion } from "framer-motion";
-import { BadgeCheck, CalendarHeart, ChevronDown, ChevronUp, Clapperboard, Pause, Play, Sparkles, Volume2, VolumeX, X } from "lucide-react";
+import { CalendarHeart, ChevronLeft, ChevronRight, Instagram, Sparkles, UserPlus, X, Youtube } from "lucide-react";
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import { useAi } from "@/components/ai/ai-provider";
 import { useBooking } from "@/components/booking/booking";
-import { cleanCaption, reelTopic } from "@/content/reels";
+import { cleanCaption, embedFor, embedHeight, reelTopic, socialVideos, type Platform, type SocialVideo } from "@/content/reels";
+import { site } from "@/lib/site";
 import { cn } from "@/lib/utils";
 
-export type ReelItem = { id: string; video: string; poster: string | null; caption: string; permalink: string; date: string };
-
-type Feed = { reels: ReelItem[]; connected: boolean };
-type Ctx = { open: (start?: number) => void; load: () => void; feed: Feed | null };
-const ReelsCtx = createContext<Ctx>({ open: () => {}, load: () => {}, feed: null });
+type Ctx = { open: (start?: number) => void; load: () => void; videos: SocialVideo[] };
+const ReelsCtx = createContext<Ctx>({ open: () => {}, load: () => {}, videos: socialVideos });
 export const useReels = () => useContext(ReelsCtx);
 
-/** NEA's videos, played on this site. Open the full-screen viewer from anywhere with useReels().open(). */
+const valid = (list: SocialVideo[]) => list.filter((v) => embedFor(v.url));
+
+/**
+ * NEA's videos, played on this site through each platform's official embedded player.
+ * Starts with the links in content/reels.ts; newer Instagram Reels are added when the Instagram API is connected.
+ */
 export function ReelsProvider({ children }: { children: ReactNode }) {
   const [start, setStart] = useState<number | null>(null);
-  const [feed, setFeed] = useState<Feed | null>(null);
-  const [error, setError] = useState(false);
+  const [videos, setVideos] = useState<SocialVideo[]>(() => valid(socialVideos));
   const asked = useRef(false);
 
   const load = useCallback(() => {
@@ -26,246 +28,176 @@ export function ReelsProvider({ children }: { children: ReactNode }) {
     asked.current = true;
     fetch("/api/reels")
       .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
-      .then((d: Feed) => setFeed(d))
-      .catch(() => setError(true));
+      .then((d: { videos?: SocialVideo[] }) => {
+        if (d.videos?.length) setVideos(valid(d.videos));
+      })
+      .catch(() => {});
   }, []);
-  const open = useCallback((i = 0) => (load(), setStart(i)), [load]);
+  const open = useCallback(
+    (i = 0) => {
+      load();
+      setStart(i);
+    },
+    [load],
+  );
 
   return (
-    <ReelsCtx.Provider value={{ open, load, feed }}>
+    <ReelsCtx.Provider value={{ open, load, videos }}>
       {children}
-      <AnimatePresence>{start !== null && <Viewer data={feed} error={error} start={start} onClose={() => setStart(null)} />}</AnimatePresence>
+      <AnimatePresence>{start !== null && videos.length > 0 && <Viewer videos={videos} start={start} onClose={() => setStart(null)} />}</AnimatePresence>
     </ReelsCtx.Provider>
   );
 }
 
-function Viewer({ data, error, start, onClose }: { data: Feed | null; error: boolean; start: number; onClose: () => void }) {
-  const [index, setIndex] = useState(start);
-  const [muted, setMuted] = useState(true);
-  const list = useRef<HTMLDivElement>(null);
-  const reels = data?.reels ?? [];
+const FOLLOW: Record<Platform, { label: string; href: string; icon: ReactNode; bg: string }> = {
+  instagram: { label: "Follow on Instagram", href: site.social.instagram, icon: <Instagram className="h-4 w-4" />, bg: "linear-gradient(90deg,#f58529,#dd2a7b 45%,#8134af 80%,#515bd4)" },
+  youtube: { label: "Subscribe on YouTube", href: site.social.youtube, icon: <Youtube className="h-4 w-4" />, bg: "#ff0033" },
+  tiktok: { label: "Follow on TikTok", href: site.social.tiktok, icon: <UserPlus className="h-4 w-4" />, bg: "#111" },
+};
 
-  const go = useCallback(
-    (i: number) => {
-      const el = list.current?.children[Math.max(0, Math.min(reels.length - 1, i))] as HTMLElement | undefined;
-      el?.scrollIntoView({ behavior: "smooth", block: "start" });
-    },
-    [reels.length],
+/** Follow button for a platform (hidden when NEA has no link for it yet). */
+export function FollowButton({ platform = "instagram", className }: { platform?: Platform; className?: string }) {
+  const f = FOLLOW[platform];
+  if (!f.href) return null;
+  return (
+    <a href={f.href} target="_blank" rel="noreferrer" className={cn("inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-[13.5px] font-medium text-white transition hover:brightness-110", className)} style={{ background: f.bg }}>
+      {f.icon} {f.label}
+    </a>
   );
+}
+
+/** Fits the platform's player to the space available. */
+function useFit(platform: Platform) {
+  const [w, setW] = useState(380);
+  useEffect(() => {
+    const fit = () => {
+      const maxH = window.innerHeight - (window.innerWidth < 1024 ? 190 : 120);
+      let width = Math.min(440, window.innerWidth - 32);
+      while (width > 220 && embedHeight(platform, width) > maxH) width -= 10;
+      setW(width);
+    };
+    fit();
+    window.addEventListener("resize", fit);
+    return () => window.removeEventListener("resize", fit);
+  }, [platform]);
+  return w;
+}
+
+function Viewer({ videos, start, onClose }: { videos: SocialVideo[]; start: number; onClose: () => void }) {
+  const [i, setI] = useState(Math.min(start, videos.length - 1));
+  const v = videos[Math.min(i, videos.length - 1)];
+  const e = embedFor(v.url)!;
+  const w = useFit(e.platform);
+  const h = embedHeight(e.platform, w);
+  const book = useBooking();
+  const ai = useAi();
+  const topic = reelTopic(v.caption ?? "");
+  const caption = cleanCaption(v.caption ?? "");
+  const go = useCallback((d: number) => setI((x) => (x + d + videos.length) % videos.length), [videos.length]);
+  const bookIt = () => book.open(topic.key, topic.label);
+  const askIt = () => ai.open({ context: topic.label, query: caption ? `Tell me about this: ${caption.slice(0, 140)}` : `Tell me about ${topic.label}` });
 
   useEffect(() => {
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
-    const k = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-      if (e.key === "ArrowDown") (e.preventDefault(), go(index + 1));
-      if (e.key === "ArrowUp") (e.preventDefault(), go(index - 1));
-      if (e.key.toLowerCase() === "m") setMuted((m) => !m);
+    const k = (ev: KeyboardEvent) => {
+      if (ev.key === "Escape") onClose();
+      if (ev.key === "ArrowRight" || ev.key === "ArrowDown") (ev.preventDefault(), go(1));
+      if (ev.key === "ArrowLeft" || ev.key === "ArrowUp") (ev.preventDefault(), go(-1));
     };
     window.addEventListener("keydown", k);
     return () => {
       document.body.style.overflow = prev;
       window.removeEventListener("keydown", k);
     };
-  }, [go, index, onClose]);
+  }, [go, onClose]);
 
-  // jump to the video that was tapped
-  useEffect(() => {
-    const el = list.current?.children[start] as HTMLElement | undefined;
-    if (el && list.current) list.current.scrollTop = el.offsetTop;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [reels.length]);
-
-  // which reel is on screen
-  useEffect(() => {
-    const root = list.current;
-    if (!root) return;
-    const io = new IntersectionObserver(
-      (es) => es.forEach((e) => e.isIntersecting && setIndex(Number((e.target as HTMLElement).dataset.i))),
-      { root, threshold: 0.6 },
-    );
-    Array.from(root.children).forEach((c) => io.observe(c));
-    return () => io.disconnect();
-  }, [reels.length]);
+  // swipe left or right outside the player to change video
+  const touch = useRef<number | null>(null);
 
   return (
-    <motion.div role="dialog" aria-modal="true" aria-label="NEA Reels" className="fixed inset-0 z-[88] bg-[rgb(12_10_16/0.92)] backdrop-blur-xl" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} data-lenis-prevent>
+    <motion.div
+      role="dialog"
+      aria-modal="true"
+      aria-label="NEA Reels"
+      className="fixed inset-0 z-[88] flex flex-col bg-[rgb(12_10_16/0.94)] text-white backdrop-blur-xl"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      data-lenis-prevent
+      onTouchStart={(ev) => (touch.current = ev.touches[0].clientX)}
+      onTouchEnd={(ev) => {
+        if (touch.current === null) return;
+        const dx = ev.changedTouches[0].clientX - touch.current;
+        if (Math.abs(dx) > 60) go(dx < 0 ? 1 : -1);
+        touch.current = null;
+      }}
+    >
       {/* top bar */}
-      <div className="absolute inset-x-0 top-0 z-10 flex items-center justify-between p-4 text-white md:p-6">
-        <div className="flex items-center gap-2.5 rounded-full bg-white/10 py-1.5 pl-1.5 pr-4 backdrop-blur-md">
-          <span className="grid h-8 w-8 place-items-center rounded-full bg-[conic-gradient(from_200deg,#feda75,#fa7e1e,#d62976,#962fbf,#4f5bd5,#feda75)] p-[2px]">
-            <span className="grid h-full w-full place-items-center rounded-full bg-[#0f1a3a] text-[9px] font-semibold tracking-wide">NEA</span>
-          </span>
-          <span className="text-[13.5px]">neaprecisionskin</span>
-          <BadgeCheck className="h-4 w-4 text-sky-400" />
-        </div>
+      <div className="flex shrink-0 items-center justify-between gap-3 p-3 md:p-5">
+        <FollowButton platform={e.platform} />
         <div className="flex items-center gap-2">
-          {reels.length > 0 && (
-            <span className="tabular rounded-full bg-white/10 px-3 py-1.5 text-[12.5px] text-white/80">
-              {index + 1} / {reels.length}
-            </span>
-          )}
+          <span className="tabular rounded-full bg-white/10 px-3 py-1.5 text-[12.5px] text-white/80">
+            {i + 1} / {videos.length}
+          </span>
           <button onClick={onClose} aria-label="Close" className="grid h-10 w-10 place-items-center rounded-full bg-white/10 transition hover:bg-white/20">
             <X className="h-5 w-5" />
           </button>
         </div>
       </div>
 
-      {!data && !error && (
-        <div className="grid h-full place-items-center">
-          <div className="aspect-[9/16] h-[78dvh] max-w-[92vw] animate-pulse rounded-[28px] bg-white/[0.06]" />
-        </div>
-      )}
-
-      {(error || (data && reels.length === 0)) && <Empty onClose={onClose} />}
-
-      {reels.length > 0 && (
-        <>
-          <div ref={list} className="no-scrollbar h-full snap-y snap-mandatory overflow-y-auto overscroll-contain">
-            {reels.map((r, i) => (
-              <section key={r.id} data-i={i} className="flex h-[100dvh] snap-start items-center justify-center py-3 md:py-6">
-                <ReelCard reel={r} active={i === index} near={Math.abs(i - index) <= 1} muted={muted} onMute={() => setMuted((m) => !m)} />
-              </section>
-            ))}
-          </div>
-          {/* desktop up / down */}
-          <div className="absolute right-6 top-1/2 hidden -translate-y-1/2 flex-col gap-2 md:flex">
-            <button onClick={() => go(index - 1)} disabled={index === 0} aria-label="Previous video" className="grid h-11 w-11 place-items-center rounded-full bg-white/10 text-white transition hover:bg-white/20 disabled:opacity-30">
-              <ChevronUp className="h-5 w-5" />
-            </button>
-            <button onClick={() => go(index + 1)} disabled={index === reels.length - 1} aria-label="Next video" className="grid h-11 w-11 place-items-center rounded-full bg-white/10 text-white transition hover:bg-white/20 disabled:opacity-30">
-              <ChevronDown className="h-5 w-5" />
-            </button>
-          </div>
-        </>
-      )}
-    </motion.div>
-  );
-}
-
-function ReelCard({ reel, active, near, muted, onMute }: { reel: ReelItem; active: boolean; near: boolean; muted: boolean; onMute: () => void }) {
-  const v = useRef<HTMLVideoElement>(null);
-  const [paused, setPaused] = useState(false);
-  const [progress, setProgress] = useState(0);
-  const [failed, setFailed] = useState(false);
-  const [more, setMore] = useState(false);
-  const book = useBooking();
-  const ai = useAi();
-  const topic = reelTopic(reel.caption);
-  const caption = cleanCaption(reel.caption);
-
-  useEffect(() => {
-    const el = v.current;
-    if (!el) return;
-    if (active && !paused) el.play().catch(() => setPaused(true));
-    else el.pause();
-    if (!active) el.currentTime = 0;
-  }, [active, paused]);
-  useEffect(() => {
-    if (!active) setPaused(false);
-  }, [active]);
-
-  const hold = () => setPaused(true);
-
-  return (
-    <div className="relative aspect-[9/16] h-full max-h-[calc(100dvh-24px)] max-w-[100vw] overflow-hidden bg-black md:rounded-[28px] md:shadow-[0_40px_120px_-30px_rgba(0,0,0,0.8)]">
-      {failed ? (
-        <div className="absolute inset-0 grid place-items-center">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          {reel.poster && <img src={reel.poster} alt="" className="absolute inset-0 h-full w-full object-cover opacity-60" />}
-          <span className="relative rounded-full bg-black/50 px-5 py-3 text-[14px] text-white backdrop-blur-md">This video is loading slowly. Swipe for the next one.</span>
-        </div>
-      ) : (
-        <video
-          ref={v}
-          src={near ? reel.video : undefined}
-          poster={reel.poster ?? undefined}
-          muted={muted}
-          loop
-          playsInline
-          preload={near ? "auto" : "none"}
-          onClick={() => setPaused((p) => !p)}
-          onTimeUpdate={(e) => setProgress(e.currentTarget.currentTime / (e.currentTarget.duration || 1))}
-          onError={() => setFailed(true)}
-          className="absolute inset-0 h-full w-full cursor-pointer object-cover"
-        />
-      )}
-
-      {paused && !failed && (
-        <button onClick={() => setPaused(false)} aria-label="Play" className="absolute inset-0 grid place-items-center">
-          <span className="grid h-16 w-16 place-items-center rounded-full bg-black/40 text-white backdrop-blur-md">
-            <Play className="h-7 w-7 translate-x-0.5" />
-          </span>
+      {/* player, with details beside it on desktop */}
+      <div className="flex min-h-0 flex-1 items-center justify-center gap-6 px-4 md:gap-10">
+        <button onClick={() => go(-1)} aria-label="Previous video" className="hidden h-12 w-12 shrink-0 place-items-center rounded-full bg-white/10 transition hover:bg-white/20 md:grid">
+          <ChevronLeft className="h-6 w-6" />
         </button>
-      )}
 
-      {/* progress */}
-      <div className="absolute inset-x-0 bottom-0 z-10 h-[3px] bg-white/20">
-        <div className="h-full bg-white" style={{ width: `${progress * 100}%` }} />
-      </div>
+        <AnimatePresence mode="wait">
+          <motion.div key={e.platform + e.id} initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.97 }} transition={{ duration: 0.25 }} className="relative shrink-0 overflow-hidden rounded-[22px] bg-white shadow-[0_40px_120px_-30px_rgba(0,0,0,0.8)]" style={{ width: w, height: h }}>
+            <div className="absolute inset-0 grid place-items-center text-[13px] text-black/40">Loading video…</div>
+            {/* Instagram's player is taller than the frame: likes and comments stay below the fold */}
+            <iframe src={e.src} title={caption || "NEA video"} width={w} height={e.platform === "instagram" ? h + 170 : h} className="relative block border-0" allow="autoplay; encrypted-media; picture-in-picture; clipboard-write; web-share" allowFullScreen scrolling="no" />
+          </motion.div>
+        </AnimatePresence>
 
-      {/* side actions */}
-      <div className="absolute bottom-28 right-3 flex flex-col items-center gap-4 text-white">
-        <Action label={muted ? "Sound" : "Mute"} onClick={onMute}>
-          {muted ? <VolumeX className="h-5 w-5" /> : <Volume2 className="h-5 w-5" />}
-        </Action>
-        <Action label={paused ? "Play" : "Pause"} onClick={() => setPaused((p) => !p)}>
-          {paused ? <Play className="h-5 w-5" /> : <Pause className="h-5 w-5" />}
-        </Action>
-        <Action label="Ask SI" onClick={() => (hold(), ai.open({ context: topic.label, query: caption ? `Tell me about this: ${caption.slice(0, 140)}` : `Tell me about ${topic.label}` }))}>
-          <Sparkles className="h-5 w-5" />
-        </Action>
-      </div>
-
-      {/* caption + booking */}
-      <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent p-4 pt-16 text-white md:p-5 md:pt-20">
-        {caption && (
-          <button onClick={() => setMore((m) => !m)} className={cn("block pr-14 text-left text-[13.5px] leading-snug text-white/90", !more && "line-clamp-2")}>
-            {caption}
-          </button>
-        )}
-        <div className="mt-3 flex items-center gap-2">
-          <button onClick={() => (hold(), book.open(topic.key, topic.label))} className="flex items-center gap-2 rounded-full bg-white px-4 py-2.5 text-[13.5px] font-medium text-ink transition hover:bg-white/90">
-            <CalendarHeart className="h-4 w-4" /> {topic.key === "popular" ? "Book a visit" : `Book ${topic.label}`}
-          </button>
-          <span className="text-[11.5px] text-white/60">{new Date(reel.date).toLocaleDateString("en-CA", { month: "short", day: "numeric" })}</span>
+        <div className="hidden w-[300px] shrink-0 lg:block">
+          <p className="text-[12px] uppercase tracking-[0.18em] text-white/50">NEA Precision Skin</p>
+          {topic.key !== "popular" && <p className="mt-3 inline-block rounded-full bg-white/10 px-3 py-1 text-[12px] text-white/85">{topic.label}</p>}
+          {caption && <p className="mt-3 text-[15px] leading-relaxed text-white/90">{caption}</p>}
+          <div className="mt-6 flex flex-col gap-2">
+            <button onClick={bookIt} className="flex items-center justify-center gap-2 rounded-full bg-white px-5 py-3 text-[14px] font-medium text-ink transition hover:bg-white/90">
+              <CalendarHeart className="h-4 w-4" /> {topic.key === "popular" ? "Book a visit" : `Book ${topic.label}`}
+            </button>
+            <button onClick={askIt} className="flex items-center justify-center gap-2 rounded-full bg-white/10 px-5 py-3 text-[14px] text-white transition hover:bg-white/20">
+              <Sparkles className="h-4 w-4" /> Ask SI about this
+            </button>
+          </div>
+          <p className="mt-5 text-[12px] text-white/45">Tap the video to play. Arrows or keyboard for the next one.</p>
         </div>
+
+        <button onClick={() => go(1)} aria-label="Next video" className="hidden h-12 w-12 shrink-0 place-items-center rounded-full bg-white/10 transition hover:bg-white/20 md:grid">
+          <ChevronRight className="h-6 w-6" />
+        </button>
       </div>
-    </div>
-  );
-}
 
-function Action({ label, onClick, children }: { label: string; onClick: () => void; children: ReactNode }) {
-  const cls = "grid h-11 w-11 place-items-center rounded-full bg-black/35 backdrop-blur-md transition hover:bg-black/55";
-  return (
-    <span className="flex flex-col items-center gap-1">
-      <button onClick={onClick} aria-label={label} className={cls}>
-        {children}
-      </button>
-      <span className="text-[10.5px] text-white/80">{label}</span>
-    </span>
-  );
-}
-
-/** Shown only before any video has been added. Keeps people on the site. */
-function Empty({ onClose }: { onClose: () => void }) {
-  const book = useBooking();
-  const ai = useAi();
-  return (
-    <div className="grid h-full place-items-center px-6 text-center text-white">
-      <div>
-        <Clapperboard className="mx-auto h-10 w-10 text-white/70" />
-        <p className="mt-4 font-display text-3xl">NEA Reels are on their way</p>
-        <p className="mx-auto mt-2 max-w-sm text-[15px] text-white/70">Treatments, before-and-afters and skincare tips from the team will play right here.</p>
-        <div className="mt-6 flex flex-wrap justify-center gap-2">
-          <button onClick={() => (onClose(), book.open())} className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-3 text-[14px] font-medium text-ink transition hover:bg-white/90">
-            <CalendarHeart className="h-4 w-4" /> Book a visit
+      {/* bottom bar on phones and tablets */}
+      <div className="shrink-0 p-3 lg:hidden">
+        {caption && <p className="mx-auto mb-2 line-clamp-2 max-w-md text-center text-[13px] text-white/80">{caption}</p>}
+        <div className="mx-auto flex max-w-md items-center justify-between gap-2">
+          <button onClick={() => go(-1)} aria-label="Previous video" className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-white/10">
+            <ChevronLeft className="h-5 w-5" />
           </button>
-          <button onClick={() => (onClose(), ai.open())} className="inline-flex items-center gap-2 rounded-full bg-white/10 px-5 py-3 text-[14px] text-white transition hover:bg-white/20">
-            <Sparkles className="h-4 w-4" /> Ask SI
+          <button onClick={bookIt} className="flex min-w-0 flex-1 items-center justify-center gap-2 rounded-full bg-white px-4 py-3 text-[13.5px] font-medium text-ink">
+            <CalendarHeart className="h-4 w-4 shrink-0" /> <span className="truncate">{topic.key === "popular" ? "Book a visit" : `Book ${topic.label}`}</span>
+          </button>
+          <button onClick={askIt} aria-label="Ask SI" className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-white/10">
+            <Sparkles className="h-5 w-5" />
+          </button>
+          <button onClick={() => go(1)} aria-label="Next video" className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-white/10">
+            <ChevronRight className="h-5 w-5" />
           </button>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }
