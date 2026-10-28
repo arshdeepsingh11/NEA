@@ -5,6 +5,7 @@ import { Footer } from "@/components/layout/footer";
 import { Dock } from "@/components/layout/dock";
 import { AiProvider } from "@/components/ai/ai-provider";
 import { BookingProvider } from "@/components/booking/booking";
+import { ReelsProvider } from "@/components/reels/reels";
 import { BrandCorner } from "@/components/layout/brand-corner";
 import { SmoothScroll } from "@/components/layout/smooth-scroll";
 import { JsonLd, clinicSchema } from "@/lib/seo";
@@ -73,10 +74,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <SmoothScroll />
         <BookingProvider>
           <AiProvider>
-            <BrandCorner />
-            <main id="main">{children}</main>
-            <Footer />
-            <Dock />
+            <ReelsProvider>
+              <BrandCorner />
+              <main id="main">{children}</main>
+              <Footer />
+              <Dock />
+            </ReelsProvider>
           </AiProvider>
         </BookingProvider>
       </body>
