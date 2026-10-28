@@ -96,15 +96,16 @@ builds a plan with a total when a budget is mentioned. Set `ANTHROPIC_API_KEY` (
 `NEXT_PUBLIC_`) to have Claude write the answer from those sources; `AI_MODEL` overrides the model.
 Without a key the built-in engine answers. It never diagnoses or invents prices.
 
-## Instagram Reels
+## Reels (Instagram and other channels)
 
-NEA's videos play on this site, never on Instagram: a **Reels** button in the navbar opens a full-screen, swipeable player, and the home page shows the latest videos in a strip that plays silently and opens the player on tap. Each video has a "Book" button that opens the matching Jane services (matching rules: `src/content/reels.ts`).
+NEA's videos play on this site through each platform's official embedded player. Nothing is downloaded or stored, and no database is needed.
 
-Videos come from two places, mixed together newest first:
+- **Reels** in the navbar opens a full-screen viewer: one video at a time, arrows or swipe for the next, plus Book (the matching Jane services), Ask SI and a Follow button.
+- The home page shows the latest videos in a "Straight from the clinic floor" strip. They play right in the page.
 
-**1. Videos hosted on the site (works immediately).** Download a Reel from @neaprecisionskin (Instagram app → the Reel → ⋯ → Download), put the .mp4 in `public/reels/`, and add one line to `localReels` in `src/content/reels.ts`.
+**To add a video**, paste its link at the top of `socialVideos` in `src/content/reels.ts` (a short caption is optional and helps pick the right Book button). Instagram Reels and posts, YouTube Shorts and videos, and TikTok videos all work. Add NEA's YouTube or TikTok channel link in `src/lib/site.ts` (`social.youtube`, `social.tiktok`) to show a Follow or Subscribe button for those videos.
 
-**2. Automatic from Instagram (free official API).** New posts appear within an hour with no manual work. One-time setup, about 20 minutes, by someone who can log in to @neaprecisionskin:
+**Optional: new Instagram Reels appear automatically.** Set `INSTAGRAM_ACCESS_TOKEN` (free official API) and the newest Reels are added within an hour, with no links to paste. One-time setup, about 20 minutes, by someone who can log in to @neaprecisionskin:
 
 1. Make sure the Instagram account is a Professional account (Business or Creator): Instagram → Settings → Account type and tools.
 2. Go to developers.facebook.com → My Apps → Create app. Choose the Instagram use case (manage messaging and content on Instagram) and a Business app type.
