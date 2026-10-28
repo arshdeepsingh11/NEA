@@ -1,4 +1,6 @@
 import { CalendarCheck, Phone, ScanFace } from "lucide-react";
+import { JaneExplorer } from "@/components/booking/jane-explorer";
+import { janeConsult, janeUrl } from "@/content/jane";
 import Link from "next/link";
 import { PageHero } from "@/components/sections/page-hero";
 import { LeadForm } from "@/components/sections/lead-form";
@@ -21,10 +23,10 @@ export default function BookPage() {
       />
       <section className="pb-12">
         <div className="container grid gap-4 md:grid-cols-3">
-          <a href={site.bookingUrl} target="_blank" rel="noreferrer" className="rounded-4xl surface-strong p-8 text-ink transition hover:brightness-110">
+          <a href={janeUrl(janeConsult)} target="_blank" rel="noreferrer" className="rounded-4xl surface-strong p-8 text-ink transition hover:brightness-110">
             <CalendarCheck className="h-6 w-6" />
-            <h2 className="mt-6 text-2xl font-semibold tracking-tight">Book online</h2>
-            <p className="mt-2 text-graphite">Pick a treatment and time in our booking system. Fastest if you know what you want.</p>
+            <h2 className="mt-6 text-2xl font-semibold tracking-tight">Book a consultation</h2>
+            <p className="mt-2 text-graphite">30 minutes in Jane. We match you to the right plan. Or pick any service below.</p>
           </a>
           <Link href="/skin-scan" className="rounded-4xl surface p-8 transition hover:shadow-[0_20px_50px_-30px_rgb(var(--c-ink) / 0.35)]">
             <ScanFace className="h-6 w-6 text-flora" />
@@ -36,6 +38,10 @@ export default function BookPage() {
             <h2 className="mt-6 text-2xl font-semibold tracking-tight">Call {site.phone}</h2>
             <p className="mt-2 text-graphite">Monday to Saturday, 9 a.m. to 5 p.m.</p>
           </a>
+        </div>
+        <div className="container mt-10">
+          <p className="eyebrow mb-4">Every service · live in Jane</p>
+          <JaneExplorer />
         </div>
       </section>
       <section className="chapter" id="consult">

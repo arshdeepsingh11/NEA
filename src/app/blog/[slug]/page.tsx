@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { BookButton } from "@/components/booking/booking";
 import { notFound } from "next/navigation";
 import { NeaImage } from "@/components/ui/nea-image";
 import { Blocks } from "@/components/sections/blocks";
@@ -54,9 +55,7 @@ export default async function PostPage({ params }: Props) {
               <Link href="/skin-scan" className="btn-primary">
                 Get my free scan
               </Link>
-              <a href={site.bookingUrl} target="_blank" rel="noreferrer" className="btn-ghost">
-                Book online
-              </a>
+              <BookButton variant="ghost">Book online</BookButton>
             </div>
           </div>
           {next && next.slug !== p.slug && (

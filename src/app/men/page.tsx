@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { BookButton } from "@/components/booking/booking";
 import { PageHero } from "@/components/sections/page-hero";
 import { NeaImage } from "@/components/ui/nea-image";
 import { getTreatment } from "@/content/treatments";
@@ -23,9 +24,7 @@ export default function MenPage() {
         lede="A growing number of men are getting laser treatments, facial treatments and injectables to enhance their faces and bodies. At NEA, every treatment is tailor-made to you and your specific needs."
       >
         <div className="flex flex-wrap gap-3">
-          <a href={site.bookingUrl} target="_blank" rel="noreferrer" className="btn-primary">
-            Book online
-          </a>
+          <BookButton>Book online</BookButton>
           <Link href="/experiences/mens-skin-check" className="btn-ghost">
             Men’s skin check at your barbershop
           </Link>

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { BookButton } from "@/components/booking/booking";
 import { LazyBeam } from "@/components/three/lazy";
 import { NeaImage } from "@/components/ui/nea-image";
 import { SectionHead } from "@/components/sections/page-hero";
@@ -26,9 +27,7 @@ export default function FotonaPage() {
             Widely acclaimed for its versatility. NEA is one of the first centres to offer Fotona and all its applications, with predictable, safe results and short downtime, clinically proven for all skin types and colours.
           </p>
           <div className="mt-10 flex flex-wrap gap-3">
-            <a href={site.bookingUrl} target="_blank" rel="noreferrer" className="btn-light">
-              Book a session
-            </a>
+            <BookButton slug="fotona-laser" title="Fotona" variant="light">Book a session</BookButton>
             <Link href="/treatments?focus=laser" className="btn border border-ink/20 text-ink hover:bg-white/90">
               See laser treatments
             </Link>

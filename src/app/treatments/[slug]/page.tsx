@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { BookButton } from "@/components/booking/booking";
 import { AiQuestionChips } from "@/components/ai/ai-question-chips";
 import { bodyRegions, faceZones } from "@/content/body";
 import { notFound } from "next/navigation";
@@ -43,9 +44,7 @@ export default async function TreatmentPage({ params }: Props) {
         lede={t.summary}
       >
         <div className="flex flex-wrap gap-3">
-          <a href={site.bookingUrl} target="_blank" rel="noreferrer" className="btn-primary">
-            Book {t.title.split(" (")[0]}
-          </a>
+          <BookButton slug={t.slug} title={t.title.split(" (")[0]} />
           <Link href="/skin-scan" className="btn-ghost">
             Not sure? Get a free scan
           </Link>

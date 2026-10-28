@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { IMG } from "@/content/media";
 import { NeaImage } from "@/components/ui/nea-image";
 import { PageHero, SectionHead } from "@/components/sections/page-hero";
 import { pageMeta } from "@/lib/seo";
@@ -41,7 +42,7 @@ export default function NutritionPage() {
             <p>By analyzing unique genetic profiles, microbiomes, and personal preferences, personalized nutrition optimizes dietary choices to enhance your health span. Many NEA packages include nutrition consultations with a Registered Dietitian, and many extended health plans cover dietitian visits.</p>
           </div>
           <div className="relative aspect-[4/3] overflow-hidden rounded-5xl bg-mist">
-            <NeaImage src="2024/06/calgary-weight-loss-program.jpg" alt="Food and nutrition planning" fill sizes="(max-width: 1024px) 100vw, 50vw" className="object-cover" />
+            <NeaImage src={IMG.gutFood} alt="Food and nutrition planning" fill sizes="(max-width: 1024px) 100vw, 50vw" className="object-cover" />
           </div>
         </div>
       </section>
