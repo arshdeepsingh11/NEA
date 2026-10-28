@@ -29,6 +29,10 @@
   --viz-3: 14 143 158;
   --viz-good: 14 143 158;
   --viz-watch: 176 122 30;
+  /* logo gradient (pearl): rose → violet → indigo */
+  --logo-a: 176 57 107;
+  --logo-b: 142 63 174;
+  --logo-c: 91 79 209;
   /* hologram */
   --holo-body: 0.97 0.9 0.95;
   --holo-rim: 0.42 0.31 0.78;
@@ -67,6 +71,9 @@
   --viz-3: 184 69 111;
   --viz-good: 63 125 94;
   --viz-watch: 169 83 58;
+  --logo-a: 138 100 36;
+  --logo-b: 168 104 47;
+  --logo-c: 110 79 27;
   --holo-body: 0.98 0.94 0.88;
   --holo-rim: 0.55 0.39 0.16;
   --holo-point: #8a6424;
@@ -85,7 +92,7 @@
   --ink: rgb(var(--c-ink));
   --dock-h: 84px;
   /* kept for components that offset content under a fixed bar */
-  --header-h: 24px;
+  --header-h: 64px;
 }
 
 @layer base {
@@ -362,4 +369,93 @@
   to {
     transform: translateX(-50%);
   }
+}
+
+/* ---------- NEA logo ---------- */
+.nea-logo-draw {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: nea-draw 1.6s cubic-bezier(0.65, 0, 0.35, 1) 0.15s forwards;
+}
+.nea-logo-sweep {
+  animation: nea-sweep 5.5s ease-in-out 1.6s infinite;
+}
+@keyframes nea-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes nea-sweep {
+  0% {
+    transform: translateX(0) skewX(-20deg);
+  }
+  45%,
+  100% {
+    transform: translateX(1200px) skewX(-20deg);
+  }
+}
+
+/* ---------- Sparkle navbar particles ---------- */
+.sparkle-dot {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  margin: -4px 0 0 -4px;
+  background: var(--sp-color, currentColor);
+  clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%);
+  filter: drop-shadow(0 0 4px var(--sp-glow, currentColor));
+  pointer-events: none;
+}
+
+/* ---------- Range slider ---------- */
+.nea-range {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 22px;
+  background: transparent;
+  cursor: pointer;
+}
+.nea-range::-webkit-slider-runnable-track {
+  height: 6px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgb(var(--viz-1)) 0 var(--p, 50%), rgb(var(--c-ink) / 0.08) var(--p, 50%) 100%);
+}
+.nea-range::-moz-range-track {
+  height: 6px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgb(var(--viz-1)) 0 var(--p, 50%), rgb(var(--c-ink) / 0.08) var(--p, 50%) 100%);
+}
+.nea-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  margin-top: -8px;
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  background: #fff;
+  border: 2px solid rgb(var(--viz-1));
+  box-shadow: 0 4px 14px -4px rgba(var(--shadow-tint), 0.6);
+  transition: transform 0.15s;
+}
+.nea-range::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  background: #fff;
+  border: 2px solid rgb(var(--viz-1));
+}
+.nea-range:active::-webkit-slider-thumb {
+  transform: scale(1.15);
+}
+.nea-range:focus-visible {
+  outline: none;
+}
+.nea-range:focus-visible::-webkit-slider-thumb {
+  box-shadow: 0 0 0 4px rgb(var(--viz-1) / 0.25);
+}
+/* timeline variant: the coloured phase bar underneath is the track */
+.nea-range-bare::-webkit-slider-runnable-track {
+  background: transparent;
+}
+.nea-range-bare::-moz-range-track {
+  background: transparent;
 }

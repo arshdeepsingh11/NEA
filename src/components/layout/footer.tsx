@@ -10,7 +10,7 @@ export function Footer() {
       <div className="container">
         <div className="grid gap-12 lg:grid-cols-[1.2fr_2fr]">
           <div className="max-w-sm">
-            <Logo />
+            <Logo className="h-14" />
             <p className="mt-5 text-[15px] leading-relaxed text-graphite">{site.promise} A physician-managed clinic combining Fotona laser, medical-grade skincare and microbiome science.</p>
             <address className="mt-6 not-italic text-[15px] leading-relaxed">
               {site.address.line1}
