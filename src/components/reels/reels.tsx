@@ -1,44 +1,46 @@
 "use client";
 import { AnimatePresence, motion } from "framer-motion";
-import { BadgeCheck, CalendarHeart, ChevronDown, ChevronUp, Instagram, Pause, Play, Sparkles, Volume2, VolumeX, X } from "lucide-react";
+import { BadgeCheck, CalendarHeart, ChevronDown, ChevronUp, Clapperboard, Pause, Play, Sparkles, Volume2, VolumeX, X } from "lucide-react";
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import { useAi } from "@/components/ai/ai-provider";
 import { useBooking } from "@/components/booking/booking";
 import { cleanCaption, reelTopic } from "@/content/reels";
-import { site } from "@/lib/site";
 import { cn } from "@/lib/utils";
 
 export type ReelItem = { id: string; video: string; poster: string | null; caption: string; permalink: string; date: string };
 
-const ReelsCtx = createContext<{ open: () => void }>({ open: () => {} });
+type Feed = { reels: ReelItem[]; connected: boolean };
+type Ctx = { open: (start?: number) => void; load: () => void; feed: Feed | null };
+const ReelsCtx = createContext<Ctx>({ open: () => {}, load: () => {}, feed: null });
 export const useReels = () => useContext(ReelsCtx);
 
-/** Full-screen viewer for NEA's own Instagram videos. Open it from anywhere with useReels().open(). */
+/** NEA's videos, played on this site. Open the full-screen viewer from anywhere with useReels().open(). */
 export function ReelsProvider({ children }: { children: ReactNode }) {
-  const [open, setOpen] = useState(false);
-  const [data, setData] = useState<{ reels: ReelItem[]; connected: boolean } | null>(null);
+  const [start, setStart] = useState<number | null>(null);
+  const [feed, setFeed] = useState<Feed | null>(null);
   const [error, setError] = useState(false);
+  const asked = useRef(false);
 
-  const show = useCallback(() => {
-    setOpen(true);
-    if (!data) {
-      fetch("/api/reels")
-        .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
-        .then((d: { reels: ReelItem[]; connected: boolean }) => setData(d))
-        .catch(() => setError(true));
-    }
-  }, [data]);
+  const load = useCallback(() => {
+    if (asked.current) return;
+    asked.current = true;
+    fetch("/api/reels")
+      .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
+      .then((d: Feed) => setFeed(d))
+      .catch(() => setError(true));
+  }, []);
+  const open = useCallback((i = 0) => (load(), setStart(i)), [load]);
 
   return (
-    <ReelsCtx.Provider value={{ open: show }}>
+    <ReelsCtx.Provider value={{ open, load, feed }}>
       {children}
-      <AnimatePresence>{open && <Viewer data={data} error={error} onClose={() => setOpen(false)} />}</AnimatePresence>
+      <AnimatePresence>{start !== null && <Viewer data={feed} error={error} start={start} onClose={() => setStart(null)} />}</AnimatePresence>
     </ReelsCtx.Provider>
   );
 }
 
-function Viewer({ data, error, onClose }: { data: { reels: ReelItem[]; connected: boolean } | null; error: boolean; onClose: () => void }) {
-  const [index, setIndex] = useState(0);
+function Viewer({ data, error, start, onClose }: { data: Feed | null; error: boolean; start: number; onClose: () => void }) {
+  const [index, setIndex] = useState(start);
   const [muted, setMuted] = useState(true);
   const list = useRef<HTMLDivElement>(null);
   const reels = data?.reels ?? [];
@@ -67,6 +69,13 @@ function Viewer({ data, error, onClose }: { data: { reels: ReelItem[]; connected
     };
   }, [go, index, onClose]);
 
+  // jump to the video that was tapped
+  useEffect(() => {
+    const el = list.current?.children[start] as HTMLElement | undefined;
+    if (el && list.current) list.current.scrollTop = el.offsetTop;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [reels.length]);
+
   // which reel is on screen
   useEffect(() => {
     const root = list.current;
@@ -80,16 +89,16 @@ function Viewer({ data, error, onClose }: { data: { reels: ReelItem[]; connected
   }, [reels.length]);
 
   return (
-    <motion.div role="dialog" aria-modal="true" aria-label="NEA on Instagram" className="fixed inset-0 z-[88] bg-[rgb(12_10_16/0.92)] backdrop-blur-xl" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} data-lenis-prevent>
+    <motion.div role="dialog" aria-modal="true" aria-label="NEA Reels" className="fixed inset-0 z-[88] bg-[rgb(12_10_16/0.92)] backdrop-blur-xl" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} data-lenis-prevent>
       {/* top bar */}
       <div className="absolute inset-x-0 top-0 z-10 flex items-center justify-between p-4 text-white md:p-6">
-        <a href={site.social.instagram} target="_blank" rel="noreferrer" className="flex items-center gap-2.5 rounded-full bg-white/10 py-1.5 pl-1.5 pr-4 backdrop-blur-md transition hover:bg-white/15">
+        <div className="flex items-center gap-2.5 rounded-full bg-white/10 py-1.5 pl-1.5 pr-4 backdrop-blur-md">
           <span className="grid h-8 w-8 place-items-center rounded-full bg-[conic-gradient(from_200deg,#feda75,#fa7e1e,#d62976,#962fbf,#4f5bd5,#feda75)] p-[2px]">
             <span className="grid h-full w-full place-items-center rounded-full bg-[#0f1a3a] text-[9px] font-semibold tracking-wide">NEA</span>
           </span>
           <span className="text-[13.5px]">neaprecisionskin</span>
           <BadgeCheck className="h-4 w-4 text-sky-400" />
-        </a>
+        </div>
         <div className="flex items-center gap-2">
           {reels.length > 0 && (
             <span className="tabular rounded-full bg-white/10 px-3 py-1.5 text-[12.5px] text-white/80">
@@ -108,18 +117,7 @@ function Viewer({ data, error, onClose }: { data: { reels: ReelItem[]; connected
         </div>
       )}
 
-      {(error || (data && reels.length === 0)) && (
-        <div className="grid h-full place-items-center px-6 text-center text-white">
-          <div>
-            <Instagram className="mx-auto h-10 w-10 text-white/70" />
-            <p className="mt-4 font-display text-3xl">Watch NEA on Instagram</p>
-            <p className="mx-auto mt-2 max-w-sm text-[15px] text-white/70">Treatments, before-and-afters and skincare tips from the team.</p>
-            <a href={site.social.instagram} target="_blank" rel="noreferrer" className="mt-6 inline-flex items-center gap-2 rounded-full bg-white px-5 py-3 text-[14px] font-medium text-ink transition hover:bg-white/90">
-              <Instagram className="h-4 w-4" /> Open @neaprecisionskin
-            </a>
-          </div>
-        </div>
-      )}
+      {(error || (data && reels.length === 0)) && <Empty onClose={onClose} />}
 
       {reels.length > 0 && (
         <>
@@ -172,13 +170,11 @@ function ReelCard({ reel, active, near, muted, onMute }: { reel: ReelItem; activ
   return (
     <div className="relative aspect-[9/16] h-full max-h-[calc(100dvh-24px)] max-w-[100vw] overflow-hidden bg-black md:rounded-[28px] md:shadow-[0_40px_120px_-30px_rgba(0,0,0,0.8)]">
       {failed ? (
-        <a href={reel.permalink} target="_blank" rel="noreferrer" className="absolute inset-0 grid place-items-center">
+        <div className="absolute inset-0 grid place-items-center">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           {reel.poster && <img src={reel.poster} alt="" className="absolute inset-0 h-full w-full object-cover opacity-60" />}
-          <span className="relative flex items-center gap-2 rounded-full bg-white px-5 py-3 text-[14px] text-ink">
-            <Instagram className="h-4 w-4" /> Watch on Instagram
-          </span>
-        </a>
+          <span className="relative rounded-full bg-black/50 px-5 py-3 text-[14px] text-white backdrop-blur-md">This video is loading slowly. Swipe for the next one.</span>
+        </div>
       ) : (
         <video
           ref={v}
@@ -219,9 +215,6 @@ function ReelCard({ reel, active, near, muted, onMute }: { reel: ReelItem; activ
         <Action label="Ask SI" onClick={() => (hold(), ai.open({ context: topic.label, query: caption ? `Tell me about this: ${caption.slice(0, 140)}` : `Tell me about ${topic.label}` }))}>
           <Sparkles className="h-5 w-5" />
         </Action>
-        <Action label="Instagram" href={reel.permalink}>
-          <Instagram className="h-5 w-5" />
-        </Action>
       </div>
 
       {/* caption + booking */}
@@ -242,20 +235,37 @@ function ReelCard({ reel, active, near, muted, onMute }: { reel: ReelItem; activ
   );
 }
 
-function Action({ label, onClick, href, children }: { label: string; onClick?: () => void; href?: string; children: ReactNode }) {
+function Action({ label, onClick, children }: { label: string; onClick: () => void; children: ReactNode }) {
   const cls = "grid h-11 w-11 place-items-center rounded-full bg-black/35 backdrop-blur-md transition hover:bg-black/55";
   return (
     <span className="flex flex-col items-center gap-1">
-      {href ? (
-        <a href={href} target="_blank" rel="noreferrer" aria-label={label} className={cls}>
-          {children}
-        </a>
-      ) : (
-        <button onClick={onClick} aria-label={label} className={cls}>
-          {children}
-        </button>
-      )}
+      <button onClick={onClick} aria-label={label} className={cls}>
+        {children}
+      </button>
       <span className="text-[10.5px] text-white/80">{label}</span>
     </span>
+  );
+}
+
+/** Shown only before any video has been added. Keeps people on the site. */
+function Empty({ onClose }: { onClose: () => void }) {
+  const book = useBooking();
+  const ai = useAi();
+  return (
+    <div className="grid h-full place-items-center px-6 text-center text-white">
+      <div>
+        <Clapperboard className="mx-auto h-10 w-10 text-white/70" />
+        <p className="mt-4 font-display text-3xl">NEA Reels are on their way</p>
+        <p className="mx-auto mt-2 max-w-sm text-[15px] text-white/70">Treatments, before-and-afters and skincare tips from the team will play right here.</p>
+        <div className="mt-6 flex flex-wrap justify-center gap-2">
+          <button onClick={() => (onClose(), book.open())} className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-3 text-[14px] font-medium text-ink transition hover:bg-white/90">
+            <CalendarHeart className="h-4 w-4" /> Book a visit
+          </button>
+          <button onClick={() => (onClose(), ai.open())} className="inline-flex items-center gap-2 rounded-full bg-white/10 px-5 py-3 text-[14px] text-white transition hover:bg-white/20">
+            <Sparkles className="h-4 w-4" /> Ask SI
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }

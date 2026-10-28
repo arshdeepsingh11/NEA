@@ -37,7 +37,7 @@ export function Dock() {
     { label: "Home", href: "/", icon: <House />, match: is("/") },
     { label: "Programs", href: "/programs", icon: <Route />, match: is("/programs") },
     { label: "Treatments", href: "/treatments", icon: <Syringe />, match: is("/treatments") || is("/fotona") },
-    { label: "Reels", icon: <Clapperboard />, onClick: () => reels.open(), hint: "NEA on Instagram" },
+    { label: "Reels", icon: <Clapperboard />, onClick: () => reels.open(), hint: "Watch NEA videos" },
     { label: "Ask SI", icon: <Sparkles />, featured: true, onClick: () => ai.open(), hint: "Skin Intelligence · press N" },
     { label: "Testing", href: "/tests", icon: <Microscope />, match: is("/tests") || is("/microbiome") },
     { label: "Free scan", href: "/skin-scan", icon: <ScanFace />, match: is("/skin-scan") },
