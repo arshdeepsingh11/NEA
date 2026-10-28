@@ -1,4 +1,5 @@
 "use client";
+import { NeaSiIcon } from "@/components/brand/nea-si-icon";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
@@ -39,7 +40,7 @@ function score(t: TreatmentItem, q: string) {
 }
 
 /**
- * Treatment Navigator: one list, one live preview. Type a concern and SI ranks every treatment by fit,
+ * Treatment Navigator: one list, one live preview. Type a concern and Nea SI ranks every treatment by fit,
  * showing session time and price straight from NEA's Jane booking system.
  */
 export function TreatmentsBrowser({ items, categories }: { items: TreatmentItem[]; categories: { id: TreatmentCategory; label: string; blurb: string }[] }) {
@@ -51,11 +52,12 @@ export function TreatmentsBrowser({ items, categories }: { items: TreatmentItem[
   const book = useBooking();
   const ai = useAi();
 
+  const order = (c: TreatmentCategory) => categories.findIndex((x) => x.id === c);
   const list = useMemo(() => {
     return items
       .map((t) => ({ t, s: score(t, q) }))
       .filter(({ t, s }) => (cat === "all" || t.category === cat) && s > 0)
-      .sort((a, b) => b.s - a.s);
+      .sort((a, b) => (q ? b.s - a.s : order(a.t.category) - order(b.t.category)));
   }, [items, cat, q]);
 
   useEffect(() => {
@@ -67,7 +69,7 @@ export function TreatmentsBrowser({ items, categories }: { items: TreatmentItem[
 
   return (
     <div>
-      {/* SI search */}
+      {/* Nea SI search */}
       <div className="surface rounded-[28px] p-3">
         <label className="flex items-center gap-3 rounded-2xl bg-white/70 px-4 py-3">
           <Sparkles className="h-4 w-4 shrink-0 text-flora" />
@@ -75,12 +77,12 @@ export function TreatmentsBrowser({ items, categories }: { items: TreatmentItem[
           <Search className="h-4 w-4 shrink-0 text-graphite" />
         </label>
         <div className="no-scrollbar mt-3 flex gap-1.5 overflow-x-auto px-1 pb-1">
-          {[{ id: "all" as const, label: "All" }, ...categories].map((c) => (
-            <button key={c.id} onClick={() => setCat(c.id)} aria-pressed={cat === c.id} className={cn("shrink-0 rounded-full px-3.5 py-1.5 text-[13px] transition", cat === c.id ? "bg-ink text-white" : "bg-ink/[0.05] text-ink/70 hover:text-ink")}>
-              {c.label}
+          {cat !== "all" && (
+            <button onClick={() => setCat("all")} className="shrink-0 rounded-full bg-ink px-3.5 py-1.5 text-[13px] text-white">
+              {catLabel(cat)} ✕
             </button>
-          ))}
-          <span className="mx-1 w-px shrink-0 bg-ink/10" />
+          )}
+          <span className="shrink-0 self-center px-1 text-[12.5px] text-graphite">Popular:</span>
           {QUICK.map((w) => (
             <button key={w} onClick={() => setQ(w)} className={cn("shrink-0 rounded-full border px-3 py-1.5 text-[12.5px] transition", q === w ? "border-ink text-ink" : "border-ink/10 text-graphite hover:text-ink")}>
               {w}
@@ -98,8 +100,10 @@ export function TreatmentsBrowser({ items, categories }: { items: TreatmentItem[
           <ul className="space-y-1.5">
             {list.map(({ t, s }, i) => {
               const on = t.slug === cur?.slug;
+              const head = !q && (i === 0 || list[i - 1].t.category !== t.category);
               return (
                 <li key={t.slug}>
+                  {head && <p className={cn("px-4 pb-1 text-[11.5px] uppercase tracking-[0.14em] text-graphite", i > 0 && "pt-4")}>{catLabel(t.category)}</p>}
                   <button
                     onMouseEnter={() => setActive(t.slug)}
                     onFocus={() => setActive(t.slug)}
@@ -139,14 +143,14 @@ export function TreatmentsBrowser({ items, categories }: { items: TreatmentItem[
             <div className="rounded-3xl border border-dashed border-ink/15 p-10 text-center">
               <p className="text-lg">Nothing matches “{q}”.</p>
               <button onClick={() => ai.open({ query: q })} className="btn-light mt-5">
-                <Sparkles className="h-4 w-4" /> Ask SI instead
+                <NeaSiIcon className="h-4 w-4" /> Ask Nea SI instead
               </button>
             </div>
           )}
         </div>
 
         {/* live preview */}
-        <div id="treatment-preview" className="scroll-mt-20 lg:sticky lg:top-24 lg:h-fit">
+        <div id="treatment-preview" data-lenis-prevent className="scroll-mt-20 lg:sticky lg:top-24 lg:max-h-[calc(100dvh-7rem)] lg:overflow-y-auto lg:overscroll-contain lg:rounded-[32px] [scrollbar-width:thin]">
           <AnimatePresence mode="wait">
             {cur && (
               <motion.article key={cur.slug} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.3 }} className="surface overflow-hidden rounded-[32px]">
@@ -193,7 +197,7 @@ export function TreatmentsBrowser({ items, categories }: { items: TreatmentItem[
                       Full details <ArrowUpRight className="h-4 w-4" />
                     </Link>
                     <button onClick={() => ai.open({ context: cur.title, query: `Is ${cur.title} right for me?` })} className="btn-ghost">
-                      <Sparkles className="h-4 w-4" /> Ask SI
+                      <NeaSiIcon className="h-4 w-4" /> Ask Nea SI
                     </button>
                   </div>
                 </div>
