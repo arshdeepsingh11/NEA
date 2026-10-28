@@ -96,6 +96,20 @@ builds a plan with a total when a budget is mentioned. Set `ANTHROPIC_API_KEY` (
 `NEXT_PUBLIC_`) to have Claude write the answer from those sources; `AI_MODEL` overrides the model.
 Without a key the built-in engine answers. It never diagnoses or invents prices.
 
+## Instagram Reels
+
+The **Reels** button in the navbar opens a full-screen viewer with NEA's own Instagram videos. Each video has a "Book" button that opens the matching Jane services; the matching rules are in `src/content/reels.ts`. It uses Instagram's official API, which is free. Only the account that owns the token can be read, so the viewer can only ever show @neaprecisionskin. Until a token is set, the button opens a card that links to the Instagram profile.
+
+One-time setup (about 20 minutes, needs someone who can log in to @neaprecisionskin):
+
+1. Make sure the Instagram account is a Professional account (Business or Creator): Instagram → Settings → Account type and tools.
+2. Go to developers.facebook.com → My Apps → Create app. Choose the Instagram use case (manage messaging and content on Instagram) and a Business app type.
+3. In the app, open Instagram → API setup with Instagram login → Generate access tokens → Add account, log in as @neaprecisionskin and approve. If Meta asks, add the account under App roles → Instagram testers and accept the invite in Instagram.
+4. Click Generate token next to the account and copy it. The app can stay in development mode because it only reads NEA's own account.
+5. Add `INSTAGRAM_ACCESS_TOKEN=<token>` to `.env.local` and to the hosting provider's environment variables, then redeploy.
+
+Tokens last 60 days. `vercel.json` calls `/api/instagram/refresh` every Monday to restart the 60 days (set `CRON_SECRET` in Vercel to protect it). On another host, call that URL weekly with any scheduler. If the refresh response ever shows `"tokenChanged": true`, paste the new token from Meta into `INSTAGRAM_ACCESS_TOKEN`. New posts appear on the site within an hour.
+
 ## 3D models and credits
 
 `public/models/body.glb` — MakeHuman base mesh (CC0). `public/models/head.glb` + textures —
