@@ -1,90 +1,89 @@
 "use client";
-import { useEffect, useRef } from "react";
-import { motion } from "framer-motion";
-import { BadgeCheck, Play } from "lucide-react";
-import { useReels, type ReelItem } from "@/components/reels/reels";
-import { cleanCaption, reelTopic } from "@/content/reels";
+import { useEffect, useRef, useState } from "react";
+import { CalendarHeart, Play } from "lucide-react";
+import { FollowButton, useReels } from "@/components/reels/reels";
+import { useBooking } from "@/components/booking/booking";
+import { cleanCaption, embedFor, embedHeight, reelTopic } from "@/content/reels";
+
+const CARD = 280;
 
 /**
- * NEA's latest videos, playing silently on the home page. Tap one to watch full screen with sound.
- * Renders nothing until there is at least one video.
+ * NEA's latest videos on the home page. Each one plays right here in the platform's embedded player;
+ * "Watch reels" opens the full-screen viewer.
  */
 export function ReelsStrip() {
-  const { feed, load, open } = useReels();
+  const { videos, load, open } = useReels();
   const root = useRef<HTMLElement>(null);
+  const [near, setNear] = useState(false);
 
-  // only ask for the videos when the section is close to the screen
+  // load the players only when the section is close to the screen
   useEffect(() => {
     const el = root.current;
     if (!el) return;
-    const io = new IntersectionObserver((es) => es[0].isIntersecting && (load(), io.disconnect()), { rootMargin: "800px" });
+    const io = new IntersectionObserver(
+      (es) => {
+        if (es[0].isIntersecting) {
+          setNear(true);
+          load();
+          io.disconnect();
+        }
+      },
+      { rootMargin: "600px" },
+    );
     io.observe(el);
     return () => io.disconnect();
   }, [load]);
 
-  const reels = feed?.reels.slice(0, 12) ?? [];
+  if (!videos.length) return null;
+  const list = videos.slice(0, 12);
 
   return (
-    <section ref={root} className={reels.length ? "chapter" : undefined} aria-label="NEA Reels">
-      {reels.length > 0 && (
-        <div className="container">
-          <div className="mb-8 flex flex-wrap items-end justify-between gap-4 md:mb-10">
-            <div>
-              <p className="flex items-center gap-2 text-[13px] text-graphite">
-                @neaprecisionskin <BadgeCheck className="h-4 w-4 text-sky-500" />
-              </p>
-              <h2 className="mt-2 max-w-2xl text-display-md font-semibold">
-                Straight from the <em className="aurora-text">clinic floor.</em>
-              </h2>
-            </div>
-            <button onClick={() => open(0)} className="btn-ghost">
-              <Play className="h-4 w-4" /> Watch all {feed!.reels.length}
-            </button>
+    <section ref={root} className="chapter" aria-label="NEA Reels">
+      <div className="container">
+        <div className="mb-8 flex flex-wrap items-end justify-between gap-4 md:mb-10">
+          <div>
+            <p className="text-[13px] text-graphite">@neaprecisionskin</p>
+            <h2 className="mt-2 max-w-2xl text-display-md font-semibold">
+              Straight from the <em className="aurora-text">clinic floor.</em>
+            </h2>
           </div>
-          <div className="no-scrollbar -mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-2 md:-mx-0 md:px-0">
-            {reels.map((r, i) => (
-              <Card key={r.id} reel={r} onOpen={() => open(i)} delay={i} />
-            ))}
+          <div className="flex flex-wrap gap-2">
+            <button onClick={() => open(0)} className="btn-primary">
+              <Play className="h-4 w-4" /> Watch reels
+            </button>
+            <FollowButton />
           </div>
         </div>
-      )}
+        <div className="no-scrollbar -mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-2 md:mx-0 md:px-0">
+          {list.map((v, i) => (
+            <Card key={v.url} url={v.url} caption={v.caption ?? ""} load={near} onOpen={() => open(i)} />
+          ))}
+        </div>
+      </div>
     </section>
   );
 }
 
-function Card({ reel, onOpen, delay }: { reel: ReelItem; onOpen: () => void; delay: number }) {
-  const v = useRef<HTMLVideoElement>(null);
-  const topic = reelTopic(reel.caption);
-  const caption = cleanCaption(reel.caption);
-
-  // play while on screen, pause when scrolled away
-  useEffect(() => {
-    const el = v.current;
-    if (!el) return;
-    const io = new IntersectionObserver(([e]) => (e.isIntersecting ? el.play().catch(() => {}) : el.pause()), { threshold: 0.6 });
-    io.observe(el);
-    return () => io.disconnect();
-  }, []);
-
+function Card({ url, caption, load, onOpen }: { url: string; caption: string; load: boolean; onOpen: () => void }) {
+  const e = embedFor(url)!;
+  const h = embedHeight(e.platform, CARD);
+  const topic = reelTopic(caption);
+  const text = cleanCaption(caption);
+  const book = useBooking();
   return (
-    <motion.button
-      onClick={onOpen}
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.5, delay: Math.min(delay, 5) * 0.06 }}
-      className="group relative aspect-[9/16] w-[62vw] max-w-[260px] shrink-0 snap-start overflow-hidden rounded-[26px] bg-ink text-left shadow-[0_24px_60px_-30px_rgba(var(--shadow-tint),0.8)] sm:w-[240px]"
-      aria-label={`Play video: ${caption.slice(0, 80) || topic.label}`}
-    >
-      <video ref={v} src={reel.video} poster={reel.poster ?? undefined} muted loop playsInline preload="metadata" className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-[1.04]" />
-      <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/5 to-transparent" />
-      <span className="absolute right-3 top-3 grid h-9 w-9 place-items-center rounded-full bg-black/35 text-white backdrop-blur-md transition group-hover:bg-white group-hover:text-ink">
-        <Play className="h-4 w-4 translate-x-px" />
-      </span>
-      <div className="absolute inset-x-0 bottom-0 p-4 text-white">
-        {topic.key !== "popular" && <span className="mb-2 inline-block rounded-full bg-white/20 px-2.5 py-1 text-[11px] backdrop-blur-md">{topic.label}</span>}
-        {caption && <p className="line-clamp-3 text-[13px] leading-snug text-white/90">{caption}</p>}
+    <div className="shrink-0 snap-start" style={{ width: CARD }}>
+      <div className="relative overflow-hidden rounded-[22px] border border-ink/[0.06] bg-white shadow-[0_24px_60px_-30px_rgba(var(--shadow-tint),0.7)]" style={{ height: h }}>
+        <div className="absolute inset-0 grid place-items-center text-[13px] text-graphite">Loading video…</div>
+        {load && <iframe src={e.src} title={text || "NEA video"} width={CARD} height={e.platform === "instagram" ? h + 170 : h} loading="lazy" className="relative block border-0" allow="autoplay; encrypted-media; picture-in-picture; clipboard-write; web-share" allowFullScreen scrolling="no" />}
       </div>
-    </motion.button>
+      {text && (
+        <button onClick={onOpen} className="mt-3 line-clamp-2 text-left text-[13.5px] leading-snug text-ink/80 hover:text-ink">
+          {text}
+        </button>
+      )}
+      <button onClick={() => book.open(topic.key, topic.label)} className="mt-2 inline-flex items-center gap-1.5 text-[13px] font-medium text-flora hover:underline">
+        <CalendarHeart className="h-3.5 w-3.5" /> {topic.key === "popular" ? "Book a visit" : `Book ${topic.label}`}
+      </button>
+    </div>
   );
 }
