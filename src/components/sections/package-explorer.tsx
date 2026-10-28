@@ -1,4 +1,5 @@
 "use client";
+import { NeaSiIcon } from "@/components/brand/nea-si-icon";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
@@ -212,7 +213,7 @@ export function PackageExplorer({ packages }: { packages: WellnessPackage[] }) {
                     Request a consultation
                   </Link>
                   <button onClick={() => ai.open({ context: cur.name, query: `Is the ${cur.name} right for me?` })} className="btn-ghost">
-                    <Sparkles className="h-4 w-4" /> Ask SI
+                    <NeaSiIcon className="h-4 w-4" /> Ask Nea SI
                   </button>
                 </div>
               </div>

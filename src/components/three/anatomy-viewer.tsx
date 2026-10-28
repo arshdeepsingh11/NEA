@@ -144,7 +144,7 @@ void main() {
 /**
  * Anatomy Viewer — a real 3D human you can rotate, zoom and click.
  * Each click maps to a NEA region (skin, gut, hormones, scalp…) and calls onSelect.
- * Two looks: realistic skin with studio light, or an SI hologram with a scanning sweep.
+ * Two looks: realistic skin with studio light, or a Nea SI hologram with a scanning sweep.
  */
 export function AnatomyViewer({ mode, regions, view = "skin", selected = null, onSelect, className, compact, showLabels = true, focus = true }: Props) {
   const [loaded, setLoaded] = useState(false);

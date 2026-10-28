@@ -1,8 +1,9 @@
 "use client";
+import { NeaSiIcon } from "@/components/brand/nea-si-icon";
 import Link from "next/link";
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowUpRight, CalendarHeart, Sparkles } from "lucide-react";
+import { ArrowUpRight, CalendarHeart } from "lucide-react";
 import { NeaImage } from "@/components/ui/nea-image";
 import { useBooking } from "@/components/booking/booking";
 import { useAi } from "@/components/ai/ai-provider";
@@ -107,7 +108,7 @@ export function ProgramLab({ programs, insights }: { programs: Program[]; insigh
               Everything about this program <ArrowUpRight className="h-4 w-4" />
             </Link>
             <button onClick={() => ai.open({ context: p.name, query: `Is the ${p.name} right for me?` })} className="btn-ghost">
-              <Sparkles className="h-4 w-4" /> Ask SI
+              <NeaSiIcon className="h-4 w-4" /> Ask Nea SI
             </button>
           </div>
         </motion.div>

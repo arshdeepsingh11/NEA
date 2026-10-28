@@ -77,7 +77,7 @@ export function HeroScan({ image, alt, className }: { image: string; alt: string
           ))}
           <div className="absolute bottom-5 left-1/2 flex -translate-x-1/2 items-center gap-2 rounded-full border border-white/70 bg-white/70 px-3.5 py-1.5 text-[11.5px] text-ink backdrop-blur-md">
             <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-flora" />
-            {step < READOUTS.length ? "SI skin scan running…" : "Scan complete · sample"}
+            {step < READOUTS.length ? "Nea SI skin scan running…" : "Scan complete · sample"}
           </div>
         </div>
 

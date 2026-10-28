@@ -11,7 +11,7 @@ import { NeaImage } from "@/components/ui/nea-image";
 import { cn, money } from "@/lib/utils";
 
 /**
- * SI Consult: seven short questions, then NEA SI explains what is most likely going on,
+ * Nea SI Consult: seven short questions, then Nea SI explains what is most likely going on,
  * which program fits (with a match score you can read), which tests and first treatments make sense,
  * what it costs against your budget, and books it in Jane.
  * The reasoning is rule-based and shown to the user, so every suggestion has a "because".
@@ -127,7 +127,7 @@ function reason(a: A) {
     tests.add("vitamin-d");
   }
   if (["acne", "redness"].includes(a.concern ?? "")) tests.add("bioskin");
-  if (Number(a.tone) >= 4 && ["pigment", "acne", "aging"].includes(a.concern ?? "")) out.push("Your skin tone is more prone to marks after irritation, so SI only suggests peels and laser settings that are safe for brown skin.");
+  if (Number(a.tone) >= 4 && ["pigment", "acne", "aging"].includes(a.concern ?? "")) out.push("Your skin tone is more prone to marks after irritation, so Nea SI only suggests peels and laser settings that are safe for brown skin.");
   if (a.age === "45" || a.age === "60") tests.add("core-inflammation-aging");
   return { reasons: out.slice(0, 4), tests: [...tests].slice(0, 3) };
 }
@@ -196,7 +196,7 @@ export function SiConsult({ className }: { className?: string }) {
           {(thinking || !done) && <span aria-hidden className="absolute inset-0 animate-ping rounded-full opacity-30 [background:var(--aurora)]" />}
         </span>
         <div className="min-w-0 flex-1">
-          <p className="text-[13px] font-medium text-ink">SI Consult</p>
+          <p className="text-[13px] font-medium text-ink">Nea SI Consult</p>
           <div className="mt-1.5 flex gap-1">
             {QS.map((_, i) => (
               <span key={i} className="h-1 flex-1 rounded-full bg-ink/[0.08]">
@@ -267,7 +267,7 @@ export function SiConsult({ className }: { className?: string }) {
           {done && !thinking && result && (
             <motion.div key="res" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="grid gap-8 lg:grid-cols-[1.05fr_0.95fr]">
               <div>
-                <p className="eyebrow">SI suggests</p>
+                <p className="eyebrow">Nea SI suggests</p>
                 {result.prog ? (
                   <>
                     <h3 className="mt-3 font-display text-[clamp(2.2rem,4vw,3.2rem)] leading-none text-ink">{result.prog.name}</h3>
@@ -284,7 +284,7 @@ export function SiConsult({ className }: { className?: string }) {
                     </svg>
                     <span className="tabular absolute inset-0 grid place-items-center text-[15px] font-semibold">{result.match}%</span>
                   </div>
-                  <p className="text-[13.5px] leading-snug text-graphite">Match with your answers. Higher means more of this program’s causes fit what you told SI.</p>
+                  <p className="text-[13.5px] leading-snug text-graphite">Match with your answers. Higher means more of this program’s causes fit what you told Nea SI.</p>
                 </div>
                 <p className="mt-7 text-[13px] font-medium text-ink">Because</p>
                 <ul className="mt-2 space-y-2">
@@ -369,13 +369,13 @@ export function SiConsult({ className }: { className?: string }) {
                 <button
                   onClick={() =>
                     ai.open({
-                      query: `SI Consult answers: concern ${a.concern}, for ${a.since}, tried ${a.tried.join("/")}, skin tone ${a.tone}, signals ${a.signals.join("/")}, age ${a.age}, budget ${a.budget}, downtime ${a.downtime} days. Explain my plan step by step.`,
+                      query: `Nea SI Consult answers: concern ${a.concern}, for ${a.since}, tried ${a.tried.join("/")}, skin tone ${a.tone}, signals ${a.signals.join("/")}, age ${a.age}, budget ${a.budget}, downtime ${a.downtime} days. Explain my plan step by step.`,
                     })
                   }
                   className="flex w-full items-center justify-between rounded-3xl bg-ink px-5 py-4 text-left text-white transition hover:bg-ink/90"
                 >
                   <span>
-                    <span className="block text-[14.5px] font-medium">Talk it through with NEA SI</span>
+                    <span className="block text-[14.5px] font-medium">Talk it through with Nea SI</span>
                     <span className="block text-[12.5px] text-white/70">Ask anything about this plan</span>
                   </span>
                   <Sparkles className="h-5 w-5" />

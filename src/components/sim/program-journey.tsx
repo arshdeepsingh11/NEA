@@ -1,4 +1,5 @@
 "use client";
+import { NeaSiIcon } from "@/components/brand/nea-si-icon";
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { CalendarCheck, FlaskConical, Pause, Play, ScanFace, Sparkles } from "lucide-react";
@@ -64,7 +65,7 @@ export function ProgramJourney({ phases, insight, className }: { phases: { name:
     <div className={cn("surface rounded-[32px] p-6 md:p-8", className)}>
       <div className="flex flex-wrap items-center justify-between gap-3">
         <p className="flex items-center gap-2 text-[13px] text-flora">
-          <Sparkles className="h-4 w-4" /> SI journey · drag the timeline
+          <NeaSiIcon className="h-4 w-4" /> Nea SI journey · drag the timeline
         </p>
         <span className="chip !text-[11.5px]">Illustrative, not a promise</span>
       </div>

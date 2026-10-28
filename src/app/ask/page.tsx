@@ -1,4 +1,5 @@
-import { Calculator, FlaskConical, PersonStanding, Sparkles, WandSparkles } from "lucide-react";
+import { NeaSiIcon } from "@/components/brand/nea-si-icon";
+import { Calculator, FlaskConical, PersonStanding, WandSparkles } from "lucide-react";
 import { AiPromptBar } from "@/components/ai/ai-prompt-bar";
 import { AiQuestionChips } from "@/components/ai/ai-question-chips";
 import { AskAutoOpen } from "@/components/ai/ask-auto-open";
@@ -6,8 +7,8 @@ import { LazySignal } from "@/components/three/lazy";
 import { pageMeta } from "@/lib/seo";
 
 export const metadata = pageMeta({
-  title: "Ask NEA SI · Skin Intelligence",
-  description: "NEA SI (Skin Intelligence) answers questions about treatments, tests, prices, hours and your visit, builds a plan within your budget, and links every answer to its source.",
+  title: "Ask Nea SI · Skin Intelligence",
+  description: "Nea SI (Skin Intelligence) answers questions about treatments, tests, prices, hours and your visit, builds a plan within your budget, and links every answer to its source.",
   path: "/ask",
 });
 
@@ -26,7 +27,7 @@ export default function AskPage() {
       <div className="container relative">
         <div className="mx-auto max-w-3xl text-center">
           <p className="chip">
-            <Sparkles className="h-3.5 w-3.5 text-flora" /> NEA SI · Skin Intelligence
+            <NeaSiIcon className="h-3.5 w-3.5 text-flora" /> Nea SI · Skin Intelligence
           </p>
           <h1 className="mt-6 text-display-lg font-semibold text-ink">
             Ask <span className="aurora-text">anything.</span>

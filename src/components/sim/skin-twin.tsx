@@ -1,4 +1,5 @@
 "use client";
+import { NeaSiIcon } from "@/components/brand/nea-si-icon";
 import Link from "next/link";
 import { animate, motion, useMotionValue, useTransform } from "framer-motion";
 import { ArrowUpRight, BedDouble, Brain, GlassWater, Salad, Sparkles, Sun, Waves } from "lucide-react";
@@ -137,7 +138,7 @@ export function SkinTwin({ className }: { className?: string }) {
 
         <div className="mt-6 rounded-3xl border border-ink/[0.07] bg-white/60 p-5">
           <p className="flex items-center gap-2 text-[13px] font-medium text-flora">
-            <Sparkles className="h-4 w-4" /> What SI sees
+            <NeaSiIcon className="h-4 w-4" /> What Nea SI sees
           </p>
           <ul className="mt-3 space-y-2">
             {notes.map((t) => (
@@ -159,7 +160,7 @@ export function SkinTwin({ className }: { className?: string }) {
               Measure my real skin, free <ArrowUpRight className="h-3.5 w-3.5" />
             </Link>
             <button onClick={() => ai.open({ query: `My habits: ${v.sleep}h sleep, ${v.water} glasses of water, ${v.sun} min sun without SPF, stress ${v.stress}/10, whole foods ${v.food}/10. What should I change first for my skin?` })} className="btn-ghost !px-4 !py-2 !text-[13px]">
-              <Sparkles className="h-3.5 w-3.5" /> Ask SI what to change first
+              <NeaSiIcon className="h-3.5 w-3.5" /> Ask Nea SI what to change first
             </button>
           </div>
         </div>

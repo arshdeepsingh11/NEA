@@ -1,6 +1,7 @@
 "use client";
+import { NeaSiIcon } from "@/components/brand/nea-si-icon";
 import Link from "next/link";
-import { ArrowUpRight, ScanFace, Sparkles } from "lucide-react";
+import { ArrowUpRight, ScanFace } from "lucide-react";
 import { useState } from "react";
 import { LazyAnatomy } from "@/components/three/lazy";
 import { useAi } from "@/components/ai/ai-provider";
@@ -84,7 +85,7 @@ export function FaceMapChapter({ zones }: { zones: Region[] }) {
                 Open in 3D <ArrowUpRight className="h-4 w-4" />
               </Link>
               <button onClick={() => ai.open({ query: `What does NEA recommend for my ${z.name.toLowerCase()}?`, context: z.name })} className="btn-primary">
-                <Sparkles className="h-4 w-4" /> Ask SI
+                <NeaSiIcon className="h-4 w-4" /> Ask Nea SI
               </button>
             </div>
           </div>

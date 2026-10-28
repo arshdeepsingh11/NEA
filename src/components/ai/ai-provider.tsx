@@ -14,7 +14,7 @@ const isTyping = (el: EventTarget | null) => {
   return !!t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.tagName === "SELECT" || t.isContentEditable);
 };
 
-/** Makes NEA SI (Skin Intelligence) available everywhere. Press N (when not typing) to open it. */
+/** Makes Nea SI (Skin Intelligence) available everywhere. Press N (when not typing) to open it. */
 export function AiProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<{ open: boolean; opts: OpenOptions; nonce: number }>({ open: false, opts: {}, nonce: 0 });
 

@@ -9,7 +9,7 @@ import { LazyAnatomy } from "@/components/three/lazy";
 type ScanRegion = { id: string; name: string; system: string; headline: string; color: string; tests: string[]; tracks: string[] };
 
 /**
- * Hero visual: an SI hologram of the body that "scans" one system at a time.
+ * Hero visual: a Nea SI hologram of the body that "scans" one system at a time.
  * The readout explains what that system does for your skin and how NEA measures it.
  * Clicking any part opens the full Body Explorer on that region.
  */
@@ -43,7 +43,7 @@ export function HeroBody({ regions }: { regions: ScanRegion[] }) {
           <motion.div key={r.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.35 }} className="glass rounded-3xl p-5">
             <div className="flex items-center justify-between">
               <span className="flex items-center gap-1.5 text-[11.5px] text-flora">
-                <Activity className="h-3.5 w-3.5" /> SI body scan · {String(i + 1).padStart(2, "0")}/{regions.length}
+                <Activity className="h-3.5 w-3.5" /> Nea SI body scan · {String(i + 1).padStart(2, "0")}/{regions.length}
               </span>
               <span className="chip !px-2 !py-0.5 !text-[11px]">{r.system}</span>
             </div>

@@ -31,7 +31,7 @@ export default function TreatmentsPage() {
     <>
       <PageHero
         trail={[{ name: "Treatments", path: "/treatments" }]}
-        title="Tell SI what you want to fix. It ranks every treatment."
+        title="Tell Nea SI what you want to fix. It ranks every treatment."
         lede="Medical-grade care in one physician-managed clinic. Not sure where to start? A free Skin Health Report tells you which of these will actually help."
       />
       <section className="pb-28">

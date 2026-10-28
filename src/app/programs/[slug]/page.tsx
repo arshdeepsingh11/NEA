@@ -1,7 +1,8 @@
+import { NeaSiIcon } from "@/components/brand/nea-si-icon";
 import Link from "next/link";
 import { BookButton } from "@/components/booking/booking";
 import { notFound } from "next/navigation";
-import { ArrowUpRight, Check, PersonStanding, ScanFace, Sparkles } from "lucide-react";
+import { ArrowUpRight, Check, PersonStanding, ScanFace } from "lucide-react";
 import { NeaImage } from "@/components/ui/nea-image";
 import { ShineBorder } from "@/components/ui/shine-border";
 import { SectionHead } from "@/components/sections/page-hero";
@@ -241,7 +242,7 @@ export default async function ProgramPage({ params }: Props) {
           <div className="container">
             <div className="aurora-border surface relative rounded-[32px] p-7 md:p-10">
               <p className="flex items-center gap-2 text-[13px] text-flora">
-                <Sparkles className="h-4 w-4" /> NEA SI · Skin Intelligence
+                <NeaSiIcon className="h-4 w-4" /> Nea SI · Skin Intelligence
               </p>
               <p className="mt-2 font-display text-2xl font-semibold text-ink">Questions people ask about the {p.name}</p>
               <div className="mt-6">

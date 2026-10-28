@@ -1,7 +1,8 @@
 "use client";
+import { NeaSiIcon } from "@/components/brand/nea-si-icon";
 import Link from "next/link";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { ArrowUpRight, Sparkles } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import { useState } from "react";
 import { useAi } from "@/components/ai/ai-provider";
 import { cn } from "@/lib/utils";
@@ -111,7 +112,7 @@ export function SystemsNetwork({ className }: { className?: string }) {
               Learn more <ArrowUpRight className="h-4 w-4" />
             </Link>
             <button onClick={() => ai.open({ query: `How does my ${node.label.toLowerCase()} affect my skin, and how does NEA test it?` })} className="btn-primary">
-              <Sparkles className="h-4 w-4" /> Ask SI
+              <NeaSiIcon className="h-4 w-4" /> Ask Nea SI
             </button>
           </div>
           <p className="mt-5 text-[12px] text-graphite/80">Strength is an illustrative weighting of how often each system contributes to the skin concerns NEA treats, not a personal result.</p>

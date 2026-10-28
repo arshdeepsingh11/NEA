@@ -1,4 +1,5 @@
 "use client";
+import { NeaSiIcon } from "@/components/brand/nea-si-icon";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowUpRight, Box, CalendarHeart, Check, ChevronRight, CircleHelp, FlaskConical, Layers, Maximize2, MousePointerClick, Rotate3d, ScanFace, Search, Sparkles, Target, TriangleAlert, X } from "lucide-react";
@@ -23,7 +24,7 @@ const VIEWS: { v: View; label: string; hint: string }[] = [
   { v: "skin", label: "Realistic", hint: "Real skin, studio light" },
   { v: "inside", label: "Inside", hint: "Glass skin, organs visible" },
   { v: "systems", label: "Systems", hint: "Every system in its colour" },
-  { v: "holo", label: "SI hologram", hint: "Scanning hologram" },
+  { v: "holo", label: "Nea SI hologram", hint: "Scanning hologram" },
 ];
 const SKIN_IDS = new Set(["face", "forehead", "undereye", "cheeks", "tzone", "mouth", "jaw", "thighs"]);
 
@@ -175,7 +176,7 @@ export function BodyExplorer({ body, face, links }: { body: Region[]; face: Regi
                   </li>
                 );
               })}
-              {!listed.length && <li className="p-4 text-[13.5px] text-graphite">Nothing matches. Try another word, or ask SI.</li>}
+              {!listed.length && <li className="p-4 text-[13.5px] text-graphite">Nothing matches. Try another word, or ask Nea SI.</li>}
             </ul>
           </div>
         </div>
@@ -347,7 +348,7 @@ function RegionDetail({ region, siblings, links, onClose, onGo }: { region: Regi
 
                 {tab === "signs" && d && (
                   <div>
-                    <p className="text-[14px] text-graphite">Tick what sounds like you. SI uses it to point you to the right next step.</p>
+                    <p className="text-[14px] text-graphite">Tick what sounds like you. Nea SI uses it to point you to the right next step.</p>
                     <ul className="mt-4 space-y-2">
                       {d.signs.map((s) => {
                         const on = ticked.includes(s);
@@ -374,7 +375,7 @@ function RegionDetail({ region, siblings, links, onClose, onGo }: { region: Regi
                           </p>
                           <div className="mt-3 flex flex-wrap gap-2">
                             <button onClick={() => ai.open({ context: region.name, query: `I have these signs: ${ticked.join(", ")}. What should I do?` })} className="btn-light !px-4 !py-2 !text-[13px]">
-                              <Sparkles className="h-3.5 w-3.5" /> Ask SI about my signs
+                              <NeaSiIcon className="h-3.5 w-3.5" /> Ask Nea SI about my signs
                             </button>
                             <Link href="/skin-scan" onClick={onClose} className="btn-ghost !px-4 !py-2 !text-[13px]">
                               <ScanFace className="h-3.5 w-3.5" /> Free skin scan
@@ -478,7 +479,7 @@ function RegionDetail({ region, siblings, links, onClose, onGo }: { region: Regi
               <CalendarHeart className="h-4 w-4" /> Book in Jane
             </button>
             <button onClick={() => ai.open({ context: region.name, query: `Tell me more about my ${region.name.toLowerCase()} and what NEA would do.` })} className="btn-primary !px-4 !py-2 !text-[13px]">
-              <Sparkles className="h-4 w-4" /> Ask SI
+              <NeaSiIcon className="h-4 w-4" /> Ask Nea SI
             </button>
           </div>
         </div>
