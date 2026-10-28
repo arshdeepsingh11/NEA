@@ -111,7 +111,7 @@ export function SystemsNetwork({ className }: { className?: string }) {
               Learn more <ArrowUpRight className="h-4 w-4" />
             </Link>
             <button onClick={() => ai.open({ query: `How does my ${node.label.toLowerCase()} affect my skin, and how does NEA test it?` })} className="btn-primary">
-              <Sparkles className="h-4 w-4" /> Ask AI
+              <Sparkles className="h-4 w-4" /> Ask SI
             </button>
           </div>
           <p className="mt-5 text-[12px] text-graphite/80">Strength is an illustrative weighting of how often each system contributes to the skin concerns NEA treats, not a personal result.</p>
