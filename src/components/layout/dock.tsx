@@ -1,49 +1,53 @@
 "use client";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Activity, CalendarCheck, FlaskConical, Grid2x2, Home, Layers, PersonStanding, ScanFace, Sparkles, X } from "lucide-react";
+import { CalendarHeart, House, LayoutGrid, Microscope, Route, ScanFace, Sparkles, Syringe, X } from "lucide-react";
 import Link from "next/link";
-import { AppleDock, type DockItem } from "@/components/ui/apple-dock";
+import { SparkleNavbar, type SparkleItem } from "@/components/ui/sparkle-navbar";
 import { useAi } from "@/components/ai/ai-provider";
+import { useBooking } from "@/components/booking/booking";
+import { NeaLogo } from "@/components/brand/nea-logo";
 import { footerNav } from "@/content/nav";
 import { site } from "@/lib/site";
-import { ThemeDot, ThemePicker, useTheme } from "@/components/theme/theme";
+import { ThemePicker } from "@/components/theme/theme";
 
 /**
- * The only navigation on the site: a floating glass dock.
- * Seven destinations people actually come for, the AI in the middle, and "More" for everything else.
+ * The only navigation: a Sparkle Navbar fixed at the bottom.
+ * Six destinations people actually come for, SI in the centre, and "More" for everything else.
  */
 export function Dock() {
   const pathname = usePathname();
   const ai = useAi();
+  const book = useBooking();
   const [more, setMore] = useState(false);
-  const { theme, toggle } = useTheme();
+  const [small, setSmall] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 767px)");
+    const on = () => setSmall(mq.matches);
+    on();
+    mq.addEventListener("change", on);
+    return () => mq.removeEventListener("change", on);
+  }, []);
   const is = (p: string) => (p === "/" ? pathname === "/" : pathname === p || pathname.startsWith(p + "/"));
 
-  const items: DockItem[] = [
-    { label: "Home", href: "/", icon: <Home />, active: is("/") },
-    { label: "Body", href: "/body", icon: <PersonStanding />, active: is("/body"), hint: "3D body explorer" },
-    { label: "Programs", href: "/programs", icon: <Layers />, active: is("/programs") },
-    { label: "Treatments", href: "/treatments", icon: <Activity />, active: is("/treatments") },
-    { label: "Ask AI", icon: <Sparkles />, featured: true, onClick: () => ai.open(), hint: "Press N" },
-    { label: "Testing", href: "/tests", icon: <FlaskConical />, active: is("/tests") || is("/microbiome") },
-    { label: "Free scan", href: "/skin-scan", icon: <ScanFace />, active: is("/skin-scan") },
-    { label: "Book", href: site.bookingUrl, icon: <CalendarCheck />, external: true },
-    { label: "More", icon: <Grid2x2 />, onClick: () => setMore(true) },
-    { label: theme === "pearl" ? "Sand" : "Pearl", icon: <ThemeDot theme={theme} />, onClick: toggle, hint: theme === "pearl" ? "Switch to Sand & gold" : "Switch to Pearl & blush" },
+  const all: (SparkleItem & { match?: boolean })[] = [
+    { label: "Home", href: "/", icon: <House />, match: is("/") },
+    { label: "Programs", href: "/programs", icon: <Route />, match: is("/programs") },
+    { label: "Treatments", href: "/treatments", icon: <Syringe />, match: is("/treatments") || is("/fotona") },
+    { label: "Ask SI", icon: <Sparkles />, featured: true, onClick: () => ai.open(), hint: "Skin Intelligence · press N" },
+    { label: "Testing", href: "/tests", icon: <Microscope />, match: is("/tests") || is("/microbiome") },
+    { label: "Free scan", href: "/skin-scan", icon: <ScanFace />, match: is("/skin-scan") },
+    { label: "Book", icon: <CalendarHeart />, onClick: () => book.open(), hint: "Book in Jane" },
+    { label: "More", icon: <LayoutGrid />, onClick: () => setMore(true), match: more },
   ];
-
-  // Phones get the five most important, still with the AI in the centre.
-  const mobile = [items[0], items[1], items[4], items[2], items[8]];
+  const items = small ? [all[0], all[1], all[3], all[6], all[7]] : all;
+  const active = items.findIndex((i) => i.match);
 
   return (
     <>
-      <div className="fixed inset-x-0 bottom-4 z-50 hidden justify-center md:flex">
-        <AppleDock items={items} />
-      </div>
-      <div className="fixed inset-x-0 bottom-3 z-50 flex justify-center px-3 md:hidden">
-        <AppleDock items={mobile} className="w-full max-w-sm justify-between" />
+      <div className="fixed inset-x-0 bottom-3 z-50 flex justify-center px-3 md:bottom-4">
+        <SparkleNavbar items={items} active={active} compact={false} className={small ? "w-full max-w-sm justify-between" : undefined} />
       </div>
       <MoreSheet open={more} onClose={() => setMore(false)} />
     </>
@@ -64,10 +68,11 @@ function MoreSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 30, opacity: 0 }}
             transition={{ type: "spring", stiffness: 320, damping: 32 }}
+            data-lenis-prevent
             className="surface max-h-[86dvh] w-full max-w-4xl overflow-y-auto rounded-t-[32px] p-6 sm:rounded-[32px] sm:p-10"
           >
             <div className="mb-8 flex items-center justify-between">
-              <p className="font-display text-2xl font-semibold tracking-tight">Everything at NEA</p>
+              <NeaLogo className="h-10 w-auto text-ink" animate={false} />
               <button onClick={onClose} className="grid h-10 w-10 place-items-center rounded-full border border-ink/10 bg-white/60" aria-label="Close">
                 <X className="h-4 w-4" />
               </button>

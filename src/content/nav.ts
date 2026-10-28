@@ -15,7 +15,7 @@ export const footerNav: { title: string; links: NavItem[] }[] = [
     links: [
       { label: "Free Skin Health Report", href: "/skin-scan" },
       { label: "Skin Finder", href: "/finder" },
-      { label: "Ask NEA AI (press N)", href: "/ask" },
+      { label: "Ask NEA SI (press N)", href: "/ask" },
       { label: "Book a consultation", href: "/book" },
     ],
   },
