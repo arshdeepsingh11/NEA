@@ -78,7 +78,7 @@ export const docs: Doc[] = [
 ];
 
 const STOP = new Set(
-  "a an and are as at be by can do does for from have how i if in is it me my of on or should the to was what when where which who why will with you your about get".split(" ")
+  "a an and are as at be by can do does for from have how i if in is it me my of on or should the to was what when where which who why will with you your about get even after keep keeps kept coming come still also just like want need think please tell help could would really suggest roughly any some".split(" ")
 );
 
 const SYN: Record<string, string> = {
