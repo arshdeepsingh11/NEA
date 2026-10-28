@@ -5,6 +5,7 @@ import { SkinFinder } from "@/components/sections/skin-finder";
 import { ScanOffer } from "@/components/sections/scan-offer";
 import { SectionHead } from "@/components/sections/page-hero";
 import { FotonaChapter, FounderChapter, ReviewsChapter, VisitChapter } from "@/components/sections/home-chapters";
+import { ReelsStrip } from "@/components/reels/reels-strip";
 import { bodyRegions, faceZones } from "@/content/body";
 import { programs } from "@/content/programs";
 import { labTests } from "@/content/tests";
@@ -47,6 +48,7 @@ export default function HomePage() {
       </section>
 
       <ReviewsChapter />
+      <ReelsStrip />
       <FounderChapter />
       <FotonaChapter />
       <VisitChapter />
