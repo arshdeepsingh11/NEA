@@ -12,20 +12,20 @@ import { IMG } from "@/content/media";
 import { revealOnMobile } from "@/lib/reveal";
 import { cn } from "@/lib/utils";
 
-/** Photo and Jane booking key for each package (Jane services are mapped in content/jane.ts). */
+/** Photo (each one unique on the site) and booking key for each package (services are mapped in content/jane.ts). */
 const META: Record<string, { image: string; book: string; goals: Goal[] }> = {
-  antiaging: { image: IMG.aging, book: "healthy-aging", goals: ["skin", "longevity", "body"] },
-  hair: { image: IMG.hair, book: "hair-regrowth", goals: ["hair"] },
+  antiaging: { image: IMG.aging2, book: "healthy-aging", goals: ["skin", "longevity", "body"] },
+  hair: { image: IMG.hairMotion, book: "hair-regrowth", goals: ["hair"] },
   nutritional: { image: IMG.gutFood, book: "nutrition", goals: ["energy", "body", "longevity"] },
   scarring: { image: IMG.microneedling, book: "acne-scarring", goals: ["skin"] },
-  facial: { image: IMG.facialMask, book: "facials", goals: ["skin"] },
+  facial: { image: IMG.facial, book: "facials", goals: ["skin"] },
   sports: { image: IMG.fitness, book: "muscle-sculpting", goals: ["body", "energy"] },
-  arthritis: { image: IMG.consultTalk, book: "prp-injections", goals: ["body", "longevity"] },
-  feminine: { image: IMG.consult, book: "feminine-health", goals: ["body", "longevity"] },
+  arthritis: { image: "https://images.unsplash.com/photo-1747302653805-02f28829388d", book: "arthritis-pain", goals: ["body", "longevity"] },
+  feminine: { image: "https://images.unsplash.com/photo-1558328712-1098a15f20ea", book: "feminine-health", goals: ["body", "longevity"] },
   sleep: { image: IMG.heroAlt, book: "snoring-sleep-apnea", goals: ["energy", "longevity"] },
   laser: { image: IMG.laserArm, book: "laser-hair-removal", goals: ["hair", "body"] },
   skin: { image: IMG.skinClose, book: "lines-wrinkles-sun-damage", goals: ["skin"] },
-  get: { image: IMG.serum, book: "popular", goals: ["skin", "energy"] },
+  get: { image: IMG.serumBlue, book: "popular", goals: ["skin", "energy"] },
 };
 
 type Goal = "skin" | "hair" | "body" | "energy" | "longevity";
@@ -207,7 +207,7 @@ export function PackageExplorer({ packages }: { packages: WellnessPackage[] }) {
 
                 <div className="mt-7 flex flex-wrap gap-2">
                   <button onClick={() => book.open(meta?.book ?? "popular", cur.name)} className="btn-light">
-                    <CalendarHeart className="h-4 w-4" /> Book in Jane
+                    <CalendarHeart className="h-4 w-4" /> Book
                   </button>
                   <Link href={`/book?topic=${encodeURIComponent(cur.name)}`} className="btn-ghost">
                     Request a consultation

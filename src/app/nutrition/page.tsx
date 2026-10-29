@@ -42,7 +42,7 @@ export default function NutritionPage() {
             <p>By analyzing unique genetic profiles, microbiomes, and personal preferences, personalized nutrition optimizes dietary choices to enhance your health span. Many NEA packages include nutrition consultations with a Registered Dietitian, and many extended health plans cover dietitian visits.</p>
           </div>
           <div className="relative aspect-[4/3] overflow-hidden rounded-5xl bg-mist">
-            <NeaImage src={IMG.gutFood} alt="Food and nutrition planning" fill sizes="(max-width: 1024px) 100vw, 50vw" className="object-cover" />
+            <NeaImage src="https://images.unsplash.com/photo-1693212454137-0d2909d79b27" alt="Food and nutrition planning" fill sizes="(max-width: 1024px) 100vw, 50vw" className="object-cover" />
           </div>
         </div>
       </section>
