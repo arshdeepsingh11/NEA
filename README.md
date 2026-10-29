@@ -95,7 +95,7 @@ Press **N** on any page, tap the SI orb, or any "Ask SI" button. Everything goes
 1. **NEA's knowledge, always.** `src/lib/knowledge.ts` finds the matching programs, treatments, tests, packages, body regions and FAQs, and prices a plan when a budget is mentioned. These show as cards under each answer.
 2. **The engine writes the answer.** Visitors choose **Xevyo** (NEA's in-house AI) or **Gemini** with the switch at the top of the chat; the choice is remembered. Both get the same education from `src/lib/si/brain.ts`: SI's rules (no diagnosing, no invented prices, link NEA pages, book through Jane), clinic facts and hours, and a catalogue of every program, treatment, Jane service, test, package, membership and FAQ, built from the content files. Edit the content and SI knows it on the next restart.
 3. **Fast.** Answers stream word by word (first words in about a second with `gemini-3.5-flash-lite`). Answers can link NEA pages and Glow Feed videos (`#reel-N` links open the video on the site).
-4. **It never breaks.** If the chosen engine fails, the other answers; if both fail, the built-in engine answers (it also handles greetings). Gemini tries each model in `GEMINI_MODELS` in turn, skipping busy ones.
+4. **It never breaks.** If the chosen engine fails, the other answers; if both fail, the built-in engine answers (it also handles greetings). Gemini is hedged for speed: it starts the first model in `GEMINI_MODELS` at once and, every `GEMINI_HEDGE_MS` (1.5 s) without an answer, starts the next one in parallel; the first to answer wins and the rest are cancelled. Gemini 3 models use minimal thinking. If nothing starts within `GEMINI_FIRST_TOKEN_MS` (9 s, e.g. when Google is overloaded), the built-in engine answers instead.
 5. **Setup notice.** In development only, the chat shows an amber note when the server can't see the keys (usually because the file was saved as `env.local` without the dot).
 
 Settings (server only, in `.env.local` and your host's environment variables, never `NEXT_PUBLIC_`):
@@ -106,7 +106,8 @@ Settings (server only, in `.env.local` and your host's environment variables, ne
 | `XEVYO_API_URL` | Full Xevyo chat endpoint. Called OpenAI-style: `POST {model, messages:[{role, content}]}` with `Authorization: Bearer <key>`; reads `choices[0].message.content` (also `text`, `output_text`, `response`). Until set, the Xevyo option shows an amber dot and Gemini answers. |
 | `XEVYO_MODEL` | Optional model name for Xevyo |
 | `GEMINI_API_KEY` | Google AI Studio key (aistudio.google.com/apikey) |
-| `GEMINI_MODELS` | Models to try in order (default `gemini-3.5-flash-lite,gemini-flash-lite-latest,gemini-flash-latest`) |
+| `GEMINI_MODELS` | Models to race, fastest first (default `gemini-3.5-flash-lite,gemini-flash-lite-latest,gemini-3.5-flash`) |
+| `GEMINI_HEDGE_MS` / `GEMINI_FIRST_TOKEN_MS` | Optional speed settings (defaults 1500 and 9000) |
 | `SI_DEFAULT_ENGINE` | `xevyo` or `gemini`: which one new visitors start with |
 
 `api/ask` allows up to 60 seconds per answer (`maxDuration`). On Vercel's Hobby plan that is the maximum; Gemini usually answers in 3–15 seconds, longer when Google is busy.
@@ -117,7 +118,7 @@ The search icon top-right (or "/" or Ctrl K) opens an instant search across trea
 
 ## Nea SI Skin Lens (/skin-lens)
 
-Take or upload a selfie; Gemini's vision model marks the visible signs on the photo (breakouts, redness, uneven tone, pores, lines, texture, dryness, under-eye, shine) with how visible each one is, explains them in plain words, and lines up the NEA program, treatments, prices and Jane booking (`src/content/lens.ts`). The visitor must tick consent first. The photo is shrunk to 768 px in the browser, sent once to Gemini through `api/lens`, and never stored by NEA. It never diagnoses and always points to the free in-clinic scan for real measurements. Uses `GEMINI_API_KEY` (optional `GEMINI_LENS_MODELS`).
+Take or upload a selfie; Gemini's vision model marks the visible signs on the photo (breakouts, redness, uneven tone, pores, lines, texture, dryness, under-eye, shine) with how visible each one is, explains them in plain words, and lines up the NEA program, treatments, prices and booking (`src/content/lens.ts`). The visitor must tick consent first. The photo is shrunk to 768 px in the browser, sent once to Gemini through `api/lens`, and never stored by NEA. It never diagnoses and always points to the free in-clinic scan for real measurements. Uses `GEMINI_API_KEY` (optional `GEMINI_LENS_MODELS`).
 
 ## Glow Feed (Instagram and other channels)
 
@@ -143,3 +144,10 @@ Tokens last 60 days. `vercel.json` calls `/api/instagram/refresh` every Monday t
 `public/models/body.glb` — MakeHuman base mesh (CC0). `public/models/head.glb` + textures —
 "Lee Perry-Smith" head scan by Infinite Realities, CC BY 3.0: keep the credit line on /body
 (see `public/models/CREDITS.md`).
+
+## Treatments, tests and media (update 11)
+
+- **Treatment Deck** (`/treatments`, `components/sections/treatment-deck.tsx`): every treatment as a full-screen scene with the name written on the photo, session time and price readouts, and a Book button that is always in view. Type a concern and the deck re-orders by fit with a match score. Swipe, arrow keys or the filmstrip move through it.
+- **Lab store** (`/tests`, `components/sections/test-store.tsx`): all 46 BioAro Labs tests from `content/tests.ts`, searchable by concern and by body system, each with BioAro's own product image, plain-language details and a **Buy now** button that opens that exact test in BioAro's shop (`bioarolabs.com/shop?test=<handle>`), where it goes into BioAro's cart.
+- **Films** (`public/media`): the home hero and the Skin Lens explainer, 720×1280 H.264, silent, played by `components/ui/loop-video.tsx` only while on screen.
+- **No repeated photos**: run `node scripts/check-images.mjs` after changing images; it lists any photo used in more than one place.
