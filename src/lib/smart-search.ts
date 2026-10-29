@@ -32,6 +32,7 @@ export type Result = { hits: Hit[]; intent: Intent; plan?: Plan; suggestion?: st
 const KIND_OF: Record<string, Kind> = { Program: "Program", Treatment: "Treatment", Package: "Package", "Lab test": "Lab test", FAQ: "Answer", Experience: "Experience", Body: "Body", Visit: "Page" };
 
 const PAGES: Hit[] = [
+  { id: "p-why", kind: "Page", title: "Why NEA?", href: "/why-nea", text: "why nea different better compare choose difference other clinics medspa reason" },
   { id: "p-lens", kind: "Page", title: "Nea SI Skin Lens (selfie analysis)", href: "/skin-lens", text: "skin lens selfie photo camera ai analysis analyse face scan online instant" },
   { id: "p-scan", kind: "Page", title: "Free Skin Health Report", href: "/skin-scan", text: "free skin scan analyzer report face analysis complimentary" },
   { id: "p-book", kind: "Page", title: "Book an appointment", href: "/book", text: "book booking appointment schedule consultation" },

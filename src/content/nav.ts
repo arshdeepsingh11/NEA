@@ -13,6 +13,7 @@ export const footerNav: { title: string; links: NavItem[] }[] = [
   {
     title: "Start here",
     links: [
+      { label: "Why NEA?", href: "/why-nea" },
       { label: "Nea SI Skin Lens (selfie)", href: "/skin-lens" },
       { label: "Free Skin Health Report", href: "/skin-scan" },
       { label: "Skin Finder", href: "/finder" },
