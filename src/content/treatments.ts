@@ -327,8 +327,67 @@ const extra: Treatment[] = [
   },
 ];
 
+// Services on neaprecisionskin.com that had no page here yet (added October 2026).
+const tx = (slug: string, title: string, category: TreatmentCategory, summary: string, concerns: string[], intro: string[], list: string[] = [], program?: string): Treatment => ({
+  slug,
+  title,
+  category,
+  summary,
+  image: "",
+  concerns,
+  program,
+  intro,
+  list,
+  subs: [],
+  more: [],
+});
+
+const added: Treatment[] = [
+  tx("alumier-peel", "AlumierMD Peels", "skin", "Medical-grade AlumierMD chemical peels, chosen for your skin type and goal.", ["peel", "dull skin", "pigmentation", "acne"], [
+    "AlumierMD peels use clinically tested acid blends to lift dead skin cells, brighten tone and refine texture. Your aesthetician chooses the strength and formula for your skin type, whether the goal is glow, breakouts or uneven tone.",
+    "Most peels take about 30 minutes, often paired with a facial, with little to no downtime. You leave with an AlumierMD home routine to protect and extend the results.",
+  ], [], "even-tone"),
+  tx("vivier-signature-kits", "Vivier Signature Kits", "skin", "Vivier’s pharmaceutical-grade home kits, matched to your skin in clinic.", ["home care", "skincare", "brightening", "anti-aging"], [
+    "Vivier Signature Kits bring pharmaceutical-grade skincare home in a ready-made routine. NEA matches the kit to your skin at a consultation or skin scan, so what you use at home supports the treatments you have in clinic.",
+  ]),
+  tx("uti-vaginal-microbiome", "UTI & Vaginal Microbiome Care", "feminine", "Testing and a care plan for recurrent UTIs, yeast infections and BV.", ["uti", "yeast infection", "bv", "vaginal microbiome"], [
+    "A healthy vaginal microbiome is essential to feminine health. When it is out of balance it can contribute to recurrent UTIs, yeast infections, bacterial vaginosis and discomfort.",
+    "The BioFemme vaginal microbiome test shows which microbes are present and in what balance. Your NEA team turns the result into a plan that can combine nutrition, probiotics and feminine health treatments such as IntimaLase and Incontilase.",
+  ], ["BioFemme vaginal microbiome test", "Consultation to review your results", "Nutrition guidance from a Registered Dietitian", "IntimaLase or Incontilase laser sessions where they fit"]),
+  tx("lipolysis", "Lipolysis (Fat Reduction)", "body", "Non-surgical fat reduction that helps the body break down stubborn fat.", ["fat", "body shape", "stubborn fat"], [
+    "Lipolysis is the body’s natural process of breaking down stored fat. NEA’s non-surgical body treatments, such as truSculpt iD and laser lipolysis, heat fat cells so the body clears them over the following weeks.",
+    "It is not weight loss: it reshapes areas that resist diet and exercise. Pairing it with nutrition support from NEA’s Registered Dietitian helps keep the results.",
+  ]),
+  tx("biosport-dexa-vo2", "BioSport: DEXA & VO2 Max", "wellness", "A DEXA body scan and VO2 max test to measure fat, muscle, bone and fitness.", ["dexa", "body composition", "vo2 max", "fitness", "athletes"], [
+    "A DEXA scan measures exactly how much fat, lean muscle and bone you have, region by region, with far more precision than a scale. VO2 max measures how well your body uses oxygen, one of the strongest markers of fitness and healthy aging.",
+    "Together they give athletes and anyone training a precise starting point, and a way to see real change. A DEXA body scan on its own is $175.",
+  ], ["DEXA body scan (fat, muscle and bone, by region)", "VO2 max fitness test", "Review with a Registered Dietitian"]),
+  tx("kinesiology", "Kinesiology Consultations", "wellness", "Exercise plans built around your genetics, lifestyle and goals.", ["exercise", "training", "performance", "kinesiology"], [
+    "NEA’s kinesiology consultations use kinesiogenomics: how your genes, lifestyle and current fitness shape the way you respond to exercise. The result is an exercise plan built for your body, whether your goal is strength, endurance, recovery or peak performance.",
+  ]),
+  tx("heart-health", "Heart Health", "wellness", "Inflammation and metabolic markers, nutrition and lifestyle for a healthier heart.", ["heart", "cholesterol", "inflammation", "blood pressure"], [
+    "Heart health starts long before symptoms. NEA looks at inflammation (hs-CRP), metabolic and vascular markers from BioAro Labs, and body composition, then builds a nutrition and lifestyle plan with a Registered Dietitian.",
+    "This does not replace care from your family doctor or cardiologist; it adds measurable, everyday steps alongside it.",
+  ]),
+  tx("healthspan-longevity", "Healthspan & Longevity", "wellness", "Measure how you are aging, then act on it: telomeres, inflammation, DNA and body composition.", ["longevity", "healthspan", "biological age", "anti-aging"], [
+    "Healthspan is the number of years you live in good health. NEA measures the markers that track it, such as telomere length, inflammation, body composition and, where it fits, your DNA, and turns them into a plan for nutrition, movement, sleep and skin.",
+    "Re-testing shows whether the plan is working, in numbers.",
+  ], [], "healthy-aging"),
+  tx("obesity-metabolic", "Obesity & Metabolic Syndrome", "wellness", "Gut, metabolism and nutrition care for weight and metabolic health.", ["obesity", "metabolic syndrome", "weight", "gut"], [
+    "Weight and metabolic health are shaped by more than calories. Gut dysbiosis, an imbalance in gut bacteria, can affect how the body stores fat, handles sugar and manages inflammation.",
+    "NEA combines the BioGut microbiome test, a DEXA body scan and a Registered Dietitian’s plan, with body treatments where they help.",
+  ]),
+  tx("diabetes", "Diabetes Nutrition Support", "wellness", "Registered Dietitian support for blood sugar, alongside your doctor’s care.", ["diabetes", "blood sugar", "prediabetes", "insulin resistance"], [
+    "NEA’s Registered Dietitian helps people living with diabetes or prediabetes build an eating plan that supports steadier blood sugar, energy and weight, using body composition and gut health testing where they add insight.",
+    "This works alongside the care from your family doctor or diabetes team and never replaces prescribed treatment.",
+  ]),
+  tx("arthritis-pain", "Arthritis, Knee & Back Pain", "wellness", "Laser pain therapy, muscle building and nutrition for joint and back pain.", ["arthritis", "knee pain", "back pain", "joint pain"], [
+    "NEA’s arthritis and pain package combines medical laser pain management with truSculpt flex muscle building, which supports the joints, and nutrition care to calm inflammation.",
+  ], ["Health assessment", "Gut microbiome test with nutrition consultation", "DEXA body scan", "12 truSculpt flex sessions", "12 mini facials", "6 laser pain management sessions"]),
+];
+
 // 4K photography per treatment (falls back to the original NEA image)
-export const treatments: Treatment[] = [...fromSite, ...extra].map((t) => ({ ...t, image: treatmentImage[t.slug] ?? t.image }));
+export const treatments: Treatment[] = [...fromSite, ...extra, ...added].map((t) => ({ ...t, image: treatmentImage[t.slug] ?? t.image }));
 
 export function getTreatment(slug: string) {
   return treatments.find((t) => t.slug === slug);
