@@ -100,33 +100,98 @@ async function* xevyo(system: string, turns: Turn[], deadline: number): AsyncGen
   yield t.trim();
 }
 
+/** Starts a request that can be cancelled and that gives up after `ms`. */
+function request(url: string, init: RequestInit, ms: number) {
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(new Error("timed out")), Math.max(1000, ms));
+  const done = fetch(url, { ...init, signal: ctrl.signal });
+  done.finally(() => clearTimeout(timer)).catch(() => {});
+  return { done, cancel: () => ctrl.abort(new Error("cancelled")) };
+}
+
+/**
+ * Gemini, hedged for speed. When Google is busy a single request can wait 10–25 s before the first word,
+ * so Nea SI starts the first model straight away and, every GEMINI_HEDGE_MS (1.5 s) without an answer,
+ * starts the next model in parallel. The first one to start answering wins; the others are cancelled.
+ * Gemini 3 models are asked for minimal thinking (fastest first word). If nothing starts within
+ * GEMINI_FIRST_TOKEN_MS (9 s), it gives up so the chat can answer from NEA's own knowledge instead.
+ */
 async function* gemini(system: string, turns: Turn[], deadline: number): AsyncGenerator<string> {
-  const models = (process.env.GEMINI_MODELS || "gemini-3.5-flash-lite,gemini-flash-lite-latest,gemini-flash-latest").split(",").map((m) => m.trim()).filter(Boolean);
-  let last = "";
-  for (const m of models) {
-    if (deadline - Date.now() < 4000) break;
-    let res: Response;
-    try {
-      res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${m}:streamGenerateContent?alt=sse`, {
-        method: "POST",
-        headers: { "content-type": "application/json", "x-goog-api-key": process.env.GEMINI_API_KEY! },
-        body: JSON.stringify({
-          systemInstruction: { parts: [{ text: system }] },
-          contents: turns.map((t) => ({ role: t.role === "assistant" ? "model" : "user", parts: [{ text: t.text }] })),
-          generationConfig: { temperature: 0.4, maxOutputTokens: 1400 },
-        }),
-        signal: AbortSignal.timeout(Math.min(30000, deadline - Date.now())),
-      });
-    } catch (e) {
-      last = `${m} ${(e as Error).message}`;
-      continue;
-    }
-    if (!res.ok || !res.body) {
-      last = `${m} ${res.status} ${(await res.text().catch(() => "")).slice(0, 120)}`;
-      continue; // busy or retired model: try the next one
-    }
-    let any = false;
-    for await (const data of sse(res.body)) {
+  const models = (process.env.GEMINI_MODELS || "gemini-3.5-flash-lite,gemini-flash-lite-latest,gemini-3.5-flash").split(",").map((m) => m.trim()).filter(Boolean);
+  const hedge = Number(process.env.GEMINI_HEDGE_MS) || 1500;
+  const wait = Math.min(Number(process.env.GEMINI_FIRST_TOKEN_MS) || 9000, deadline - Date.now() - 2000);
+  const contents = turns.map((t) => ({ role: t.role === "assistant" ? "model" : "user", parts: [{ text: t.text }] }));
+  const body = (m: string, think: boolean) =>
+    JSON.stringify({
+      systemInstruction: { parts: [{ text: system }] },
+      contents,
+      generationConfig: { temperature: 0.4, maxOutputTokens: 1100, ...(think ? { thinkingConfig: { thinkingLevel: "minimal" } } : {}) },
+    });
+  const call = (m: string, think: boolean) =>
+    request(
+      `https://generativelanguage.googleapis.com/v1beta/models/${m}:streamGenerateContent?alt=sse`,
+      { method: "POST", headers: { "content-type": "application/json", "x-goog-api-key": process.env.GEMINI_API_KEY! }, body: body(m, think) },
+      deadline - Date.now(),
+    );
+
+  const live: { cancel: () => void }[] = [];
+  const errors: string[] = [];
+  const winner = await new Promise<{ res: Response; m: string } | null>((resolve) => {
+    let next = 0;
+    let running = 0;
+    let settled = false;
+    const finish = (w: { res: Response; m: string } | null) => {
+      if (settled) return;
+      settled = true;
+      clearInterval(tick);
+      clearTimeout(stop);
+      resolve(w);
+    };
+    const launch = (m: string, think: boolean) => {
+      running++;
+      const r = call(m, think);
+      live.push(r);
+      r.done.then(
+        async (res) => {
+          if (res.ok && res.body) {
+            if (settled) return r.cancel();
+            // first to start answering wins: cancel the others straight away
+            for (const o of live) if (o !== r) o.cancel();
+            finish({ res, m });
+            return;
+          }
+          const text = (await res.text().catch(() => "")).slice(0, 160);
+          running--;
+          // a model that doesn't accept thinkingLevel: ask again without it
+          if (think && res.status === 400 && /think/i.test(text)) return void launch(m, false);
+          errors.push(`${m} ${res.status} ${text}`);
+          if (!settled && next < models.length) start();
+          else if (!running) finish(null);
+        },
+        (e: Error) => {
+          running--;
+          errors.push(`${m} ${e.message}`);
+          if (!settled && next < models.length) start();
+          else if (!running) finish(null);
+        },
+      );
+    };
+    const start = () => {
+      if (settled || next >= models.length) return;
+      const m = models[next++];
+      launch(m, m.startsWith("gemini-3"));
+    };
+    const tick = setInterval(start, hedge);
+    const stop = setTimeout(() => (errors.push(`no answer within ${wait} ms`), finish(null)), wait);
+    start();
+  });
+  if (!winner) {
+    live.forEach((r) => r.cancel());
+    throw new Error(`Gemini: ${errors.join(" | ") || "no model answered"}`);
+  }
+  let any = false;
+  try {
+    for await (const data of sse(winner.res.body!)) {
       try {
         const j = JSON.parse(data) as { candidates?: { content?: { parts?: { text?: string; thought?: boolean }[] } }[] };
         const t = (j.candidates?.[0]?.content?.parts ?? []).filter((p) => !p.thought).map((p) => p.text ?? "").join("");
@@ -136,10 +201,10 @@ async function* gemini(system: string, turns: Turn[], deadline: number): AsyncGe
         }
       } catch {}
     }
-    if (any) return;
-    last = `${m} returned no text`;
+  } finally {
+    live.forEach((r) => r.cancel());
   }
-  throw new Error(`Gemini: ${last}`);
+  if (!any) throw new Error(`Gemini: ${winner.m} returned no text`);
 }
 
 /** Streams one engine's answer; `deadline` (epoch ms) keeps the request inside the server's time limit. */
