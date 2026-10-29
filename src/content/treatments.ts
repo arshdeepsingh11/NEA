@@ -14,12 +14,12 @@ type RawSection = {
 export type TreatmentCategory = "skin" | "laser" | "injectables" | "body" | "hair" | "wellness" | "feminine";
 
 export const categories: { id: TreatmentCategory; label: string; blurb: string }[] = [
-  { id: "skin", label: "Skin & peels", blurb: "Acne, pigmentation, pores, scars and facials." },
+  { id: "skin", label: "Skin & peels", blurb: "Acne, dark spots, pores, scars, peels and facials." },
   { id: "laser", label: "Fotona laser", blurb: "Tightening, resurfacing and medical laser modes." },
   { id: "injectables", label: "Injectables", blurb: "Neuromodulators, fillers, PRP and Belkyra." },
-  { id: "body", label: "Body & muscle", blurb: "truSculpt flex, TightSculpting and nutrition." },
+  { id: "body", label: "Body & muscle", blurb: "Muscle building, fat reduction and body contouring." },
   { id: "hair", label: "Hair", blurb: "Hair restoration and laser hair removal." },
-  { id: "wellness", label: "Health & wellness", blurb: "Sleep, migraine, nails, warts and weight." },
+  { id: "wellness", label: "Health & wellness", blurb: "Weight, heart, longevity, pain, sleep and migraine." },
   { id: "feminine", label: "Feminine health", blurb: "IntimaLase, Incontilase and vaginal microbiome." },
 ];
 
