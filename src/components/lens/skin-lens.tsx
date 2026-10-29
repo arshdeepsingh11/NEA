@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { ArrowRight, CalendarHeart, Camera, Check, ImageUp, Loader2, RotateCcw, ScanFace, ShieldCheck } from "lucide-react";
 import { NeaSiIcon } from "@/components/brand/nea-si-icon";
 import { NeaImage } from "@/components/ui/nea-image";
+import { LoopVideo } from "@/components/ui/loop-video";
 import { useBooking } from "@/components/booking/booking";
 import { useAi } from "@/components/ai/ai-provider";
 import { SIGNS, type LensResult, type LensSign } from "@/content/lens";
@@ -115,9 +116,8 @@ export function SkinLens() {
       <AnimatePresence mode="wait">
         {stage === "intro" && (
           <motion.div key="intro" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="grid gap-8 p-6 md:grid-cols-[1fr_1.1fr] md:p-10">
-            <div className="relative aspect-[4/5] overflow-hidden rounded-[26px] bg-ink">
-              <NeaImage src="https://images.unsplash.com/photo-1713207524097-596f3c17afc3" alt="" fill sizes="(min-width:768px) 40vw, 100vw" className="object-cover opacity-90" />
-              <FaceGuide scanning />
+            <div className="relative aspect-[4/5] overflow-hidden rounded-[26px] bg-ink md:aspect-[3/4]">
+              <LoopVideo src="/media/nea-skin-lens.mp4" poster="/media/nea-skin-lens.jpg" label="How Nea SI Skin Lens reads a selfie" className="absolute inset-0 h-full w-full" />
             </div>
             <div className="flex flex-col justify-center">
               <p className="flex items-center gap-2 text-[13px] text-flora">
@@ -339,7 +339,7 @@ function Result({ photo, result, onRetake }: { photo: string; result: LensResult
 
         <div className="mt-5 flex flex-wrap gap-2">
           <button onClick={() => book.open(top ? SIGNS[top.key].book : "skin-scan", top ? SIGNS[top.key].label : "Free skin scan")} className="btn-primary">
-            <CalendarHeart className="h-4 w-4" /> Book in Jane
+            <CalendarHeart className="h-4 w-4" /> Book
           </button>
           <button onClick={() => ai.open({ context: "Skin Lens result", query: askText })} className="btn-ghost">
             <NeaSiIcon className="h-4 w-4" /> Ask Nea SI what to do first
