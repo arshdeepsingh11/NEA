@@ -57,7 +57,7 @@ export function JaneExplorer({ className }: { className?: string }) {
                       </span>
                     </span>
                     <span className="flex items-center gap-3">
-                      {i.price ? <span className="tabular font-display text-[18px]">{money(i.price)}</span> : <span className="text-[12px] text-graphite">Price in Jane</span>}
+                      {i.price ? <span className="tabular font-display text-[18px]">{money(i.price)}</span> : <span className="text-[12px] text-graphite">Price at booking</span>}
                       <ArrowUpRight className="h-4 w-4 text-graphite transition group-hover:text-ink" />
                     </span>
                   </a>

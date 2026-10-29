@@ -47,7 +47,7 @@ export function Dock() {
     { label: "Treatments", href: "/treatments", icon: <Syringe />, match: is("/treatments") || is("/fotona") },
     { label: "Testing", href: "/tests", icon: <Microscope />, match: is("/tests") || is("/microbiome") },
     { label: "Glow Feed", icon: <Aperture />, onClick: () => reels.open(), hint: "NEA’s latest from the clinic" },
-    { label: "Book", icon: <CalendarHeart />, onClick: () => book.open(), hint: "Book in Jane" },
+    { label: "Book", icon: <CalendarHeart />, onClick: () => book.open(), hint: "Book an appointment" },
     { label: "More", icon: <LayoutGrid />, onClick: () => setMore(true), match: more },
   ];
   const items = small ? [all[0], all[2], all[4], all[5], all[6]] : all;

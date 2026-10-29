@@ -26,7 +26,7 @@ export default function BookPage() {
           <a href={janeUrl(janeConsult)} target="_blank" rel="noreferrer" className="rounded-4xl surface-strong p-8 text-ink transition hover:brightness-110">
             <CalendarCheck className="h-6 w-6" />
             <h2 className="mt-6 text-2xl font-semibold tracking-tight">Book a consultation</h2>
-            <p className="mt-2 text-graphite">30 minutes in Jane. We match you to the right plan. Or pick any service below.</p>
+            <p className="mt-2 text-graphite">30 minutes. We match you to the right plan. Or pick any service below.</p>
           </a>
           <Link href="/skin-scan" className="rounded-4xl surface p-8 transition hover:shadow-[0_20px_50px_-30px_rgb(var(--c-ink) / 0.35)]">
             <ScanFace className="h-6 w-6 text-flora" />
@@ -40,7 +40,7 @@ export default function BookPage() {
           </a>
         </div>
         <div className="container mt-10">
-          <p className="eyebrow mb-4">Every service · live in Jane</p>
+          <p className="eyebrow mb-4">Every service · live times</p>
           <JaneExplorer />
         </div>
       </section>

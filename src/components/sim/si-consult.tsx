@@ -13,7 +13,7 @@ import { cn, money } from "@/lib/utils";
 /**
  * Nea SI Consult: seven short questions, then Nea SI explains what is most likely going on,
  * which program fits (with a match score you can read), which tests and first treatments make sense,
- * what it costs against your budget, and books it in Jane.
+ * what it costs against your budget, and books it.
  * The reasoning is rule-based and shown to the user, so every suggestion has a "because".
  */
 type A = {

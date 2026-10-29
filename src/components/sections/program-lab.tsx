@@ -102,7 +102,7 @@ export function ProgramLab({ programs, insights }: { programs: Program[]; insigh
 
           <div className="flex flex-wrap gap-2">
             <button onClick={() => book.open(p.slug, p.name)} className="btn-light">
-              <CalendarHeart className="h-4 w-4" /> Book in Jane
+              <CalendarHeart className="h-4 w-4" /> Book
             </button>
             <Link href={`/programs/${p.slug}`} className="btn-ghost">
               Everything about this program <ArrowUpRight className="h-4 w-4" />

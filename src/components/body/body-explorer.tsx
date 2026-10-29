@@ -476,7 +476,7 @@ function RegionDetail({ region, siblings, links, onClose, onGo }: { region: Regi
 
           <div className="flex flex-wrap gap-2 border-t border-ink/[0.06] p-4 sm:px-8">
             <button onClick={() => book.open(l?.program?.slug ?? l?.treatments[0]?.slug, region.name)} className="btn-light !px-4 !py-2 !text-[13px]">
-              <CalendarHeart className="h-4 w-4" /> Book in Jane
+              <CalendarHeart className="h-4 w-4" /> Book
             </button>
             <button onClick={() => ai.open({ context: region.name, query: `Tell me more about my ${region.name.toLowerCase()} and what NEA would do.` })} className="btn-primary !px-4 !py-2 !text-[13px]">
               <NeaSiIcon className="h-4 w-4" /> Ask Nea SI

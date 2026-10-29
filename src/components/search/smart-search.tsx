@@ -166,7 +166,7 @@ function Panel({ onClose }: { onClose: () => void }) {
               onPick={(t) => setQ(t)}
               actions={[
                 { label: "Skin Lens selfie", icon: <ScanFace className="h-4 w-4" />, run: () => (onClose(), router.push("/skin-lens")) },
-                { label: "Book in Jane", icon: <CalendarHeart className="h-4 w-4" />, run: () => (onClose(), book.open()) },
+                { label: "Book", icon: <CalendarHeart className="h-4 w-4" />, run: () => (onClose(), book.open()) },
                 { label: "Glow Feed", icon: <Aperture className="h-4 w-4" />, run: () => (onClose(), window.dispatchEvent(new CustomEvent("nea:reels", { detail: { index: 0 } }))) },
                 { label: "Ask Nea SI", icon: <NeaSiIcon className="h-4 w-4" />, run: () => (onClose(), ai.open()) },
               ]}
@@ -261,7 +261,7 @@ function TopCard({ hit, on, onOpen, onBook, onAsk }: { hit: Hit; on: boolean; on
         </button>
         {onBook && (
           <button onClick={onBook} className="btn-light !px-3.5 !py-1.5 !text-[13px]">
-            <CalendarHeart className="h-3.5 w-3.5" /> Book in Jane
+            <CalendarHeart className="h-3.5 w-3.5" /> Book
           </button>
         )}
         <button onClick={onAsk} className="btn-ghost !px-3.5 !py-1.5 !text-[13px]">

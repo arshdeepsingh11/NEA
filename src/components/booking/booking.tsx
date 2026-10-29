@@ -10,7 +10,7 @@ const BookingCtx = createContext<Ctx>({ open: () => {} });
 export const useBooking = () => useContext(BookingCtx);
 
 /**
- * Booking that lands on the right service in Jane.
+ * Booking that lands on the right service in Jane (the booking software; never named in the UI).
  * Every "Book" opens this sheet with the Jane services that match the page you are on,
  * each one deep-linked to its own Jane calendar.
  */
@@ -92,9 +92,9 @@ function BookingSheet({ open, pageKey, title, onClose }: { open: boolean; pageKe
           >
             <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="eyebrow">Book online · Jane</p>
+                <p className="eyebrow">Book online</p>
                 <h2 className="mt-2 font-display text-[2.2rem] leading-none text-ink">{title ? <>Book {title}</> : <>Book at NEA</>}</h2>
-                <p className="mt-2 text-[14px] text-graphite">Pick a service and Jane opens its calendar directly. Times update live.</p>
+                <p className="mt-2 text-[14px] text-graphite">Pick a service and its calendar opens directly. Times update live.</p>
               </div>
               <button onClick={onClose} aria-label="Close" className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-ink/10 bg-white/70 text-graphite hover:text-ink">
                 <X className="h-4 w-4" />
@@ -165,7 +165,7 @@ function BookingSheet({ open, pageKey, title, onClose }: { open: boolean; pageKe
               </div>
             </div>
             <a href={JANE} target="_blank" rel="noreferrer" className="mt-6 inline-flex items-center gap-1 text-[13px] text-graphite underline-offset-4 hover:text-ink hover:underline">
-              See every service in Jane <ArrowUpRight className="h-3.5 w-3.5" />
+              See every service <ArrowUpRight className="h-3.5 w-3.5" />
             </a>
           </motion.div>
         </motion.div>
