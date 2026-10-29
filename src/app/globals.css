@@ -459,3 +459,20 @@
 .nea-range-bare::-moz-range-track {
   background: transparent;
 }
+
+/* a light scan line that sweeps down a card (lab store) */
+@keyframes scan {
+  0% { top: 0%; }
+  50% { top: 100%; }
+  100% { top: 0%; }
+}
+
+/* Nea SI mark while thinking */
+@keyframes siBreath {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(0.86); }
+}
+@keyframes siTwinkle {
+  0%, 100% { transform: scale(1) rotate(0deg); opacity: 1; }
+  50% { transform: scale(0.5) rotate(45deg); opacity: 0.6; }
+}

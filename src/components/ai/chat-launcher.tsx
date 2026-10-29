@@ -56,7 +56,7 @@ export function ChatLauncher({ hidden, onOpen }: { hidden: boolean; onOpen: () =
             <span aria-hidden className="absolute inset-0 animate-pulseglow rounded-full blur-md [background:var(--aurora)]" />
             <span aria-hidden className="absolute inset-0 rounded-full [background:var(--aurora)]" />
             <span aria-hidden className="absolute inset-[3px] rounded-full bg-white/75 backdrop-blur" />
-            <NeaSiIcon className="relative h-8 w-8 transition-transform duration-700 group-hover:rotate-[60deg] md:h-9 md:w-9" />
+            <NeaSiIcon className="relative h-7 w-7 transition-transform duration-500 group-hover:scale-110 md:h-8 md:w-8" />
           </button>
         </motion.div>
       )}
