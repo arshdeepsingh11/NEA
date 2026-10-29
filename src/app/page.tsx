@@ -1,4 +1,5 @@
 import { HomeHero } from "@/components/sections/home-hero";
+import { SkinFilmChapter } from "@/components/sections/skin-film";
 import { ConcernsMarquee, MethodStory, BodyIntelChapter, ProgramsRail } from "@/components/sections/home-story";
 import { FaceMapChapter, SkinReportChapter, SystemsChapter } from "@/components/sections/home-intel";
 import { SkinFinder } from "@/components/sections/skin-finder";
@@ -27,6 +28,7 @@ export default function HomePage() {
       <JsonLd data={faqSchema(faqs.slice(0, 6))} />
       <HomeHero />
       <ConcernsMarquee />
+      <SkinFilmChapter />
       <SystemsChapter />
       <MethodStory />
       <BodyIntelChapter regions={scan} />
