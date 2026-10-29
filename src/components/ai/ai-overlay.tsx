@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowUp, CalendarHeart, Check, Loader2, Mic, Play, RotateCcw, ScanFace, Sparkles, X } from "lucide-react";
+import { ArrowUp, CalendarHeart, Mic, Play, RotateCcw, ScanFace, Sparkles, X } from "lucide-react";
 import { NeaSiIcon } from "@/components/brand/nea-si-icon";
 import { useBooking } from "@/components/booking/booking";
 import { answer as localAnswer, type DocMeta, type Plan } from "@/lib/knowledge";
@@ -192,7 +192,7 @@ export function AiOverlay({ open, onClose, initialQuery, context, nonce }: { ope
             exit={{ y: 30, opacity: 0, scale: 0.98 }}
             transition={{ type: "spring", stiffness: 320, damping: 32 }}
             data-lenis-prevent
-            className="aurora-border relative flex h-[92dvh] w-full flex-col overflow-hidden rounded-t-[32px] border border-ink/10 bg-white/85 shadow-[0_60px_160px_-40px_rgba(var(--shadow-tint),0.45)] backdrop-blur-2xl sm:h-[min(720px,calc(100dvh-150px))] sm:w-[440px] sm:rounded-[28px]"
+            className="aurora-border relative flex h-[92dvh] w-full flex-col overflow-hidden rounded-t-[32px] border border-ink/10 bg-white shadow-[0_60px_160px_-40px_rgba(var(--shadow-tint),0.45)] sm:h-[min(720px,calc(100dvh-150px))] sm:w-[440px] sm:rounded-[28px]"
           >
             <header className="flex items-center justify-between gap-4 border-b border-ink/10 px-5 py-4 sm:px-7">
               <div className="flex items-center gap-3">
@@ -238,8 +238,8 @@ export function AiOverlay({ open, onClose, initialQuery, context, nonce }: { ope
             <div ref={scroller} className="flex-1 space-y-6 overflow-y-auto px-5 py-6 sm:px-7" aria-live="polite">
               {msgs.length === 0 && (
                 <div className="pt-2">
-                  <div className="max-w-[90%] rounded-3xl rounded-tl-lg bg-white/80 px-5 py-4 text-[15px] leading-relaxed text-ink shadow-sm">
-                    Hi, I’m <strong className="font-semibold">Nea SI</strong>, NEA’s Skin Intelligence. I can explain what is behind a concern, match you to a program, price a plan within your budget, compare tests, and book you into the right service in Jane.
+                  <div className="max-w-[90%] rounded-3xl rounded-tl-lg bg-porcelain px-5 py-4 text-[15px] leading-relaxed text-ink shadow-sm">
+                    Hi, I’m <strong className="font-semibold">Nea SI</strong>, NEA’s Skin Intelligence. I can explain what is behind a concern, match you to a program, price a plan within your budget, compare tests, and book you in.
                   </div>
                   <p className="mt-6 text-[12.5px] text-graphite">Try one of these</p>
                   <div className="mt-2 grid gap-2">
@@ -268,7 +268,7 @@ export function AiOverlay({ open, onClose, initialQuery, context, nonce }: { ope
             </div>
 
             <form onSubmit={onSubmit} className="border-t border-ink/10 p-3 sm:p-4">
-              <div className="flex items-end gap-2 rounded-3xl border border-ink/10 bg-white/60 p-2 pl-4 focus-within:border-flora/50">
+              <div className="flex items-end gap-2 rounded-3xl border border-ink/10 bg-porcelain/70 p-2 pl-4 focus-within:border-flora/50">
                 <label htmlFor="nea-ai-input" className="sr-only">
                   Ask Nea SI
                 </label>
@@ -323,17 +323,6 @@ function AssistantReply({ reply, onClose, onFollow, last }: { reply: Reply; onCl
 
   return (
     <div className="space-y-4">
-      <ul className="space-y-1">
-        {reply.steps.map((s, i) => {
-          const working = !doneText && i === reply.steps.length - 1;
-          return (
-            <li key={i} className="flex items-center gap-2 text-[12px] text-graphite">
-              {working ? <Loader2 className="h-3.5 w-3.5 animate-spin text-flora" /> : <Check className="h-3.5 w-3.5 text-flora" />}
-              {s}
-            </li>
-          );
-        })}
-      </ul>
       {reply.text ? <RichText text={reply.text} onClose={onClose} typing={!doneText} /> : !doneText && <Thinking />}
       {doneText && reply.plan && (
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="surface-strong rounded-3xl p-5">
@@ -397,13 +386,8 @@ function AssistantReply({ reply, onClose, onFollow, last }: { reply: Reply; onCl
             <ScanFace className="h-4 w-4" /> Free Skin Health Report
           </Link>
           <button onClick={() => book.open(firstSlug)} className="btn-light !px-4 !py-2 !text-[13px]">
-            <CalendarHeart className="h-4 w-4" /> Book in Jane
+            <CalendarHeart className="h-4 w-4" /> Book
           </button>
-          {(reply.model === "xevyo" || reply.model === "gemini") && (
-            <span className="chip !text-[11.5px]">
-              {reply.fellBack ? `${reply.model === "xevyo" ? "Gemini" : "Xevyo"} was unavailable · ` : ""}Answered by {reply.model === "xevyo" ? "Xevyo" : "Gemini"} from NEA data
-            </span>
-          )}
         </div>
       )}
       {doneText && last && follow.length > 0 && (

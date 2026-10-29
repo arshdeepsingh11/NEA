@@ -43,7 +43,7 @@ export async function POST(req: Request) {
   const body$ = new ReadableStream<Uint8Array>({
     async start(ctrl) {
       const send = (o: object) => ctrl.enqueue(enc.encode(JSON.stringify(o) + "\n"));
-      send({ t: "meta", sources, plan: local.plan, steps: local.steps.concat(order.length ? [`${ENGINE_LABEL[order[0]]} is writing the answer from NEA's knowledge`] : []) });
+      send({ t: "meta", sources, plan: local.plan, steps: [] });
       const deadline = Date.now() + 54000;
       for (const e of order) {
         if (deadline - Date.now() < 4000) break;
