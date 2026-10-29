@@ -7,9 +7,8 @@
 import { docs, tokenize, buildPlan, SYN, type Plan } from "@/lib/knowledge";
 import { socialVideos, cleanCaption, reelTopic } from "@/content/reels";
 import { treatments } from "@/content/treatments";
-import { labTests } from "@/content/tests";
+import { labTests, testPhoto } from "@/content/tests";
 import { janeFor } from "@/content/jane";
-import { testImage } from "@/content/media";
 import { site } from "@/lib/site";
 
 export type Kind = "Treatment" | "Program" | "Lab test" | "Package" | "Video" | "Answer" | "Body" | "Experience" | "Page";
@@ -35,7 +34,7 @@ const KIND_OF: Record<string, Kind> = { Program: "Program", Treatment: "Treatmen
 const PAGES: Hit[] = [
   { id: "p-lens", kind: "Page", title: "Nea SI Skin Lens (selfie analysis)", href: "/skin-lens", text: "skin lens selfie photo camera ai analysis analyse face scan online instant" },
   { id: "p-scan", kind: "Page", title: "Free Skin Health Report", href: "/skin-scan", text: "free skin scan analyzer report face analysis complimentary" },
-  { id: "p-book", kind: "Page", title: "Book an appointment", href: "/book", text: "book booking appointment jane schedule consultation" },
+  { id: "p-book", kind: "Page", title: "Book an appointment", href: "/book", text: "book booking appointment schedule consultation" },
   { id: "p-body", kind: "Page", title: "3D Body Explorer", href: "/body", text: "3d body explorer anatomy organs map regions" },
   { id: "p-member", kind: "Page", title: "Membership", href: "/membership", text: "membership monthly glow plus elite subscription save" },
   { id: "p-pack", kind: "Page", title: "Beauty & wellness packages", href: "/packages", text: "packages bundles wellness beauty" },
@@ -80,7 +79,8 @@ function build() {
     if (kind === "Lab test") {
       const slug = d.href.split("#")[1];
       h.price = tests.get(slug)?.price;
-      h.image = testImage[slug];
+      const t = tests.get(slug);
+      h.image = t ? testPhoto(t) : undefined;
       h.text = tests.get(slug)?.bestFor ?? h.text;
     }
     hits.push(h);

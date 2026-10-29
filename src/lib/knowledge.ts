@@ -44,9 +44,9 @@ export const docs: Doc[] = [
     kind: "Lab test",
     title: t.name,
     href: `/tests#${t.slug}`,
-    text: `${t.name} is a BioAro Labs test, ${t.price.toFixed(2).replace(".00", "")} CAD list price. ${t.neaUse} Best suited for: ${t.bestFor}`,
-    keywords: `${t.group} test lab bioaro price cost`,
-    aliases: { bioskin: "skin microbiome test acne eczema rosacea", biogut: "gut microbiome test bloating ibs", biofemme: "vaginal microbiome test uti yeast" }[t.slug] ?? "",
+    text: `${t.name} is a BioAro Labs test, ${t.price.toFixed(2).replace(".00", "")} CAD list price. ${t.plain} ${t.neaUse} Best suited for: ${t.bestFor} You can buy it from the Buy now button on the tests page.`,
+    keywords: `${t.group} test lab bioaro price cost buy ${t.sample ?? ""}`,
+    aliases: { bioskin: "skin microbiome test acne eczema rosacea", biogut: "gut microbiome test bloating ibs", biofemme: "vaginal microbiome test uti yeast", biodental: "oral mouth gum breath teeth microbiome", "brain-health": "memory alzheimer cognitive", pharmacogenomics: "medication medicine drug response genes" }[t.slug] ?? "",
     meta: { price: t.price, summary: t.bestFor },
   })),
   ...faqs.map((f, i) => ({ id: `faq-${i}`, kind: "FAQ", title: f.q, href: `/faq#q-${i}`, text: f.a, keywords: f.topic })),
@@ -171,7 +171,7 @@ export function answer(question: string): Answer {
   // greetings and thanks get a friendly reply, not "not found"
   const small = question.trim().toLowerCase().replace(/[!.?,]+$/g, "");
   if (/^(hi|hii+|hello|hey|hey there|good (morning|afternoon|evening)|yo|hola|namaste|sat sri akal)$/.test(small)) {
-    return { text: `Hi! I’m Nea SI, NEA’s Skin Intelligence. Tell me what is bothering your skin, hair or body, and I’ll explain what is likely behind it, match you to a program, price it, and book the right service in Jane.`, sources: [], steps: ["Read your message"] };
+    return { text: `Hi! I’m Nea SI, NEA’s Skin Intelligence. Tell me what is bothering your skin, hair or body, and I’ll explain what is likely behind it, match you to a program, price it, and book you in.`, sources: [], steps: ["Read your message"] };
   }
   if (/^(thanks|thank you|thx|ty|great|perfect|ok|okay|cool|awesome)( so much| a lot)?$/.test(small)) {
     return { text: `You’re welcome! Anything else about your skin, a treatment or a price I can check for you?`, sources: [], steps: ["Read your message"] };
