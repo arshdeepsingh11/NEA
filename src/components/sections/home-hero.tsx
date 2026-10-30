@@ -66,7 +66,7 @@ export function HomeHero() {
           <p className="mt-6 text-[12.5px] text-graphite/80">Open Monday to Saturday, 9 to 5 · {site.address.line1}, Calgary</p>
         </div>
 
-        <HeroScan image={HERO_IMAGE} alt="Client with clear, healthy skin" className="order-1 lg:order-2" />
+        <HeroScan image={HERO_IMAGE} alt="A smiling client with healthy, glowing skin" className="order-1 lg:order-2" />
       </div>
     </section>
   );

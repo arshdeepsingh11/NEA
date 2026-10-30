@@ -11,10 +11,10 @@ import { cn } from "@/lib/utils";
  * the way the free NEA Skin Health Report reads a face. Values are a labelled sample.
  */
 const READOUTS = [
-  { icon: Sun, label: "UV damage", value: "Early", at: { x: 58, y: 14 }, side: "r" as const },
-  { icon: Droplets, label: "Hydration", value: "58%", at: { x: 53, y: 38 }, side: "r" as const },
-  { icon: Activity, label: "Pigment", value: "3 spots", at: { x: 36, y: 36 }, side: "l" as const },
-  { icon: ScanFace, label: "Pores", value: "Refined", at: { x: 31, y: 50 }, side: "l" as const },
+  { icon: Sun, label: "UV damage", value: "Early", at: { x: 55, y: 30 }, side: "r" as const },
+  { icon: Droplets, label: "Hydration", value: "58%", at: { x: 58, y: 42 }, side: "r" as const },
+  { icon: Activity, label: "Pigment", value: "3 spots", at: { x: 43, y: 41 }, side: "l" as const },
+  { icon: ScanFace, label: "Pores", value: "Refined", at: { x: 46, y: 50 }, side: "l" as const },
 ];
 
 export function HeroScan({ image, alt, className }: { image: string; alt: string; className?: string }) {

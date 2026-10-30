@@ -6,7 +6,11 @@
 const U = (id: string) => `https://images.unsplash.com/photo-${id}`;
 
 export const IMG = {
-  hero: U("1637851496668-9310c745c3dc"),
+  hero: U("1592275772614-ec71b19e326f"),
+  /** smiling, clothed, front-facing faces and figures for the aesthetic "holograms" */
+  twin: U("1580489944761-15a19d654956"),
+  faceMap: U("1790575187751-bb1f1e01a894"),
+  bodyMap: U("1786641982527-f14ae5685e6e"),
   heroAlt: U("1643932919088-53349a7c3385"),
   scanFace: U("1713207524097-596f3c17afc3"),
   brownSkin: U("1629050516563-495e1ded1b9d"),
