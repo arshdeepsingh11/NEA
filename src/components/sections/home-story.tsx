@@ -5,7 +5,7 @@ import { ArrowUpRight, FlaskConical, ChartLine, Repeat2, Sparkles } from "lucide
 import { useLayoutEffect, useRef, useState } from "react";
 import { NeaImage } from "@/components/ui/nea-image";
 import { SplitReveal } from "@/components/motion/split-reveal";
-import { HeroBody } from "./hero-body";
+import { HeroBody, type ScanRegion } from "./hero-body";
 import { cn, money } from "@/lib/utils";
 import { IMG } from "@/content/media";
 
@@ -190,7 +190,6 @@ export function MethodStory() {
 /* ------------------------------------------------------------------ */
 /* Body Intelligence: the 3D hologram with an editorial frame          */
 /* ------------------------------------------------------------------ */
-type ScanRegion = { id: string; name: string; system: string; headline: string; color: string; tests: string[]; tracks: string[] };
 export function BodyIntelChapter({ regions }: { regions: ScanRegion[] }) {
   return (
     <section className="chapter relative overflow-hidden">
@@ -199,7 +198,7 @@ export function BodyIntelChapter({ regions }: { regions: ScanRegion[] }) {
           <p className="eyebrow">Body Intelligence</p>
           <SplitReveal text={"Ten systems.\n*One* skin."} className="mt-5 font-display text-display-lg text-ink" />
           <p className="mt-6 max-w-md text-[17px] leading-relaxed text-graphite">
-            Breakouts, pigment, hair loss and ageing start in places a mirror can’t see. Tap any glowing point to see what that system does for your skin, and exactly how NEA measures and treats it.
+            Breakouts, pigment, hair loss and ageing start in places a mirror can’t see. Tap any glowing point to open it, or switch on the X-ray lens to look inside.
           </p>
           <ul className="mt-8 grid max-w-md grid-cols-3 gap-4 border-t border-ink/10 pt-6">
             {[
@@ -217,7 +216,7 @@ export function BodyIntelChapter({ regions }: { regions: ScanRegion[] }) {
             Open the 3D Body Explorer <ArrowUpRight className="h-4 w-4" />
           </Link>
         </div>
-        <div className="relative h-[70svh] min-h-[480px]">
+        <div className="relative lg:h-[78svh] lg:min-h-[560px]">
           <HeroBody regions={regions} />
         </div>
       </div>

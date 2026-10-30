@@ -20,7 +20,7 @@ import { JsonLd, faqSchema } from "@/lib/seo";
  */
 export default function HomePage() {
   const testName = Object.fromEntries(labTests.map((t) => [t.slug, t.name]));
-  const scan = bodyRegions.map((r) => ({ id: r.id, name: r.name, system: r.system, headline: r.headline, color: r.color, tests: r.tests.map((s) => testName[s]).filter(Boolean) as string[], tracks: r.tracks }));
+  const scan = bodyRegions.map((r) => ({ id: r.id, name: r.name, system: r.system, headline: r.headline, color: r.color, tests: r.tests.map((s) => testName[s]).filter(Boolean) as string[], tracks: r.tracks, madeOf: r.madeOf, disruptors: r.disruptors, improve: r.improve }));
   const rail = programs.map((p) => ({ slug: p.slug, name: p.name, problem: p.problem, headline: p.headline, priceFrom: p.priceFrom, duration: p.duration, image: p.image }));
 
   return (

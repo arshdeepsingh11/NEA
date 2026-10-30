@@ -3,7 +3,8 @@ import { NeaSiIcon } from "@/components/brand/nea-si-icon";
 import Link from "next/link";
 import { ArrowUpRight, ScanFace } from "lucide-react";
 import { useState } from "react";
-import { HoloPortrait } from "@/components/ui/holo-portrait";
+import { HoloPortrait, PartLayers } from "@/components/ui/holo-portrait";
+import { AnimatePresence } from "framer-motion";
 import { IMG } from "@/content/media";
 
 /** Where each face zone sits on the portrait (% of the visible frame). */
@@ -71,7 +72,7 @@ export function FaceMapChapter({ zones }: { zones: Region[] }) {
         <div>
           <p className="chip">Face map</p>
           <h2 className="mt-5 text-display-md font-semibold text-ink">Every zone of your face ages differently.</h2>
-          <p className="measure mt-5 text-lede text-graphite">Lines start on the forehead, pigment on the cheeks, oil in the T-zone. Pick a zone to see what drives it and what treats it.</p>
+          <p className="measure mt-5 text-lede text-graphite">Lines start on the forehead, pigment on the cheeks, oil in the T-zone. Tap a zone on her face to open it, or use the X-ray lens to look under the skin.</p>
           <div className="mt-8 flex flex-wrap gap-2">
             {zones.map((x) => (
               <button key={x.id} onClick={() => setSel(x.id)} className={cn("chip !py-1.5 !text-[13px] transition", sel === x.id ? "!border-ink !bg-ink !text-white" : "hover:text-ink")}>
@@ -80,19 +81,30 @@ export function FaceMapChapter({ zones }: { zones: Region[] }) {
               </button>
             ))}
           </div>
-          <div className="surface mt-6 rounded-3xl p-6">
-            <p className="font-display text-xl font-semibold text-ink">{z.name}</p>
-            <p className="mt-1 text-[15px] text-ink/90">{z.headline}</p>
-            <p className="mt-3 text-[14px] leading-relaxed text-graphite">{z.improve}</p>
-            <div className="mt-5 flex flex-wrap gap-3">
-              <Link href={`/body?mode=face&focus=${z.id}`} className="btn-ghost">
-                Open in 3D <ArrowUpRight className="h-4 w-4" />
-              </Link>
-              <button onClick={() => ai.open({ query: `What does NEA recommend for my ${z.name.toLowerCase()}?`, context: z.name })} className="btn-primary">
-                <NeaSiIcon className="h-4 w-4" /> Ask Nea SI
-              </button>
-            </div>
-          </div>
+          <AnimatePresence mode="wait">
+            <PartLayers
+              key={z.id}
+              className="mt-6"
+              title={z.name}
+              kicker={`Opened · ${z.headline}`}
+              color={z.color}
+              layers={[
+                { label: "What it’s made of", items: z.madeOf.slice(0, 2) },
+                { label: "What throws it off", items: z.disruptors.slice(0, 3) },
+                { label: "How NEA treats it", items: [z.improve] },
+              ]}
+              footer={
+                <div className="flex flex-wrap gap-3">
+                  <Link href={`/body?mode=face&focus=${z.id}`} className="btn-ghost">
+                    Open in 3D <ArrowUpRight className="h-4 w-4" />
+                  </Link>
+                  <button onClick={() => ai.open({ query: `What does NEA recommend for my ${z.name.toLowerCase()}?`, context: z.name })} className="btn-primary">
+                    <NeaSiIcon className="h-4 w-4" /> Ask Nea SI
+                  </button>
+                </div>
+              }
+            />
+          </AnimatePresence>
         </div>
         <HoloPortrait
           src={IMG.faceMap}
