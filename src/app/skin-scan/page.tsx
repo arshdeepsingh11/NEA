@@ -1,6 +1,7 @@
 import { Check } from "lucide-react";
-import { PageHero, SectionHead } from "@/components/sections/page-hero";
+import { PageHero } from "@/components/sections/page-hero";
 import { ScanOffer } from "@/components/sections/scan-offer";
+import { ScanImager } from "@/components/sections/scan-imager";
 import { LeadForm } from "@/components/sections/lead-form";
 import { ShineBorder } from "@/components/ui/shine-border";
 import { Accordion } from "@/components/sections/accordion";
@@ -9,16 +10,18 @@ import { JsonLd, faqSchema, pageMeta } from "@/lib/seo";
 
 export const metadata = pageMeta({
   title: "Free NEA Skin Health Report — advanced skin scan in Calgary",
-  description: "A complimentary advanced facial analysis showing hidden pigmentation, UV damage, pores, texture, redness and hydration. 20 spots each week.",
+  description: "A free AI skin scan in Calgary: 8 kinds of light and a 36MP camera show hidden sun damage, pigment, pores, wrinkles, redness and hydration in 15 seconds, graded on 14+ measures. 20 spots each week.",
   path: "/skin-scan",
 });
 
 const QA = [
   { q: "Is the scan really free?", a: "Yes. The NEA Skin Health Report is complimentary. There is no obligation to buy anything." },
   { q: "What if my skin is healthy?", a: "Then we will tell you, and suggest a simple routine to keep it that way. Recommendations always match what the scan shows." },
-  { q: "How long does it take?", a: "Plan for about 20 minutes: a short questionnaire, a five-minute contact-free scan, and time to walk through your images and report." },
+  { q: "How long does it take?", a: "Plan for about 20 minutes: a short questionnaire, a 15-second contact-free scan, and time to walk through your images and report." },
   { q: "Should I wear makeup?", a: "Come with a clean face if you can. If not, we will give you a gentle cleanser before the scan." },
-  { q: "Do I get a copy?", a: "Yes. We text or email your report with your two or three priorities, and you can come back for a free re-scan in 90 days if you start products or treatment." },
+  { q: "What machine do you use?", a: "An AI skin imager from Bitmoji-tek. It photographs your face in 8 kinds of light (including UV, polarized and Wood’s light) with a 36-megapixel camera, and its AI grades 14+ things about your skin, from pores and wrinkles to hidden sun damage and redness." },
+  { q: "Is the light safe?", a: "Yes. The flashes are brief and gentle, nothing touches your skin and nothing heats it. If flashing light bothers you, tell us before the scan." },
+  { q: "Do I get a copy?", a: "Yes. Scan the QR code and your report is on your phone, and we text or email your two or three priorities, and you can come back for a free re-scan in 90 days if you start products or treatment." },
 ];
 
 export default function SkinScanPage() {
@@ -32,19 +35,10 @@ export default function SkinScanPage() {
           <ScanOffer />
         </div>
       </section>
-      <section className="chapter">
+      <ScanImager />
+      <section className="pb-20">
         <div className="container">
-          <SectionHead title="What happens at your scan." />
-          <ol className="grid gap-4 md:grid-cols-5">
-            {offer.steps.map((s, i) => (
-              <li key={s.title} className="rounded-4xl bg-porcelain p-6">
-                <span className="font-display text-sm text-flora">{i + 1}</span>
-                <h3 className="mt-3 text-xl font-semibold tracking-tight">{s.title}</h3>
-                <p className="mt-2 text-[15px] leading-relaxed text-graphite">{s.detail}</p>
-              </li>
-            ))}
-          </ol>
-          <div className="mt-12 rounded-4xl bg-flora-soft p-8">
+          <div className="rounded-4xl bg-flora-soft p-8">
             <p className="font-display text-lg font-semibold">Your report gives you a three-level plan</p>
             <ul className="mt-4 grid gap-3 md:grid-cols-3">
               {offer.leadsTo.map((l) => (

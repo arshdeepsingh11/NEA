@@ -24,12 +24,12 @@ export const offers: Offer[] = [
     kicker: "Complimentary this month",
     headline: "See what your skin has been trying to tell you.",
     summary:
-      "Our advanced facial analyzer looks below the surface: hidden pigmentation, UV damage, pores, texture, redness and hydration. You leave with a clear report and two or three priorities, never a hard sell.",
+      "Our AI skin imager photographs your face in 8 kinds of light and looks below the surface: hidden pigmentation, UV damage, pores, texture, redness and hydration. You leave with a clear report and two or three priorities, never a hard sell.",
     value: "A $150 assessment",
     spots: "20 scans each week",
     steps: [
       { title: "Book your spot", detail: "Pick a time online. Tell us your age and your main concern so we prepare." },
-      { title: "The scan", detail: "Five minutes, no contact. Multi-spectral images capture layers you cannot see in a mirror." },
+      { title: "The scan", detail: "About 15 seconds, no contact. 8 kinds of light capture layers you cannot see in a mirror." },
       { title: "See it on screen", detail: "Your aesthetician walks you through each image and what it means." },
       { title: "Your report", detail: "Two or three priorities, the likely causes (including gut and nutrition) and a simple three-level plan." },
       { title: "Re-scan in 90 days", detail: "If you start products or treatment, we scan again for free so you can see the change." },
