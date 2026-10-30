@@ -11,10 +11,10 @@ import { cn } from "@/lib/utils";
  * the way the free NEA Skin Health Report reads a face. Values are a labelled sample.
  */
 const READOUTS = [
-  { icon: Sun, label: "UV damage", value: "Early", at: { x: 55, y: 30 }, side: "r" as const },
-  { icon: Droplets, label: "Hydration", value: "58%", at: { x: 58, y: 42 }, side: "r" as const },
-  { icon: Activity, label: "Pigment", value: "3 spots", at: { x: 43, y: 41 }, side: "l" as const },
-  { icon: ScanFace, label: "Pores", value: "Refined", at: { x: 46, y: 50 }, side: "l" as const },
+  { icon: Sun, label: "UV damage", value: "Early", at: { x: 50, y: 33 }, side: "r" as const },
+  { icon: Droplets, label: "Hydration", value: "58%", at: { x: 58, y: 45 }, side: "r" as const },
+  { icon: Activity, label: "Pigment", value: "3 spots", at: { x: 41, y: 44 }, side: "l" as const },
+  { icon: ScanFace, label: "Pores", value: "Refined", at: { x: 49, y: 52 }, side: "l" as const },
 ];
 
 export function HeroScan({ image, alt, className }: { image: string; alt: string; className?: string }) {
@@ -43,7 +43,7 @@ export function HeroScan({ image, alt, className }: { image: string; alt: string
       <motion.div style={{ y }} className="relative mx-auto aspect-[4/5] w-full max-w-[560px]">
         <div className="relative h-full w-full overflow-hidden rounded-b-[44px] rounded-t-[999px] border border-white/80 shadow-[0_40px_120px_-50px_rgba(var(--shadow-tint),0.55)]">
           <motion.div style={{ scale }} className="absolute inset-0">
-            <NeaImage src={image} alt={alt} fill priority sizes="(min-width:1024px) 40vw, 90vw" className="object-cover object-[50%_35%]" />
+            <NeaImage src={image} alt={alt} fill priority sizes="(min-width:1024px) 40vw, 90vw" className="object-cover object-[50%_65%]" />
           </motion.div>
           {/* tone the photo into the theme */}
           <div aria-hidden className="absolute inset-0 mix-blend-soft-light" style={{ background: "linear-gradient(160deg, var(--fill-a), transparent 45%, var(--fill-c))" }} />
