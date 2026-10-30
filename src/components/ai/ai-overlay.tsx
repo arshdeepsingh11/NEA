@@ -230,6 +230,11 @@ export function AiOverlay({ open, onClose, initialQuery, context, nonce }: { ope
               </div>
             </div>
 
+            {!ready[engine] && (
+              <p role="status" className="border-b border-ink/10 bg-porcelain px-5 py-2 text-[12px] text-graphite sm:px-7">
+                {ENGINES.find((x) => x.id === engine)?.label} isn’t connected yet, so {ENGINES.find((x) => x.id !== engine)?.label} is answering for now.
+              </p>
+            )}
             {hint && (
               <div role="status" className="border-b border-amber-300/50 bg-amber-50 px-5 py-2.5 text-[12.5px] leading-snug text-amber-900 sm:px-7">
                 <strong className="font-semibold">Setup (only you see this in development):</strong> {hint}
@@ -324,6 +329,11 @@ function AssistantReply({ reply, onClose, onFollow, last }: { reply: Reply; onCl
   return (
     <div className="space-y-4">
       {reply.text ? <RichText text={reply.text} onClose={onClose} typing={!doneText} /> : !doneText && <Thinking />}
+      {doneText && reply.fellBack && (
+        <p className="text-[11.5px] text-graphite/80">
+          {reply.model === "gemini" ? "Answered by Gemini because Xevyo isn’t available right now." : reply.model === "xevyo" ? "Answered by Xevyo because Gemini isn’t available right now." : "Answered from NEA’s own knowledge because the AI engines are busy right now."}
+        </p>
+      )}
       {doneText && reply.plan && (
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="surface-strong rounded-3xl p-5">
           <div className="flex items-center justify-between">
