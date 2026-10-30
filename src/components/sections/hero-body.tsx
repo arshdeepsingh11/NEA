@@ -4,12 +4,18 @@ import { AnimatePresence, motion } from "framer-motion";
 import { ArrowUpRight, Activity } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { LazyAnatomy } from "@/components/three/lazy";
+import { HoloPortrait } from "@/components/ui/holo-portrait";
+import { IMG } from "@/content/media";
+
+/** Where each body system sits on the portrait (% of the photo). */
+const AT: Record<string, [number, number]> = {
+  scalp: [44, 6], brain: [55, 7.5], face: [53, 13], neck: [53, 19.5], chest: [50, 27], arms: [31, 33], liver: [42, 38], adrenals: [58, 40], gut: [50, 44], pelvis: [48, 53], thighs: [45, 63], knees: [47, 75], feet: [52, 93],
+};
 
 type ScanRegion = { id: string; name: string; system: string; headline: string; color: string; tests: string[]; tracks: string[] };
 
 /**
- * Hero visual: a Nea SI hologram of the body that "scans" one system at a time.
+ * A real, smiling person with a Nea SI scan layered on top: one body system lights up at a time.
  * The readout explains what that system does for your skin and how NEA measures it.
  * Clicking any part opens the full Body Explorer on that region.
  */
@@ -28,7 +34,16 @@ export function HeroBody({ regions }: { regions: ScanRegion[] }) {
   return (
     <div className="relative h-full w-full" onPointerEnter={() => setPaused(true)} onPointerLeave={() => setPaused(false)}>
       <div aria-hidden className="absolute inset-[8%] rounded-full bg-[radial-gradient(circle,rgb(var(--c-accent) / 0.16),transparent_65%)] blur-2xl" />
-      <LazyAnatomy mode="body" view="skin" compact focus={false} regions={regions} selected={r.id} onSelect={(id) => router.push(`/body?focus=${id}`)} className="absolute inset-0" />
+      <HoloPortrait
+        src={IMG.bodyMap}
+        alt="A smiling woman, with NEA's body systems marked on her"
+        aspect="2 / 3"
+        className="absolute left-1/2 top-1/2 h-[96%] -translate-x-1/2 -translate-y-1/2"
+        spots={regions.filter((x) => AT[x.id]).map((x) => ({ id: x.id, x: AT[x.id][0], y: AT[x.id][1], label: x.name, color: x.color }))}
+        selected={r.id}
+        onSelect={(id) => (r.id === id ? router.push(`/body?focus=${id}`) : setI(regions.findIndex((x) => x.id === id)))}
+        badge="Nea SI body scan"
+      />
 
       {/* Scan progress across the ten systems */}
       <div className="absolute left-1/2 top-2 flex -translate-x-1/2 items-center gap-1.5" aria-hidden>

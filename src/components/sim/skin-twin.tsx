@@ -35,10 +35,10 @@ export function model(i: Inputs) {
 }
 
 const BREAKOUTS = [
-  [31, 60], [69, 61], [36, 66], [64, 67], [44, 35], [57, 33], [50, 76], [27, 55], [73, 54], [41, 72], [60, 74], [47, 41],
+  [38, 57], [62, 57], [41, 60], [59, 61], [46, 42], [54, 41], [50, 66], [36, 54], [64, 53], [44, 64], [56, 65], [48, 46],
 ] as const;
 const SPOTS = [
-  [34, 56], [38, 52], [62, 52], [66, 57], [45, 50], [56, 49], [30, 50], [70, 49],
+  [40, 54], [43, 52], [57, 52], [60, 55], [47, 51], [54, 50], [38, 51], [62, 50],
 ] as const;
 
 export function SkinTwin({ className }: { className?: string }) {
@@ -69,12 +69,12 @@ export function SkinTwin({ className }: { className?: string }) {
       <div className="relative mx-auto w-full max-w-[520px]">
         <div className="relative aspect-[4/5] overflow-hidden rounded-[40px] border border-white/80 shadow-[0_50px_120px_-60px_rgba(var(--shadow-tint),0.65)]">
           <motion.div className="absolute inset-0" animate={{ filter: `saturate(${0.7 + m.glow / 300}) brightness(${0.9 + m.glow / 900}) contrast(${0.96 + m.glow / 2000})` }} transition={{ duration: 0.5 }}>
-            <NeaImage src={IMG.scanFace} alt="Digital skin twin" fill sizes="(min-width:1024px) 40vw, 90vw" className="object-cover object-[50%_40%]" />
+            <NeaImage src={IMG.twin} alt="Digital skin twin" fill sizes="(min-width:1024px) 40vw, 90vw" className="object-cover object-[50%_40%]" />
           </motion.div>
           {/* redness: inflammation shows on the cheeks first */}
-          <motion.div aria-hidden className="absolute inset-0 mix-blend-multiply" animate={{ opacity: ((100 - m.calm) / 100) * 0.9 }} transition={{ duration: 0.5 }} style={{ background: "radial-gradient(14% 10% at 32% 59%, rgba(220,70,70,0.55), transparent 70%), radial-gradient(14% 10% at 68% 59%, rgba(220,70,70,0.55), transparent 70%), radial-gradient(10% 6% at 50% 55%, rgba(220,70,70,0.35), transparent 70%)" }} />
+          <motion.div aria-hidden className="absolute inset-0 mix-blend-multiply" animate={{ opacity: ((100 - m.calm) / 100) * 0.9 }} transition={{ duration: 0.5 }} style={{ background: "radial-gradient(9% 6% at 40% 57%, rgba(220,70,70,0.55), transparent 70%), radial-gradient(9% 6% at 60% 57%, rgba(220,70,70,0.55), transparent 70%), radial-gradient(6% 4% at 50% 54%, rgba(220,70,70,0.35), transparent 70%)" }} />
           {/* glow: a healthy sheen on the high points */}
-          <motion.div aria-hidden className="absolute inset-0 mix-blend-screen" animate={{ opacity: m.glow / 140 }} transition={{ duration: 0.5 }} style={{ background: "radial-gradient(10% 7% at 50% 38%, rgba(255,255,255,0.7), transparent 70%), radial-gradient(9% 6% at 36% 54%, rgba(255,255,255,0.5), transparent 70%), radial-gradient(9% 6% at 64% 54%, rgba(255,255,255,0.5), transparent 70%)" }} />
+          <motion.div aria-hidden className="absolute inset-0 mix-blend-screen" animate={{ opacity: m.glow / 140 }} transition={{ duration: 0.5 }} style={{ background: "radial-gradient(7% 4% at 50% 42%, rgba(255,255,255,0.7), transparent 70%), radial-gradient(6% 4% at 41% 55%, rgba(255,255,255,0.5), transparent 70%), radial-gradient(6% 4% at 59% 55%, rgba(255,255,255,0.5), transparent 70%)" }} />
           {/* breakouts */}
           {BREAKOUTS.map(([x, y], k) => (
             <motion.span key={k} aria-hidden className="absolute h-[9px] w-[9px] -translate-x-1/2 -translate-y-1/2 rounded-full" style={{ left: `${x}%`, top: `${y}%`, background: "radial-gradient(circle, rgba(196,60,60,0.95) 0 35%, rgba(220,110,100,0.5) 60%, transparent 72%)" }} animate={{ opacity: k < breakouts ? 1 : 0, scale: k < breakouts ? 1 : 0.4 }} transition={{ duration: 0.4 }} />

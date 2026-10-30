@@ -3,7 +3,11 @@ import { NeaSiIcon } from "@/components/brand/nea-si-icon";
 import Link from "next/link";
 import { ArrowUpRight, ScanFace } from "lucide-react";
 import { useState } from "react";
-import { LazyAnatomy } from "@/components/three/lazy";
+import { HoloPortrait } from "@/components/ui/holo-portrait";
+import { IMG } from "@/content/media";
+
+/** Where each face zone sits on the portrait (% of the visible frame). */
+const FACE_AT: Record<string, [number, number]> = { forehead: [58, 9], undereye: [36, 35], cheeks: [24, 53], tzone: [55, 45], mouth: [55, 71], jaw: [70, 90] };
 import { useAi } from "@/components/ai/ai-provider";
 import { SkinTwin } from "@/components/sim/skin-twin";
 import { LiveReport } from "@/components/sim/live-report";
@@ -65,7 +69,7 @@ export function FaceMapChapter({ zones }: { zones: Region[] }) {
     <section className="chapter">
       <div className="container grid items-center gap-8 lg:grid-cols-[1fr_1.1fr]">
         <div>
-          <p className="chip">3D face map</p>
+          <p className="chip">Face map</p>
           <h2 className="mt-5 text-display-md font-semibold text-ink">Every zone of your face ages differently.</h2>
           <p className="measure mt-5 text-lede text-graphite">Lines start on the forehead, pigment on the cheeks, oil in the T-zone. Pick a zone to see what drives it and what treats it.</p>
           <div className="mt-8 flex flex-wrap gap-2">
@@ -90,9 +94,17 @@ export function FaceMapChapter({ zones }: { zones: Region[] }) {
             </div>
           </div>
         </div>
-        <div className="surface relative h-[520px] overflow-hidden rounded-[36px] lg:h-[620px]">
-          <LazyAnatomy mode="face" view="holo" compact regions={zones} selected={sel} onSelect={setSel} className="absolute inset-0" />
-        </div>
+        <HoloPortrait
+          src={IMG.faceMap}
+          alt="A smiling woman, with the six face zones marked"
+          aspect="4 / 5"
+          position="50% 30%"
+          className="mx-auto w-full max-w-[540px]"
+          spots={zones.filter((x) => FACE_AT[x.id]).map((x) => ({ id: x.id, x: FACE_AT[x.id][0], y: FACE_AT[x.id][1], label: x.name, color: x.color }))}
+          selected={sel}
+          onSelect={setSel}
+          badge="Nea SI face map"
+        />
       </div>
     </section>
   );

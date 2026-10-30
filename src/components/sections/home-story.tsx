@@ -199,7 +199,7 @@ export function BodyIntelChapter({ regions }: { regions: ScanRegion[] }) {
           <p className="eyebrow">Body Intelligence</p>
           <SplitReveal text={"Ten systems.\n*One* skin."} className="mt-5 font-display text-display-lg text-ink" />
           <p className="mt-6 max-w-md text-[17px] leading-relaxed text-graphite">
-            Breakouts, pigment, hair loss and ageing start in places a mirror can’t see. Rotate the body, tap any system, and see what it’s made of, what throws it off, and exactly how NEA measures and treats it.
+            Breakouts, pigment, hair loss and ageing start in places a mirror can’t see. Tap any glowing point to see what that system does for your skin, and exactly how NEA measures and treats it.
           </p>
           <ul className="mt-8 grid max-w-md grid-cols-3 gap-4 border-t border-ink/10 pt-6">
             {[
