@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { BookButton } from "@/components/booking/booking";
-import { LazyBeam } from "@/components/three/lazy";
+import { Film } from "@/components/ui/film";
 import { NeaImage } from "@/components/ui/nea-image";
 import { SectionHead } from "@/components/sections/page-hero";
 import { treatments } from "@/content/treatments";
@@ -17,18 +17,29 @@ export default function FotonaPage() {
   const laser = treatments.filter((t) => ["laser"].includes(t.category) || ["laser-hair-removal", "wart-removal", "snoring-sleep-apnea", "feminine-health", "fungal-nail", "body-contouring", "hair-restoration", "large-pores"].includes(t.slug));
   return (
     <>
-      <section className="chapter-dark relative overflow-hidden">
-        <div className="absolute inset-0">
-          <LazyBeam />
+      <section className="relative overflow-hidden bg-[#141011] text-white md:min-h-[92vh]">
+        {/* the film: tall on phones, wide behind the words on larger screens */}
+        <div className="relative aspect-[4/5] w-full md:absolute md:inset-0 md:aspect-auto">
+          <Film
+            className="absolute inset-0"
+            pauseAt="bottom"
+            label="A Fotona laser treatment at NEA"
+            sources={[
+              { src: "/media/nea-fotona-16x9.mp4", poster: "/media/nea-fotona-16x9.jpg", media: "(min-width: 768px)" },
+              { src: "/media/nea-fotona-4x5.mp4", poster: "/media/nea-fotona-4x5.jpg" },
+            ]}
+          />
+          <div aria-hidden className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#141011] via-[#141011]/10 to-transparent md:bg-[linear-gradient(90deg,rgba(20,16,17,0.92)_0%,rgba(20,16,17,0.6)_38%,rgba(20,16,17,0)_68%)]" />
         </div>
-        <div className="container relative flex min-h-[92vh] flex-col justify-end pb-20 pt-40">
-          <h1 className="max-w-4xl text-display-xl font-semibold">Fotona laser.</h1>
-          <p className="measure mt-6 text-lede text-graphite">
+        <div className="container relative -mt-28 pb-16 md:mt-0 md:flex md:min-h-[92vh] md:flex-col md:justify-end md:pb-20 md:pt-40">
+          <p className="text-[13px] uppercase tracking-[0.2em] text-white/60">One of Calgary’s first Fotona centres</p>
+          <h1 className="mt-3 max-w-4xl font-display text-[clamp(3rem,8vw,6.5rem)] font-semibold leading-[0.95]">Fotona laser.</h1>
+          <p className="mt-6 max-w-xl text-[17px] leading-relaxed text-white/80 md:text-[19px]">
             Widely acclaimed for its versatility. NEA is one of the first centres to offer Fotona and all its applications, with predictable, safe results and short downtime, clinically proven for all skin types and colours.
           </p>
           <div className="mt-10 flex flex-wrap gap-3">
-            <BookButton slug="fotona-laser" title="Fotona" variant="light">Book a session</BookButton>
-            <Link href="/treatments?focus=laser" className="btn border border-ink/20 text-ink hover:bg-white/90">
+            <BookButton slug="fotona-laser" title="Fotona" variant="light" className="!bg-white !text-ink hover:!bg-white/90">Book a session</BookButton>
+            <Link href="/treatments" className="btn border border-white/30 text-white hover:bg-white/10">
               See laser treatments
             </Link>
           </div>
