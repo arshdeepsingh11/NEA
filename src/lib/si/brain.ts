@@ -76,6 +76,30 @@ export function brief(engine: string) {
   return cached.replace("{engine}", engine);
 }
 
+let compact: string | null = null;
+/**
+ * A shorter brief for engines that slow down on long prompts (Xevyo): the same rules and clinic facts,
+ * with every program, treatment, test, package and page as a one-line index (name, link, starting price).
+ * The full detail for each question still arrives with the PAGES sent alongside it.
+ */
+export function briefCompact(engine: string) {
+  compact ??= (() => {
+    const prog = programs.map((p) => `- ${p.name} (/programs/${p.slug}): ${p.problem}. From ${money(p.priceFrom)}, ${p.duration}.`).join("\n");
+    const tx = treatments
+      .map((t) => {
+        const priced = janeFor(t.slug).filter((x) => x.price).map((x) => x.price as number);
+        return `- ${t.title} (/treatments/${t.slug})${priced.length ? `, from ${money(Math.min(...priced))}` : ""}: ${t.concerns.slice(0, 3).join(", ")}`;
+      })
+      .join("\n");
+    const tests = labTests.map((t) => `- ${t.name} (/tests#${t.slug}) ${money(t.price)}`).join("\n");
+    const packs = wellnessPackages.map((p) => `- ${p.name} (/packages#${p.id})`).join("\n");
+    const members = memberships.map((m) => `- ${m.name}: ${money(m.price)}/month`).join("\n");
+    const offs = offers.map((o) => `- ${o.name} (${o.slug === "skin-scan" ? "/skin-scan" : `/experiences/${o.slug}`})`).join("\n");
+    return `${RULES}\n\n${clinic()}\n\nPROGRAMS\n${prog}\n\nTREATMENTS (starting price where published)\n${tx}\n\nLAB TESTS by BioAro Labs (CAD list price; Buy now on /tests)\n${tests}\n\nPACKAGES\n${packs}\n\nMEMBERSHIPS (/membership)\n${members}\n\nOFFERS\n${offs}\n\nOTHER PAGES: /why-nea, /skin-lens, /skin-scan, /body, /treatments, /programs, /tests, /packages, /magazine, /book, /contact, /faq, /about\n\nFor details (what a treatment involves, test samples, package contents, FAQs) use the PAGES sent with the question.`;
+  })();
+  return compact.replace("{engine}", engine);
+}
+
 /** The pages most relevant to this question, in full. */
 export function pagesFor(hits: Doc[]) {
   if (!hits.length) return "PAGES: none matched this question.";

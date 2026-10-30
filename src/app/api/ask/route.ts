@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { answer, search } from "@/lib/knowledge";
-import { brief, pagesFor } from "@/lib/si/brain";
+import { brief, briefCompact, pagesFor } from "@/lib/si/brain";
 import { ENGINE_LABEL, configured, defaultEngine, setupHint, stream, type Engine, type Turn } from "@/lib/si/engines";
 
 /**
@@ -39,6 +39,9 @@ export async function POST(req: Request) {
     .map((t) => ({ role: t.role, text: t.text.slice(0, 1500) }));
   const turn: Turn = { role: "user", text: `${pagesFor(search(full, 6))}\n\n${context ? `The visitor is looking at: ${context}\n` : ""}QUESTION: ${question}` };
 
+  // Xevyo gets a shorter index, so give it a couple more full pages for this question
+  const turnX: Turn = { role: "user", text: `${pagesFor(search(full, 8))}\n\n${context ? `The visitor is looking at: ${context}\n` : ""}QUESTION: ${question}` };
+
   const enc = new TextEncoder();
   const body$ = new ReadableStream<Uint8Array>({
     async start(ctrl) {
@@ -49,7 +52,7 @@ export async function POST(req: Request) {
         if (deadline - Date.now() < 4000) break;
         let wrote = false;
         try {
-          for await (const chunk of stream(e, brief(ENGINE_LABEL[e]), [...history, turn], deadline)) {
+          for await (const chunk of stream(e, e === "xevyo" ? briefCompact(ENGINE_LABEL[e]) : brief(ENGINE_LABEL[e]), [...history, e === "xevyo" ? turnX : turn], deadline)) {
             wrote = true;
             send({ t: "d", v: chunk });
           }

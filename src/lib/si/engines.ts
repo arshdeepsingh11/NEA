@@ -1,6 +1,6 @@
 /**
  * The two engines behind Nea SI. Keys live only on the server (.env.local / hosting env vars).
- * - Xevyo: NEA's in-house AI. Called OpenAI-style (POST messages, Bearer key) at XEVYO_API_URL; streams when the API supports it.
+ * - Xevyo: NEA's in-house AI. OpenAI-style chat at XEVYO_API_URL (https://chat.xevyo.com/xevyo/v1), model XEVYO_MODEL ("xevyo"); streamed.
  * - Gemini: Google's API, streamed. Tries each model in GEMINI_MODELS until one answers (busy models are skipped).
  * Both stream text as it is written, so the first words appear in about a second.
  */
@@ -74,7 +74,7 @@ async function* xevyo(system: string, turns: Turn[], deadline: number): AsyncGen
     method: "POST",
     headers: { "content-type": "application/json", accept: "text/event-stream, application/json", authorization: `Bearer ${process.env.XEVYO_API_KEY}`, "x-api-key": process.env.XEVYO_API_KEY! },
     body: JSON.stringify({
-      model: process.env.XEVYO_MODEL || undefined,
+      model: process.env.XEVYO_MODEL || "xevyo",
       messages: [{ role: "system", content: system }, ...turns.map((t) => ({ role: t.role, content: t.text }))],
       temperature: 0.4,
       max_tokens: 900,
