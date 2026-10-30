@@ -1,6 +1,5 @@
 import Link from "next/link";
-import { IMG } from "@/content/media";
-import { NeaImage } from "@/components/ui/nea-image";
+import { Film } from "@/components/ui/film";
 import { PageHero, SectionHead } from "@/components/sections/page-hero";
 import { pageMeta } from "@/lib/seo";
 import { site } from "@/lib/site";
@@ -41,9 +40,17 @@ export default function NutritionPage() {
             <p className="!text-lg !text-ink">Personalized nutrition is a cutting-edge dietary approach that leverages individual genetic makeup, lifestyle factors, and health goals to create tailor-made nutrition plans.</p>
             <p>By analyzing unique genetic profiles, microbiomes, and personal preferences, personalized nutrition optimizes dietary choices to enhance your health span. Many NEA packages include nutrition consultations with a Registered Dietitian, and many extended health plans cover dietitian visits.</p>
           </div>
-          <div className="relative aspect-[4/3] overflow-hidden rounded-5xl bg-mist">
-            <NeaImage src="https://images.unsplash.com/photo-1693212454137-0d2909d79b27" alt="Food and nutrition planning" fill sizes="(max-width: 1024px) 100vw, 50vw" className="object-cover" />
-          </div>
+          <Film
+            className="aspect-square rounded-5xl"
+            label="How food on your plate becomes the glow on your skin"
+            sources={[{ src: "/media/nea-nutrition-1x1.mp4", poster: "/media/nea-nutrition-1x1.jpg" }]}
+            chapters={[
+              { at: 0, label: "It starts on your plate" },
+              { at: 2, label: "Real, whole food", note: "Greens, omega-3 fish, eggs and healthy fats." },
+              { at: 5, label: "Fibre and probiotics", note: "What your gut bacteria feed on." },
+              { at: 8.2, label: "A calmer gut, a clearer face", note: "A balanced gut means less inflammation, and skin shows it." },
+            ]}
+          />
         </div>
       </section>
       <section className="chapter">

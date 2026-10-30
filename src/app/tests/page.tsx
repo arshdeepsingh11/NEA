@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { TestJourney } from "@/components/sections/test-journey";
+import { Film } from "@/components/ui/film";
 import { PageHero, SectionHead } from "@/components/sections/page-hero";
 import { TestStore } from "@/components/sections/test-store";
 import { LazySignal } from "@/components/three/lazy";
@@ -46,6 +47,20 @@ export default function TestsPage() {
       <section className="chapter">
         <div className="container">
           <SectionHead title="How testing works." lede="Four steps, from the first conversation to a plan that changes because of your results. Tap a step to see what happens and why." />
+          <Film
+            className="mb-10 aspect-square rounded-[32px] md:aspect-video"
+            label="From sample to insight: how NEA testing works"
+            sources={[
+              { src: "/media/nea-testing-16x9.mp4", poster: "/media/nea-testing-16x9.jpg", media: "(min-width: 768px)" },
+              { src: "/media/nea-testing-1x1.mp4", poster: "/media/nea-testing-1x1.jpg" },
+            ]}
+            chapters={[
+              { at: 0, label: "A painless sample", note: "A gentle swab, a stool kit or a blood draw, depending on the test." },
+              { at: 4, label: "Sealed and sent", note: "Your sample is sealed, labelled and sent to BioAro Labs." },
+              { at: 7, label: "Analysed in the lab", note: "CLIA-registered laboratories run your test." },
+              { at: 10, label: "Your results, explained", note: "Results arrive on your secure dashboard, and your NEA team walks you through them." },
+            ]}
+          />
           <TestJourney />
         </div>
       </section>
