@@ -62,8 +62,15 @@ const pickText = (d: Record<string, unknown> & { choices?: { message?: { content
   (d.answer as string) ??
   (typeof d.message === "string" ? d.message : undefined);
 
+/** XEVYO_API_URL may be the full chat address or just the API base (".../v1"); a bare base gets /chat/completions added. */
+function xevyoUrl() {
+  const raw = (process.env.XEVYO_API_URL || "").trim().replace(/\/+$/, "");
+  if (/\/(chat|completions|generate|messages|ask|query|responses)(\/|$|\?)/i.test(raw)) return raw;
+  return /\/v\d+$/i.test(raw) ? `${raw}/chat/completions` : raw;
+}
+
 async function* xevyo(system: string, turns: Turn[], deadline: number): AsyncGenerator<string> {
-  const res = await fetch(process.env.XEVYO_API_URL!, {
+  const res = await fetch(xevyoUrl(), {
     method: "POST",
     headers: { "content-type": "application/json", accept: "text/event-stream, application/json", authorization: `Bearer ${process.env.XEVYO_API_KEY}`, "x-api-key": process.env.XEVYO_API_KEY! },
     body: JSON.stringify({
