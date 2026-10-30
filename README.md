@@ -103,8 +103,8 @@ Settings (server only, in `.env.local` and your host's environment variables, ne
 | Variable | What it is |
 | --- | --- |
 | `XEVYO_API_KEY` | Xevyo key |
-| `XEVYO_API_URL` | Full Xevyo chat endpoint. Called OpenAI-style: `POST {model, messages:[{role, content}]}` with `Authorization: Bearer <key>`; reads `choices[0].message.content` (also `text`, `output_text`, `response`). Until set, the Xevyo option shows an amber dot and Gemini answers. |
-| `XEVYO_MODEL` | Optional model name for Xevyo |
+| `XEVYO_API_URL` | `https://chat.xevyo.com/xevyo/v1` (the base is enough; `/chat/completions` is added). OpenAI-style streaming chat with `Authorization: Bearer <xk- key>`. Until set, the Xevyo option shows an amber dot and Gemini answers. Xevyo gets a compact brief (about 10k characters) because long prompts slow it down. |
+| `XEVYO_MODEL` | `xevyo` (the default; Xevyo returns "Model not found" without it) |
 | `GEMINI_API_KEY` | Google AI Studio key (aistudio.google.com/apikey) |
 | `GEMINI_MODELS` | Models to race, fastest first (default `gemini-3.5-flash-lite,gemini-flash-lite-latest,gemini-3.5-flash`) |
 | `GEMINI_HEDGE_MS` / `GEMINI_FIRST_TOKEN_MS` | Optional speed settings (defaults 1500 and 9000) |
