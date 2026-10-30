@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { Check } from "lucide-react";
 import { NeaImage } from "@/components/ui/nea-image";
+import { Film } from "@/components/ui/film";
 import { LeadForm } from "@/components/sections/lead-form";
 import { getOffer, offers } from "@/content/offers";
 import { pageMeta } from "@/lib/seo";
@@ -36,9 +37,13 @@ export default async function ExperiencePage({ params }: Props) {
             <p className="measure mt-5 text-lede text-graphite">{o.summary}</p>
             <p className="mt-6 text-[14px] text-graphite">Best for: {o.audience}</p>
           </div>
-          <div className="relative aspect-[4/3] overflow-hidden rounded-5xl bg-mist">
-            <NeaImage src={o.image} alt={o.name} fill priority sizes="(max-width: 1024px) 100vw, 50vw" className="object-cover" />
-          </div>
+          {o.film ? (
+            <Film className="aspect-video rounded-5xl" label={`${o.name}: film`} sources={[{ src: o.film.src, poster: o.film.poster }]} />
+          ) : (
+            <div className="relative aspect-[4/3] overflow-hidden rounded-5xl bg-mist">
+              <NeaImage src={o.image} alt={o.name} fill priority sizes="(max-width: 1024px) 100vw, 50vw" className="object-cover" />
+            </div>
+          )}
         </div>
       </section>
       <section className="chapter">

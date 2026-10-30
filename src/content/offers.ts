@@ -15,6 +15,8 @@ export type Offer = {
   leadsTo: string[];
   image: string;
   audience: string;
+  /** optional silent film shown instead of the photo */
+  film?: { src: string; poster: string };
 };
 
 export const offers: Offer[] = [
@@ -54,6 +56,7 @@ export const offers: Offer[] = [
     leadsTo: ["Nutrition programs", "truSculpt flex", "TightSculpting", "Sports package"],
     image: "2024/06/zqndcje06vm-e1718734658676.jpg",
     audience: "Gyms, athletes, weight-loss journeys and people on GLP-1 medication.",
+    film: { src: "/media/nea-body-hologram.mp4", poster: "/media/nea-body-hologram.jpg" },
   },
   {
     slug: "bring-your-bag",
