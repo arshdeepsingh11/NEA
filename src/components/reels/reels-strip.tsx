@@ -70,11 +70,20 @@ function Card({ url, caption, load, onOpen }: { url: string; caption: string; lo
   const topic = reelTopic(caption);
   const text = cleanCaption(caption);
   const book = useBooking();
+  // each player loads only when its card is (nearly) on screen: 12 Instagram players at once can freeze a phone
+  const box = useRef<HTMLDivElement>(null);
+  const [seen, setSeen] = useState(false);
+  useEffect(() => {
+    if (!load || seen || !box.current) return;
+    const io = new IntersectionObserver(([en]) => en.isIntersecting && (setSeen(true), io.disconnect()), { rootMargin: "150px" });
+    io.observe(box.current);
+    return () => io.disconnect();
+  }, [load, seen]);
   return (
-    <div className="shrink-0 snap-start" style={{ width: CARD }}>
+    <div ref={box} className="shrink-0 snap-start" style={{ width: CARD }}>
       <div className="relative overflow-hidden rounded-[22px] border border-ink/[0.06] bg-white shadow-[0_24px_60px_-30px_rgba(var(--shadow-tint),0.7)]" style={{ height: h }}>
         <div className="absolute inset-0 grid place-items-center text-[13px] text-graphite">Loading video…</div>
-        {load && <iframe src={e.src} title={text || "NEA video"} width={CARD} height={e.platform === "instagram" ? h + 170 : h} loading="lazy" className="relative block border-0" allow="autoplay; encrypted-media; picture-in-picture; clipboard-write; web-share" allowFullScreen scrolling="no" />}
+        {seen && <iframe src={e.src} title={text || "NEA video"} width={CARD} height={e.platform === "instagram" ? h + 170 : h} loading="lazy" className="relative block border-0" allow="autoplay; encrypted-media; picture-in-picture; clipboard-write; web-share" allowFullScreen scrolling="no" />}
       </div>
       {text && (
         <button onClick={onOpen} className="mt-3 line-clamp-2 text-left text-[13.5px] leading-snug text-ink/80 hover:text-ink">

@@ -3,6 +3,8 @@ const nextConfig = {
   reactStrictMode: true,
   eslint: { ignoreDuringBuilds: true },
   images: {
+    // keep optimised images for 30 days so the server rarely has to fetch them again
+    minimumCacheTTL: 2592000,
     remotePatterns: [
       { protocol: "https", hostname: "neaprecisionskin.com", pathname: "/wp-content/**" },
       { protocol: "https", hostname: "images.unsplash.com" },
