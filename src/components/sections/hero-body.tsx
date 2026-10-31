@@ -16,7 +16,7 @@ export type ScanRegion = { id: string; name: string; system: string; headline: s
 /**
  * A real, smiling person with a Nea SI scan layered on top. One body system lights up at a time;
  * tap any glowing point to open it: three layers fan out showing what it's made of, what throws it off,
- * and how NEA measures and treats it. The X-ray lens shows the inside of the same person.
+ * and how NEA measures and treats it. The glow preview shows the same person with rested, healthy skin.
  */
 export function HeroBody({ regions }: { regions: ScanRegion[] }) {
   const [i, setI] = useState(1);

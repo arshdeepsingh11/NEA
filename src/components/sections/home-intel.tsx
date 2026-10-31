@@ -73,7 +73,7 @@ export function FaceMapChapter({ zones }: { zones: Region[] }) {
         <div>
           <p className="chip">Face map</p>
           <h2 className="mt-5 text-display-md font-semibold text-ink">Every zone of your face ages differently.</h2>
-          <p className="measure mt-5 text-lede text-graphite">Lines start on the forehead, pigment on the cheeks, oil in the T-zone. Tap a zone on her face to open it, or use the X-ray lens to look under the skin.</p>
+          <p className="measure mt-5 text-lede text-graphite">Lines start on the forehead, pigment on the cheeks, oil in the T-zone. Tap a zone on her face to open it, or use the glow preview to see that skin rested and bright.</p>
           <div className="mt-8 flex flex-wrap gap-2">
             {zones.map((x) => (
               <button key={x.id} onClick={() => setSel(x.id)} className={cn("chip !py-1.5 !text-[13px] transition", sel === x.id ? "!border-ink !bg-ink !text-white" : "hover:text-ink")}>

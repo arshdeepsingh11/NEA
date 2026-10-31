@@ -1,7 +1,7 @@
 "use client";
 import { useRef, useState, type ReactNode } from "react";
 import { AnimatePresence, motion, useMotionValue, useSpring, useTransform } from "framer-motion";
-import { ScanLine } from "lucide-react";
+import { Sparkles } from "lucide-react";
 import { NeaImage } from "@/components/ui/nea-image";
 import { cn } from "@/lib/utils";
 
@@ -14,7 +14,7 @@ const mp = (s?: { x: number; y: number }) => (s ? `${((130 - s.x) / 160) * 100}%
 /**
  * An aesthetic hologram of a real, smiling person in clothes, built to be explored:
  * - The portrait tilts in 3D under your pointer, with the scan points floating above it.
- * - X-ray lens: switch it on and a lens follows your pointer (or your finger), showing the "inside" of the same person.
+ * - Glow lens: switch it on and a soft lens follows your pointer (or your finger), previewing the same skin rested and glowing.
  * - Glowing points on the face and body; tap one to open that part (the parent shows the opened layers via `children`).
  * Points are % positions on the photo, so keep the box the same shape as the photo (set `aspect`).
  */
@@ -45,7 +45,7 @@ export function HoloPortrait({
   const cur = spots.find((s) => s.id === selected);
   const color = cur?.color ?? GOLD;
   const box = useRef<HTMLDivElement>(null);
-  const [xray, setXray] = useState(false);
+  const [glow, setGlow] = useState(false);
 
   // 3D tilt and the lens position follow the pointer
   const px = useMotionValue(0.5);
@@ -63,8 +63,8 @@ export function HoloPortrait({
     px.set((e.clientX - r.left) / r.width);
     py.set((e.clientY - r.top) / r.height);
   };
-  const toggleXray = () => {
-    setXray((v) => !v);
+  const toggleGlow = () => {
+    setGlow((v) => !v);
     if (cur) {
       px.set(cur.x / 100);
       py.set(cur.y / 100);
@@ -72,7 +72,7 @@ export function HoloPortrait({
   };
   const pick = (s: HoloSpot) => {
     onSelect?.(s.id);
-    if (xray) {
+    if (glow) {
       px.set(s.x / 100);
       py.set(s.y / 100);
     }
@@ -83,7 +83,7 @@ export function HoloPortrait({
       <motion.div
         ref={box}
         onPointerMove={move}
-        onPointerLeave={() => !xray && (px.set(0.5), py.set(0.5))}
+        onPointerLeave={() => !glow && (px.set(0.5), py.set(0.5))}
         className="relative h-full w-full touch-pan-y overflow-hidden rounded-[36px] bg-[#1b1512] shadow-[0_50px_120px_-50px_rgba(var(--shadow-tint),0.8)]"
         style={{ rotateX: rx, rotateY: ry, transformStyle: "preserve-3d" }}
       >
@@ -92,23 +92,20 @@ export function HoloPortrait({
         <div aria-hidden className="pointer-events-none absolute inset-0 mix-blend-soft-light" style={{ background: "linear-gradient(160deg, rgba(243,217,164,0.55), transparent 50%, rgba(212,138,138,0.45))" }} />
         <div aria-hidden className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-black/10" />
 
-        {/* X-ray: the inside of the same person, seen through a lens */}
+        {/* Glow lens: the same skin, rested and glowing, seen through a soft lens */}
         <AnimatePresence>
-          {xray && (
+          {glow && (
             <motion.div aria-hidden className="pointer-events-none absolute inset-0" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ clipPath: lens }}>
-              <NeaImage src={src} alt="" fill sizes="(min-width:1024px) 40vw, 90vw" className="object-cover" style={{ objectPosition: position, filter: "grayscale(1) invert(1) contrast(1.35) brightness(0.95)" }} />
-              <div className="absolute inset-0 mix-blend-color" style={{ background: "linear-gradient(160deg, #6fd3ff, #c58bff)" }} />
-              <div className="absolute inset-0" style={{ backgroundImage: "linear-gradient(rgba(170,230,255,0.25) 1px, transparent 1px), linear-gradient(90deg, rgba(170,230,255,0.25) 1px, transparent 1px)", backgroundSize: "16px 16px" }} />
-              {/* every system glows inside the lens */}
-              {spots.map((s) => (
-                <span key={s.id} className="absolute h-10 w-10 -translate-x-1/2 -translate-y-1/2 rounded-full" style={{ left: `${s.x}%`, top: `${s.y}%`, background: `radial-gradient(circle, ${s.color ?? GOLD} 0 18%, transparent 65%)`, boxShadow: `0 0 30px 6px ${(s.color ?? GOLD)}55` }} />
-              ))}
+              <NeaImage src={src} alt="" fill sizes="(min-width:1024px) 40vw, 90vw" className="object-cover" style={{ objectPosition: position, filter: "brightness(1.05) saturate(1.1) contrast(0.97)" }} />
+              {/* soft focus, the way rested skin catches light */}
+              <NeaImage src={src} alt="" fill sizes="(min-width:1024px) 40vw, 90vw" className="object-cover opacity-30 mix-blend-soft-light" style={{ objectPosition: position, filter: "blur(5px)" }} />
+              <div className="absolute inset-0 mix-blend-soft-light" style={{ background: "radial-gradient(circle at 40% 35%, rgba(255,236,214,0.55), rgba(255,214,200,0.2) 60%, transparent)" }} />
             </motion.div>
           )}
         </AnimatePresence>
-        {xray && (
-          <motion.span aria-hidden className="pointer-events-none absolute aspect-square w-[34%] -translate-x-1/2 -translate-y-1/2 rounded-full border border-[#aee6ff]/80 shadow-[0_0_30px_rgba(120,210,255,0.6),inset_0_0_30px_rgba(120,210,255,0.35)]" style={{ left: ringX, top: ringY }}>
-            <span className="absolute -top-6 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-black/60 px-2 py-0.5 text-[10.5px] uppercase tracking-[0.18em] text-[#aee6ff]">X-ray</span>
+        {glow && (
+          <motion.span aria-hidden className="pointer-events-none absolute aspect-square w-[34%] -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/80 shadow-[0_0_40px_rgba(255,230,200,0.7),inset_0_0_30px_rgba(255,240,220,0.4)]" style={{ left: ringX, top: ringY }}>
+            <span className="absolute -top-6 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-white/85 px-2.5 py-0.5 text-[10.5px] font-medium uppercase tracking-[0.16em] text-ink">Glow preview</span>
           </motion.span>
         )}
 
@@ -181,8 +178,8 @@ export function HoloPortrait({
             {badge}
           </span>
         )}
-        <button onClick={toggleXray} aria-pressed={xray} className={cn("absolute bottom-4 left-4 inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-[12px] font-medium backdrop-blur-md transition", xray ? "border-[#aee6ff] bg-[#aee6ff] text-ink" : "border-white/40 bg-black/40 text-white hover:bg-black/55")}>
-          <ScanLine className="h-3.5 w-3.5" /> {xray ? "X-ray on" : "X-ray view"}
+        <button onClick={toggleGlow} aria-pressed={glow} className={cn("absolute bottom-4 left-4 inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-[12px] font-medium backdrop-blur-md transition", glow ? "border-white bg-white text-ink" : "border-white/40 bg-black/40 text-white hover:bg-black/55")}>
+          <Sparkles className="h-3.5 w-3.5" /> {glow ? "Glow preview on" : "Glow preview"}
         </button>
       </motion.div>
       {children}

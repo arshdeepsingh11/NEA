@@ -198,7 +198,7 @@ export function BodyIntelChapter({ regions }: { regions: ScanRegion[] }) {
           <p className="eyebrow">Body Intelligence</p>
           <SplitReveal text={"Ten systems.\n*One* skin."} className="mt-5 font-display text-display-lg text-ink" />
           <p className="mt-6 max-w-md text-[17px] leading-relaxed text-graphite">
-            Breakouts, pigment, hair loss and ageing start in places a mirror can’t see. Tap any glowing point to open it, or switch on the X-ray lens to look inside.
+            Breakouts, pigment, hair loss and ageing start in places a mirror can’t see. Tap any glowing point to open it, or try the glow preview to see healthy skin.
           </p>
           <ul className="mt-8 grid max-w-md grid-cols-3 gap-4 border-t border-ink/10 pt-6">
             {[
