@@ -2,15 +2,13 @@ import Link from "next/link";
 import { ArrowRight, Heart, ScanFace } from "lucide-react";
 import { AiPromptBar } from "@/components/ai/ai-prompt-bar";
 import { SplitReveal } from "@/components/motion/split-reveal";
-import { HeroScan } from "./hero-scan";
+import { HeroFace } from "@/components/face/hero-face";
 import { NumberTicker } from "@/components/ui/number-ticker";
 import { treatments } from "@/content/treatments";
 import { labTests } from "@/content/tests";
 import { site } from "@/lib/site";
-import { IMG } from "@/content/media";
 import { TypingAnimation } from "@/components/motion/typing-animation";
 
-export const HERO_IMAGE = IMG.hero;
 
 /**
  * Home hero, v4: editorial serif headline, a real face in an arch with a live AI skin scan,
@@ -66,7 +64,7 @@ export function HomeHero() {
           <p className="mt-6 text-[12.5px] text-graphite/80">Open Monday to Saturday, 9 to 5 · {site.address.line1}, Calgary</p>
         </div>
 
-        <HeroScan image={HERO_IMAGE} alt="A smiling client with healthy, glowing skin" className="order-1 lg:order-2" />
+        <HeroFace className="order-1 lg:order-2" />
       </div>
     </section>
   );
