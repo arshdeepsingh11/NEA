@@ -1,10 +1,8 @@
 "use client";
 import Link from "next/link";
-import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { animate, motion, useInView, useScroll, useTransform, type MotionValue } from "framer-motion";
 import { ArrowRight, Apple, Brain, CalendarHeart, Droplets, FlaskConical, Moon, Salad, Sparkles, Stethoscope, Users } from "lucide-react";
-import { LoopVideo } from "@/components/ui/loop-video";
 import { NeaSiIcon } from "@/components/brand/nea-si-icon";
 import { cn } from "@/lib/utils";
 
@@ -29,102 +27,114 @@ export function WhyStory() {
   );
 }
 
-/* 1. You've probably been here before. */
-const TRIED = ["The facial", "The peel", "The ‘miracle’ serum", "The new cream", "The cleanse"];
+/* 1. Tried everything? */
+const TRIED = ["Creams", "Facials", "Peels", "Serums"];
 function Tried() {
   const ref = useRef<HTMLElement>(null);
   const { scrollYProgress: p } = useScroll({ target: ref, offset: ["start start", "end end"] });
-  const strike = useTransform(p, [0.5, 0.7], [0, 1]);
-  const fade = useTransform(p, [0.55, 0.75], [1, 0.45]);
-  const after = useTransform(p, [0.68, 0.82], [0, 1]);
-  const afterY = useTransform(p, [0.68, 0.82], [20, 0]);
+  const q = useTransform(p, [0.45, 0.6], [0, 1]);
+  const qy = useTransform(p, [0.45, 0.6], [20, 0]);
+  const a = useTransform(p, [0.65, 0.8], [0, 1]);
+  const ay = useTransform(p, [0.65, 0.8], [20, 0]);
   return (
-    <section ref={ref} className="relative h-[260svh]">
+    <section ref={ref} className="relative h-[240svh]">
       <div className="sticky top-0 flex h-[100svh] flex-col items-center justify-center px-5 text-center">
         <p className="text-[13px] uppercase tracking-[0.2em] text-graphite">Why NEA</p>
-        <h1 className="mt-4 max-w-3xl font-display text-[clamp(2.6rem,8vw,6rem)] leading-[0.98] tracking-[-0.02em] text-ink">You’ve probably been here before.</h1>
-        <ul className="mt-10 flex max-w-2xl flex-wrap justify-center gap-2.5">
+        <h1 className="mt-4 max-w-3xl font-display text-[clamp(2.8rem,9vw,6.4rem)] leading-[0.98] tracking-[-0.02em] text-ink">Tried everything?</h1>
+        <ul className="mt-9 flex max-w-2xl flex-wrap justify-center gap-2.5">
           {TRIED.map((t, i) => (
-            <TriedChip key={t} text={t} p={p} i={i} strike={strike} fade={fade} />
+            <TriedChip key={t} text={t} p={p} i={i} />
           ))}
         </ul>
-        <motion.p style={{ opacity: after, y: afterY }} className="mt-10 max-w-xl font-display text-[clamp(1.4rem,4vw,2.2rem)] leading-snug text-ink">
-          It worked. For two weeks.
-          <br />
-          <span className="text-graphite">Then it came back.</span>
+        <motion.p style={{ opacity: q, y: qy }} className="mt-10 max-w-xl font-display text-[clamp(1.5rem,4.4vw,2.4rem)] leading-snug text-graphite">
+          And your skin still isn’t happy?
+        </motion.p>
+        <motion.p style={{ opacity: a, y: ay }} className="mt-3 font-display text-[clamp(1.9rem,5.6vw,3.2rem)] leading-tight">
+          <span className="aurora-text italic">We find out why.</span>
         </motion.p>
       </div>
     </section>
   );
 }
-function TriedChip({ text, p, i, strike, fade }: { text: string; p: MotionValue<number>; i: number; strike: MotionValue<number>; fade: MotionValue<number> }) {
-  const o = useTransform(p, [0.05 + i * 0.07, 0.13 + i * 0.07], [0, 1]);
-  const y = useTransform(p, [0.05 + i * 0.07, 0.13 + i * 0.07], [16, 0]);
-  const opacity = useTransform([o, fade], ([a, b]: number[]) => a * b);
+function TriedChip({ text, p, i }: { text: string; p: MotionValue<number>; i: number }) {
+  const opacity = useTransform(p, [0.06 + i * 0.08, 0.14 + i * 0.08], [0, 1]);
+  const y = useTransform(p, [0.06 + i * 0.08, 0.14 + i * 0.08], [16, 0]);
   return (
-    <motion.li style={{ opacity, y }} className="relative rounded-full border border-ink/10 bg-white px-4 py-2 text-[15px] text-ink shadow-[0_10px_30px_-20px_rgba(var(--shadow-tint),0.6)] md:px-6 md:py-3 md:text-[20px]">
+    <motion.li style={{ opacity, y }} className="rounded-full border border-ink/10 bg-white px-5 py-2.5 text-[17px] text-ink shadow-[0_10px_30px_-20px_rgba(var(--shadow-tint),0.6)] md:px-7 md:py-3 md:text-[21px]">
       {text}
-      <motion.span aria-hidden style={{ scaleX: strike }} className="absolute inset-x-3 top-1/2 h-px origin-left bg-ink/60" />
     </motion.li>
   );
 }
 
-/* 2. It's not your fault. */
-const INSIDE = [
-  { label: "Gut", icon: Salad, x: "18%", y: "30%" },
-  { label: "Hormones", icon: Droplets, x: "78%", y: "26%" },
-  { label: "Food", icon: Apple, x: "14%", y: "66%" },
-  { label: "Sleep", icon: Moon, x: "82%", y: "62%" },
-  { label: "Stress", icon: Brain, x: "50%", y: "86%" },
+/* 2. It's not you: what you see is only the tip. */
+const SEEN = ["Breakouts", "Dull skin", "Dark spots"];
+const UNSEEN = [
+  { label: "Sleep", icon: Moon },
+  { label: "Stress", icon: Brain },
+  { label: "Food", icon: Apple },
+  { label: "Hormones", icon: Droplets },
+  { label: "Gut", icon: Salad },
 ];
 function NotYourFault() {
   const ref = useRef<HTMLElement>(null);
   const { scrollYProgress: p } = useScroll({ target: ref, offset: ["start start", "end end"] });
-  const cut = useTransform(p, [0.15, 0.6], [100, 0]);
-  const clip = useTransform(cut, (v) => `inset(0 0 0 ${v}%)`);
-  const line = useTransform(cut, (v) => `${v}%`);
-  const labels = useTransform(p, [0.45, 0.65], [0, 1]);
-  const words = useTransform(p, [0.6, 0.78], [0, 1]);
-  const outside = useTransform(labels, (v) => 1 - v);
+  const dive = useTransform(p, [0.2, 0.6], ["0%", "-34%"]);
+  const below = useTransform(p, [0.4, 0.62], [0, 1]);
+  const words = useTransform(p, [0.62, 0.8], [0, 1]);
   return (
     <section ref={ref} className="relative h-[260svh] bg-ink text-white">
-      <div className="sticky top-0 flex h-[100svh] flex-col items-center justify-center gap-6 px-5 py-20 md:flex-row md:gap-16">
+      <div className="sticky top-0 flex h-[100svh] flex-col items-center justify-center gap-6 overflow-hidden px-5 py-20 md:flex-row md:gap-16">
         <div className="text-center md:max-w-md md:text-left">
           <h2 className="font-display text-[clamp(2.4rem,7vw,5rem)] leading-[0.98]">It’s not you.</h2>
-          <motion.p style={{ opacity: words }} className="mt-4 text-[17px] leading-relaxed text-white/75 md:text-[20px]">
-            Your skin shows what’s going on <em className="not-italic text-[#f3d9a4]">inside</em>. Sleep. Stress. Food. Gut. Hormones. Treat only the outside, and it keeps coming back.
+          <p className="mt-4 text-[17px] leading-relaxed text-white/75 md:text-[20px]">What you see is only the tip.</p>
+          <motion.p style={{ opacity: words }} className="mt-2 text-[17px] leading-relaxed text-white md:text-[20px]">
+            Most places treat the tip. <span className="text-[#f3d9a4]">We look at the rest.</span>
           </motion.p>
         </div>
-        <div className="relative aspect-[3/4] w-[min(72vw,380px)] shrink-0 overflow-hidden rounded-[36px] md:w-[400px]">
-          <Image src="/media/nea-why.jpg" alt="A face, and what shapes it underneath" fill sizes="400px" className="object-cover" unoptimized />
-          {/* the inside view */}
-          <motion.div style={{ clipPath: clip }} className="absolute inset-0">
-            <Image src="/media/nea-why.jpg" alt="" fill sizes="400px" className="object-cover opacity-40 blur-[2px] saturate-0" unoptimized />
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_45%,rgba(243,217,164,0.35),rgba(20,14,12,0.85)_70%)]" />
-            <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="absolute inset-0 h-full w-full" aria-hidden>
-              {INSIDE.map((d) => (
-                <line key={d.label} x1="50" y1="45" x2={parseFloat(d.x)} y2={parseFloat(d.y)} stroke="#f3d9a4" strokeOpacity="0.5" strokeWidth="0.4" strokeDasharray="1.5 1.5" />
-              ))}
-              <circle cx="50" cy="45" r="2.2" fill="#f3d9a4" />
+        <div className="relative h-[min(56svh,520px)] w-[min(84vw,400px)] shrink-0 overflow-hidden rounded-[36px]">
+          <motion.div style={{ y: dive }} className="absolute inset-x-0 top-0 h-[150%]">
+            <div className="absolute inset-x-0 top-0 h-[30%] bg-gradient-to-b from-[#f6e7da] to-[#f3d9c8]" />
+            <div className="absolute inset-x-0 bottom-0 top-[30%] bg-gradient-to-b from-[#7fa6b8] via-[#3f5f78] to-[#1c2a3a]" />
+            <svg viewBox="0 0 300 450" preserveAspectRatio="none" className="absolute inset-0 h-full w-full" aria-hidden>
+              <defs>
+                <linearGradient id="ice-top" x1="0" x2="1" y1="0" y2="1">
+                  <stop offset="0" stopColor="#ffffff" />
+                  <stop offset="1" stopColor="#e3eef4" />
+                </linearGradient>
+                <linearGradient id="ice-deep" x1="0" x2="0" y1="0" y2="1">
+                  <stop offset="0" stopColor="#a9cfdf" stopOpacity="0.7" />
+                  <stop offset="1" stopColor="#6f9cb4" stopOpacity="0.55" />
+                </linearGradient>
+              </defs>
+              <path d="M150 62 L178 98 L196 135 L104 135 L122 100 Z" fill="url(#ice-top)" />
+              <path d="M104 135 L196 135 L238 190 L262 270 L240 350 L190 410 L110 410 L62 350 L40 268 L66 190 Z" fill="url(#ice-deep)" />
+              <line x1="0" x2="300" y1="135" y2="135" stroke="white" strokeOpacity="0.8" strokeWidth="1" />
             </svg>
-            <motion.div style={{ opacity: labels }}>
-              {INSIDE.map((d) => (
-                <span key={d.label} className="absolute flex -translate-x-1/2 -translate-y-1/2 items-center gap-1.5 rounded-full border border-white/25 bg-black/40 px-3 py-1.5 text-[13px] text-white backdrop-blur-md" style={{ left: d.x, top: d.y }}>
-                  <d.icon className="h-3.5 w-3.5 text-[#f3d9a4]" /> {d.label}
+            <div className="absolute inset-x-0 top-[4%] flex flex-wrap justify-center gap-1.5 px-4">
+              {SEEN.map((t) => (
+                <span key={t} className="rounded-full bg-white/90 px-3 py-1 text-[13px] font-medium text-ink shadow-sm">
+                  {t}
                 </span>
               ))}
+            </div>
+            <motion.div style={{ opacity: below }} className="absolute inset-x-0 top-[38%] flex flex-col items-center gap-2 px-6">
+              <p className="mb-1 rounded-full bg-[#1c2a3a]/70 px-3 py-1 text-[11.5px] uppercase tracking-[0.2em] text-white">What’s causing it</p>
+              <div className="flex max-w-[16rem] flex-wrap justify-center gap-2">
+                {UNSEEN.map((d) => (
+                  <span key={d.label} className="flex items-center gap-1.5 rounded-full border border-white/20 bg-[#1c2a3a]/75 px-3 py-1.5 text-[14px] font-medium text-white shadow-lg backdrop-blur-md">
+                    <d.icon className="h-3.5 w-3.5 text-[#f3d9a4]" /> {d.label}
+                  </span>
+                ))}
+              </div>
             </motion.div>
           </motion.div>
-          <motion.span aria-hidden style={{ left: line }} className="absolute inset-y-0 w-0.5 bg-[#f3d9a4] shadow-[0_0_20px_4px_rgba(243,217,164,0.6)]" />
-          <motion.span style={{ opacity: outside }} className="absolute bottom-3 left-3 rounded-full bg-black/40 px-2.5 py-1 text-[11.5px] text-white/85 backdrop-blur">What you see</motion.span>
-          <motion.span style={{ opacity: labels }} className="absolute bottom-3 right-3 rounded-full bg-[#f3d9a4] px-2.5 py-1 text-[11.5px] font-medium text-ink">What’s really going on</motion.span>
         </div>
       </div>
     </section>
   );
 }
 
-/* 3. We don't guess. We look. */
+/* 3. We don’t guess. We look. */
 function WeLook() {
   const steps = [
     { w: "Look.", d: "We scan your skin up close." },
@@ -133,10 +143,7 @@ function WeLook() {
   ];
   return (
     <section className="chapter">
-      <div className="container grid items-center gap-12 md:grid-cols-[auto_1fr] md:gap-20">
-        <motion.div {...reveal} className="relative mx-auto aspect-[9/16] w-[min(70vw,340px)] overflow-hidden rounded-[40px] bg-ink shadow-[0_50px_120px_-50px_rgba(var(--shadow-tint),0.8)]">
-          <LoopVideo src="/media/nea-skin-lens.mp4" poster="/media/nea-skin-lens.jpg" label="Skin being scanned" className="absolute inset-0 h-full w-full" />
-        </motion.div>
+      <div className="container mx-auto max-w-3xl">
         <div>
           <motion.h2 {...reveal} className="font-display text-[clamp(2.4rem,6vw,4.6rem)] leading-[0.98] text-ink">
             We don’t guess.
