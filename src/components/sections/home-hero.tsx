@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ArrowRight, Heart, ScanFace } from "lucide-react";
 import { AiPromptBar } from "@/components/ai/ai-prompt-bar";
 import { SplitReveal } from "@/components/motion/split-reveal";
-import { HeroFace } from "@/components/face/hero-face";
+import { GlowDrop } from "@/components/hero/glow-drop";
 import { NumberTicker } from "@/components/ui/number-ticker";
 import { treatments } from "@/content/treatments";
 import { labTests } from "@/content/tests";
@@ -11,7 +11,7 @@ import { TypingAnimation } from "@/components/motion/typing-animation";
 
 
 /**
- * Home hero, v4: editorial serif headline, a real face in an arch with a live AI skin scan,
+ * Home hero, v5: editorial serif headline, a drop of serum made of light that takes the colour of what you want from your skin,
  * and the AI prompt as the main way in. The free scan is the main offer.
  */
 export function HomeHero() {
@@ -42,8 +42,8 @@ export function HomeHero() {
             <Link href="/skin-scan" className="btn-light">
               <ScanFace className="h-4 w-4" /> Get my free Skin Health Report
             </Link>
-            <Link href="/why-nea" className="btn-ghost">
-              <Heart className="h-4 w-4 text-flora" /> Why NEA?
+            <Link href="/why-nea" className="btn !border-transparent text-white shadow-[0_16px_36px_-16px_rgba(var(--shadow-tint),0.9)] transition hover:brightness-110 active:scale-[0.97]" style={{ background: "var(--grad-text)" }}>
+              <Heart className="h-4 w-4" /> Why NEA?
             </Link>
             <Link href="/body" className="btn text-graphite hover:text-ink">
               Explore the 3D body <ArrowRight className="h-4 w-4" />
@@ -64,7 +64,7 @@ export function HomeHero() {
           <p className="mt-6 text-[12.5px] text-graphite/80">Open Monday to Saturday, 9 to 5 · {site.address.line1}, Calgary</p>
         </div>
 
-        <HeroFace className="order-1 lg:order-2" />
+        <GlowDrop className="order-1 lg:order-2" />
       </div>
     </section>
   );
