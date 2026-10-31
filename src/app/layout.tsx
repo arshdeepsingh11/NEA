@@ -7,6 +7,7 @@ import { AiProvider } from "@/components/ai/ai-provider";
 import { BookingProvider } from "@/components/booking/booking";
 import { ReelsProvider } from "@/components/reels/reels";
 import { BrandCorner } from "@/components/layout/brand-corner";
+import { MirrorLazy } from "@/components/face/mirror-lazy";
 import { SmoothScroll } from "@/components/layout/smooth-scroll";
 import { JsonLd, clinicSchema } from "@/lib/seo";
 import { site } from "@/lib/site";
@@ -79,6 +80,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <main id="main">{children}</main>
               <Footer />
               <Dock />
+              <MirrorLazy />
             </ReelsProvider>
           </AiProvider>
         </BookingProvider>
