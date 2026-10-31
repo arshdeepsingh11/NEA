@@ -14,7 +14,7 @@ import { WeightBars } from "@/components/viz/weight-bars";
 import { JsonLd, breadcrumbSchema, pageMeta, procedureSchema } from "@/lib/seo";
 import { getProgram, programs } from "@/content/programs";
 import { programInsights } from "@/content/program-insights";
-import { getTest, testGroups } from "@/content/tests";
+import { allTestGroups, getTest } from "@/content/tests";
 import { getTreatment } from "@/content/treatments";
 import { site } from "@/lib/site";
 import { money, nea } from "@/lib/utils";
@@ -37,7 +37,7 @@ export default async function ProgramPage({ params }: Props) {
   const ins = programInsights[p.slug];
   const tests = p.tests.map(getTest).filter((t): t is NonNullable<typeof t> => Boolean(t));
   const tx = p.treatments.map(getTreatment).filter((t): t is NonNullable<typeof t> => Boolean(t));
-  const groupLabel = Object.fromEntries(testGroups.map((g) => [g.id, g.label]));
+  const groupLabel = Object.fromEntries(allTestGroups.map((g) => [g.id, g.label]));
   const first = ins?.metric.values[0];
   const last = ins?.metric.values[ins.metric.values.length - 1];
 

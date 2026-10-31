@@ -29,10 +29,11 @@ export type LabTest = {
   photo?: string;
 };
 
-export const testGroups: { id: TestGroup; label: string; blurb: string; system: string }[] = [
-  { id: "microbiome", label: "Microbiome", blurb: "The bacteria and fungi living on your skin, gut, mouth and vaginal tissue.", system: "Skin & gut" },
-  { id: "hormones", label: "Hormones", blurb: "Acne, hair, energy, mood and cycle.", system: "Hormones" },
-  { id: "nutrition", label: "Vitamins & nutrition", blurb: "The building blocks skin, hair and muscle are made from.", system: "Nutrition" },
+/** Every BioAro group (program pages still label tests from any group). */
+export const allTestGroups: { id: TestGroup; label: string; blurb: string; system: string }[] = [
+  { id: "microbiome", label: "Gut & skin", blurb: "The tiny living things on your skin and in your gut.", system: "Gut & skin" },
+  { id: "hormones", label: "Hormones", blurb: "Chin breakouts, hair thinning, cycle skin and stress.", system: "Hormones" },
+  { id: "nutrition", label: "Vitamins", blurb: "What your skin and hair are built from.", system: "Vitamins" },
   { id: "aging", label: "Inflammation & aging", blurb: "Hidden inflammation and how fast your body is aging.", system: "Aging" },
   { id: "organs", label: "Heart, kidney & tissue", blurb: "Vascular strain, kidney filtration and tissue repair.", system: "Heart & kidney" },
   { id: "brain", label: "Brain health", blurb: "Blood markers linked to memory and brain aging.", system: "Brain" },
@@ -45,7 +46,8 @@ const NONE = "No special instructions";
 const W23 = "2–3 weeks";
 const ABX = "No antibiotics in the prior 2 months";
 
-export const labTests: LabTest[] = [
+/** The full BioAro Labs catalogue (used by program pages and lookups). */
+export const bioaroTests: LabTest[] = [
   // Microbiome
   { slug: "bioskin", handle: "the-bioskin-test", name: "BioSkin", price: 279, group: "microbiome", bestFor: "Persistent skin concerns, irritation, or skincare response.", plain: "Which bacteria, fungi and archaea live on your skin, and whether they are in balance.", neaUse: "Your aesthetician uses it to choose peels, products and laser settings that suit your skin’s ecosystem.", sample: "Skin swab of the affected area", prep: ABX, results: "3–4 weeks", markers: "1 biomarker", featured: true },
   { slug: "biogut", handle: "the-biogut-test", name: "BioGut", price: 279, group: "microbiome", bestFor: "Digestive symptoms and gut microbiome assessment.", plain: "The full mix of microbes in your gut, and which ones are too high or too low.", neaUse: "The core of NEA’s inside-out approach: your Registered Dietitian turns it into a gut-to-skin nutrition plan.", sample: "Stool sample", prep: ABX, results: "3–4 weeks", markers: "1 biomarker", featured: true },
@@ -107,7 +109,13 @@ export const labTests: LabTest[] = [
   { slug: "cfdna", handle: "comprehensive-cell-free-dna-analysis", name: "Comprehensive Cell-free DNA Analysis", price: 1700, group: "genetics", bestFor: "Tumor profiling, treatment selection, or therapy monitoring.", plain: "Tumour and inherited DNA compared from one blood draw, for cancer care decisions.", neaUse: "Ordered with your oncology team, not for screening.", sample: "Whole blood (cell-free DNA tube)", prep: "Referral needed", results: "4–6 weeks", markers: "1 biomarker", usaOnly: true },
 ];
 
-export const getTest = (slug: string) => labTests.find((t) => t.slug === slug);
+/** The tests NEA shows: only what explains your skin, meaning hormones, gut and skin, and vitamins. */
+const SHOWN_GROUPS: TestGroup[] = ["hormones", "microbiome", "nutrition"];
+const NOT_SHOWN = new Set(["biodental", "resveratrol", "advanced-amino-acid", "ultra-amino-acid"]);
+export const labTests: LabTest[] = bioaroTests.filter((t) => SHOWN_GROUPS.includes(t.group) && !NOT_SHOWN.has(t.slug)).sort((a, b) => SHOWN_GROUPS.indexOf(a.group) - SHOWN_GROUPS.indexOf(b.group));
+export const testGroups = allTestGroups.filter((g) => SHOWN_GROUPS.includes(g.id)).sort((a, b) => SHOWN_GROUPS.indexOf(a.id) - SHOWN_GROUPS.indexOf(b.id));
+
+export const getTest = (slug: string) => bioaroTests.find((t) => t.slug === slug);
 
 /** Opens the exact test on BioAro Labs' shop, with its Add to Cart button. */
 export const buyUrl = (t: Pick<LabTest, "handle">) => `https://bioarolabs.com/shop?test=${encodeURIComponent(t.handle)}`;

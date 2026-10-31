@@ -2,12 +2,11 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { AnimatePresence, LayoutGroup, motion } from "framer-motion";
-import { Activity, Apple, ArrowUpRight, Brain, CalendarHeart, Clock, Dna, Droplet, Globe2, HeartPulse, Hourglass, Layers, PersonStanding, Search, ShoppingBag, Sprout, X } from "lucide-react";
-import { NeaImage } from "@/components/ui/nea-image";
+import { Activity, Apple, ArrowUpRight, Brain, CalendarHeart, Dna, Globe2, HeartPulse, Hourglass, Layers, PersonStanding, Search, ShoppingBag, Sprout, X } from "lucide-react";
 import { NeaSiIcon } from "@/components/brand/nea-si-icon";
 import { useBooking } from "@/components/booking/booking";
 import { useAi } from "@/components/ai/ai-provider";
-import { buyUrl, testPhoto, type LabTest, type TestGroup } from "@/content/tests";
+import { buyUrl, type LabTest, type TestGroup } from "@/content/tests";
 import { cn, money } from "@/lib/utils";
 
 type Group = { id: TestGroup; label: string; blurb: string; system: string };
@@ -18,16 +17,14 @@ const HUE: Record<TestGroup, string> = { microbiome: "110 139 78", hormones: "18
 
 /** Everyday words → the tests that answer them. */
 const CONCERNS: { label: string; words: string; tests: string[] }[] = [
-  { label: "Acne", words: "acne breakouts pimples spots oily", tests: ["bioskin", "hormone-health", "biogut", "dhea-s", "total-testosterone", "hs-crp"] },
-  { label: "Hair thinning", words: "hair loss thinning shedding bald", tests: ["dht", "ultra-hormone-health", "vitamin-d", "core-amino-acid", "disease-based-dna"] },
-  { label: "Bloating & gut", words: "bloating gut digestion ibs stomach", tests: ["biogut", "core-amino-acid", "hs-crp"] },
-  { label: "Tired all the time", words: "tired fatigue energy exhausted stress sleep", tests: ["cortisol", "vitamin-d", "essential-vitamin-health", "hormone-health", "advanced-amino-acid"] },
-  { label: "Aging & longevity", words: "aging longevity wrinkles age biological", tests: ["telomere-length", "core-inflammation-aging", "ultra-inflammation-aging", "gdf-15", "brain-health"] },
-  { label: "Feminine health", words: "vaginal uti yeast bv cycle period fertility perimenopause", tests: ["biofemme", "estradiol", "progesterone", "ultra-hormone-health"] },
-  { label: "Redness & rosacea", words: "redness rosacea flushing eczema irritation", tests: ["bioskin", "hs-crp", "il-6", "biogut"] },
-  { label: "Heart & metabolism", words: "heart cholesterol weight metabolism diabetes blood sugar kidney", tests: ["pai-1", "hs-crp", "cystatin-c", "advanced-inflammation-aging", "advanced-amino-acid"] },
-  { label: "Memory", words: "memory brain focus cognitive alzheimer", tests: ["brain-health", "p-tau217", "beta-amyloid"] },
-  { label: "Medicines & DNA", words: "medication medicine drug genes dna genetic family inherited", tests: ["pharmacogenomics", "wgs-30x", "disease-based-dna"] },
+  { label: "Breakouts", words: "acne breakouts pimples spots oily chin", tests: ["bioskin", "hormone-health", "biogut", "dhea-s", "total-testosterone"] },
+  { label: "Hair thinning", words: "hair loss thinning shedding bald", tests: ["dht", "ultra-hormone-health", "vitamin-d", "core-amino-acid", "essential-vitamin-health"] },
+  { label: "Bloating", words: "bloating gut digestion ibs stomach", tests: ["biogut", "core-amino-acid"] },
+  { label: "Always tired", words: "tired fatigue energy exhausted stress sleep", tests: ["cortisol", "vitamin-d", "essential-vitamin-health", "hormone-health"] },
+  { label: "Dark spots", words: "dark spots pigment melasma uneven tone", tests: ["ultra-hormone-health", "estradiol", "progesterone", "vitamin-d"] },
+  { label: "Redness", words: "redness rosacea flushing eczema irritation sensitive", tests: ["bioskin", "biogut", "essential-vitamin-health"] },
+  { label: "Dull, dry skin", words: "dull dry flaky tired skin glow", tests: ["essential-vitamin-health", "vitamin-a", "vitamin-e", "core-amino-acid"] },
+  { label: "Cycle & feminine", words: "vaginal uti yeast bv cycle period fertility perimenopause", tests: ["biofemme", "estradiol", "progesterone", "ultra-hormone-health"] },
 ];
 
 const words = (s: string) => s.toLowerCase().split(/[^a-z0-9]+/).filter((w) => w.length > 2);
@@ -78,10 +75,10 @@ export function TestStore({ tests, groups, regionsByTest = {} }: { tests: LabTes
       {/* Concern scanner */}
       <div className="relative overflow-hidden rounded-[32px] border border-ink/[0.07] bg-white p-5 shadow-[0_30px_80px_-50px_rgba(var(--shadow-tint),0.6)] md:p-7">
         <div aria-hidden className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full opacity-60 blur-3xl" style={{ background: "var(--aurora)" }} />
-        <p className="relative text-[12px] uppercase tracking-[0.18em] text-graphite">{tests.length} tests · one blood draw, swab or sample away</p>
+        <p className="relative text-[12px] uppercase tracking-[0.18em] text-graphite">Tell us what’s going on</p>
         <label className="relative mt-3 flex items-center gap-3 rounded-2xl border border-ink/10 bg-porcelain/60 px-4 py-3.5 focus-within:border-ink/30">
           <Search className="h-5 w-5 shrink-0 text-graphite" />
-          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="What do you want to understand? Try “hair thinning” or “always tired”" className="min-w-0 flex-1 bg-transparent text-[16px] text-ink outline-none placeholder:text-graphite/70" aria-label="Search tests by concern" />
+          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="What’s bothering you? Try “breakouts” or “always tired”" className="min-w-0 flex-1 bg-transparent text-[16px] text-ink outline-none placeholder:text-graphite/70" aria-label="Search tests by concern" />
           {q && (
             <button onClick={() => setQ("")} aria-label="Clear" className="grid h-7 w-7 place-items-center rounded-full bg-ink/[0.06] text-ink/70 hover:bg-ink/10">
               <X className="h-3.5 w-3.5" />
@@ -98,7 +95,7 @@ export function TestStore({ tests, groups, regionsByTest = {} }: { tests: LabTes
       </div>
 
       {/* Body systems */}
-      <div className="mt-5 grid grid-cols-4 gap-2 sm:grid-cols-8">
+      <div className="mt-5 grid grid-cols-4 gap-2">
         <SystemTile on={sys === "all"} onClick={() => setSys("all")} icon={Layers} label="All" count={tests.length} hue="31 30 28" />
         {groups.map((g) => (
           <SystemTile key={g.id} on={sys === g.id} onClick={() => setSys(sys === g.id ? "all" : g.id)} icon={ICON[g.id]} label={g.system} count={tests.filter((t) => t.group === g.id).length} hue={HUE[g.id]} />
@@ -106,7 +103,7 @@ export function TestStore({ tests, groups, regionsByTest = {} }: { tests: LabTes
       </div>
       <AnimatePresence mode="wait">
         <motion.p key={sys + String(searching)} initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="mt-4 text-[14px] text-graphite">
-          {searching ? `${shown.length} tests match “${q}”, best match first.` : sys === "all" ? "Every BioAro Labs test, explained in plain words. Tap any test for details." : groupOf[sys].blurb}
+          {searching ? `${shown.length} tests match “${q}”, best match first.` : sys === "all" ? "Tap any test to see what it tells you." : groupOf[sys].blurb}
         </motion.p>
       </AnimatePresence>
 
@@ -158,8 +155,8 @@ function TestCard({ t, score, system, onOpen }: { t: LabTest; score?: number; sy
   return (
     <div ref={ref} onPointerMove={move} className="group relative flex h-full flex-col overflow-hidden rounded-[28px] border border-ink/[0.07] bg-white shadow-[0_20px_50px_-40px_rgba(var(--shadow-tint),0.7)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_30px_70px_-40px_rgba(var(--shadow-tint),0.8)]">
       <div aria-hidden className="pointer-events-none absolute inset-0 z-10 opacity-0 transition duration-300 group-hover:opacity-100" style={{ background: `radial-gradient(420px circle at var(--mx,50%) var(--my,0%), rgb(${hue} / 0.12), transparent 45%)` }} />
-      <button onClick={onOpen} className="relative block aspect-[16/10] w-full overflow-hidden text-left" aria-label={`${t.name} details`}>
-        <NeaImage src={testPhoto(t)} alt="" fill sizes="(min-width:1024px) 33vw, (min-width:640px) 50vw, 100vw" className="object-cover transition duration-700 group-hover:scale-[1.04]" />
+      <button onClick={onOpen} className="relative block aspect-[16/9] w-full overflow-hidden text-left" aria-label={`${t.name} details`}>
+        <TestArt t={t} className="transition duration-700 group-hover:scale-[1.04]" />
         {/* scan line */}
         <span aria-hidden className="absolute inset-x-0 top-0 h-px opacity-0 group-hover:animate-[scan_1.8s_ease-in-out_infinite] group-hover:opacity-100" style={{ background: `linear-gradient(90deg, transparent, rgb(${hue}), transparent)`, boxShadow: `0 0 18px 2px rgb(${hue} / 0.6)` }} />
         <span className="absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full bg-white/90 px-2.5 py-1 text-[11.5px] text-ink backdrop-blur">
@@ -174,25 +171,9 @@ function TestCard({ t, score, system, onOpen }: { t: LabTest; score?: number; sy
         )}
       </button>
       <div className="flex flex-1 flex-col p-5">
-        <div className="flex items-start justify-between gap-3">
-          <button onClick={onOpen} className="text-left font-display text-[1.25rem] leading-tight text-ink hover:underline hover:underline-offset-4">
-            {t.name}
-          </button>
-          <span className="tabular shrink-0 font-display text-[1.25rem] text-ink">{money(t.price)}</span>
-        </div>
-        <p className="mt-1.5 line-clamp-2 text-[14px] leading-snug text-graphite">{t.bestFor}</p>
-        <div className="mt-3 flex flex-wrap gap-1.5 text-[11.5px] text-ink/75">
-          {t.sample && (
-            <span className="inline-flex items-center gap-1 rounded-full bg-ink/[0.045] px-2 py-0.5">
-              <Droplet className="h-3 w-3" /> {t.sample.split(" (")[0]}
-            </span>
-          )}
-          {t.results && (
-            <span className="inline-flex items-center gap-1 rounded-full bg-ink/[0.045] px-2 py-0.5">
-              <Clock className="h-3 w-3" /> {t.results}
-            </span>
-          )}
-          {t.markers && <span className="rounded-full bg-ink/[0.045] px-2 py-0.5">{t.markers}</span>}
+        <div className="flex items-start justify-between gap-4">
+          <p className="line-clamp-3 text-[15px] leading-snug text-ink/80">{t.plain}</p>
+          <span className="tabular shrink-0 font-display text-[1.35rem] leading-none text-ink">{money(t.price)}</span>
         </div>
         <div className="mt-auto flex gap-2 pt-4">
           <a href={buyUrl(t)} target="_blank" rel="noopener" className="inline-flex flex-1 items-center justify-center gap-2 rounded-full bg-ink px-4 py-2.5 text-[14px] font-medium text-white transition hover:bg-ink/90 active:scale-[0.97]">
@@ -257,8 +238,8 @@ function TestSheet({ t, system, regions, onClose }: { t: LabTest; system: string
         transition={{ type: "spring", stiffness: 320, damping: 32 }}
         className="relative max-h-[92dvh] w-full max-w-3xl overflow-y-auto overscroll-contain rounded-t-[32px] bg-white shadow-2xl md:rounded-[32px]"
       >
-        <div className="relative aspect-[16/9] w-full md:aspect-[16/8]">
-          <NeaImage src={testPhoto(t)} alt={t.name} fill sizes="(min-width:768px) 768px, 100vw" className="object-cover" />
+        <div className="relative aspect-[16/8] w-full md:aspect-[16/7]">
+          <TestArt t={t} big />
           <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/5 to-transparent" />
           <button onClick={onClose} aria-label="Close" className="absolute right-4 top-4 grid h-10 w-10 place-items-center rounded-full bg-white/90 text-ink backdrop-blur hover:bg-white">
             <X className="h-5 w-5" />
@@ -324,5 +305,26 @@ function TestSheet({ t, system, regions, onClose }: { t: LabTest; system: string
         </div>
       </motion.article>
     </motion.div>
+  );
+}
+
+/** Each test gets its own art: its name set large on its group's colour, with a pattern for the group. No photos, so nothing repeats. */
+function TestArt({ t, big, className }: { t: LabTest; big?: boolean; className?: string }) {
+  const hue = HUE[t.group];
+  const Icon = ICON[t.group];
+  const short = t.name.replace(/\s*\(.*\)/, "").replace(/^Vitamin /, "Vitamin\u00a0");
+  const pattern =
+    t.group === "hormones"
+      ? `repeating-radial-gradient(circle at 85% 20%, rgb(255 255 255 / 0.22) 0 1px, transparent 1px 22px)`
+      : t.group === "microbiome"
+        ? `radial-gradient(rgb(255 255 255 / 0.35) 1.5px, transparent 2px) 0 0 / 18px 18px`
+        : `repeating-linear-gradient(135deg, rgb(255 255 255 / 0.16) 0 1px, transparent 1px 16px)`;
+  return (
+    <div aria-hidden className={cn("absolute inset-0 overflow-hidden", className)} style={{ background: `linear-gradient(140deg, rgb(${hue} / 0.95), rgb(${hue} / 0.55) 60%, rgb(255 236 226))` }}>
+      <div className="absolute inset-0" style={{ background: pattern }} />
+      <div className="absolute -bottom-16 -right-10 h-56 w-56 rounded-full bg-white/25 blur-2xl" />
+      <Icon className={cn("absolute right-5 top-5 text-white/80", big ? "h-9 w-9" : "h-7 w-7")} strokeWidth={1.4} />
+      {!big && <p className="absolute bottom-4 left-5 right-5 font-display text-[clamp(1.7rem,4.5vw,2.3rem)] leading-[1.02] text-white [text-shadow:0_2px_18px_rgb(0_0_0/0.15)]">{short}</p>}
+    </div>
   );
 }
