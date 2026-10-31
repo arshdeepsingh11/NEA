@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Directions } from "@/components/map/directions";
 import { BookButton } from "@/components/booking/booking";
 import {
   Activity,
@@ -381,8 +382,11 @@ export function VisitChapter() {
             </div>
           </dl>
         </div>
-        <div className="min-h-[560px]">
-          <ClinicMap query={site.mapsQuery} />
+        <div className="grid gap-4">
+          <div className="min-h-[440px] lg:min-h-[520px]">
+            <ClinicMap query={site.mapsQuery} className="min-h-[440px] lg:min-h-[520px]" />
+          </div>
+          <Directions />
         </div>
       </div>
     </section>
