@@ -1,5 +1,6 @@
 import { HomeHero } from "@/components/sections/home-hero";
 import { SkinFilmChapter } from "@/components/sections/skin-film";
+import { SkinDive } from "@/components/sections/skin-dive";
 import { ConcernsMarquee, MethodStory, BodyIntelChapter, ProgramsRail } from "@/components/sections/home-story";
 import { FaceMapChapter, SkinReportChapter, SystemsChapter } from "@/components/sections/home-intel";
 import { SkinFinder } from "@/components/sections/skin-finder";
@@ -29,6 +30,7 @@ export default function HomePage() {
       <HomeHero />
       <ConcernsMarquee />
       <SkinFilmChapter />
+      <SkinDive />
       <SystemsChapter />
       <MethodStory />
       <BodyIntelChapter regions={scan} />
