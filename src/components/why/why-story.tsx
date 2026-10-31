@@ -30,7 +30,7 @@ export function WhyStory() {
 }
 
 /* 1. You've probably been here before. */
-const TRIED = ["The facial", "The peel", "The serum everyone swears by", "The new cream", "The cleanse"];
+const TRIED = ["The facial", "The peel", "The ‘miracle’ serum", "The new cream", "The cleanse"];
 function Tried() {
   const ref = useRef<HTMLElement>(null);
   const { scrollYProgress: p } = useScroll({ target: ref, offset: ["start start", "end end"] });
@@ -49,7 +49,7 @@ function Tried() {
           ))}
         </ul>
         <motion.p style={{ opacity: after, y: afterY }} className="mt-10 max-w-xl font-display text-[clamp(1.4rem,4vw,2.2rem)] leading-snug text-ink">
-          It looked better for two weeks.
+          It worked. For two weeks.
           <br />
           <span className="text-graphite">Then it came back.</span>
         </motion.p>
@@ -85,13 +85,14 @@ function NotYourFault() {
   const line = useTransform(cut, (v) => `${v}%`);
   const labels = useTransform(p, [0.45, 0.65], [0, 1]);
   const words = useTransform(p, [0.6, 0.78], [0, 1]);
+  const outside = useTransform(labels, (v) => 1 - v);
   return (
     <section ref={ref} className="relative h-[260svh] bg-ink text-white">
       <div className="sticky top-0 flex h-[100svh] flex-col items-center justify-center gap-6 px-5 py-20 md:flex-row md:gap-16">
         <div className="text-center md:max-w-md md:text-left">
-          <h2 className="font-display text-[clamp(2.4rem,7vw,5rem)] leading-[0.98]">That’s not your fault.</h2>
+          <h2 className="font-display text-[clamp(2.4rem,7vw,5rem)] leading-[0.98]">It’s not you.</h2>
           <motion.p style={{ opacity: words }} className="mt-4 text-[17px] leading-relaxed text-white/75 md:text-[20px]">
-            Most clinics only treat what they can see. But your skin is the last stop of everything happening <em className="not-italic text-[#f3d9a4]">inside</em> you.
+            Your skin shows what’s going on <em className="not-italic text-[#f3d9a4]">inside</em>. Sleep. Stress. Food. Gut. Hormones. Treat only the outside, and it keeps coming back.
           </motion.p>
         </div>
         <div className="relative aspect-[3/4] w-[min(72vw,380px)] shrink-0 overflow-hidden rounded-[36px] md:w-[400px]">
@@ -115,7 +116,8 @@ function NotYourFault() {
             </motion.div>
           </motion.div>
           <motion.span aria-hidden style={{ left: line }} className="absolute inset-y-0 w-0.5 bg-[#f3d9a4] shadow-[0_0_20px_4px_rgba(243,217,164,0.6)]" />
-          <span className="absolute bottom-3 left-3 rounded-full bg-black/40 px-2.5 py-1 text-[11.5px] text-white/85 backdrop-blur">What everyone treats</span>
+          <motion.span style={{ opacity: outside }} className="absolute bottom-3 left-3 rounded-full bg-black/40 px-2.5 py-1 text-[11.5px] text-white/85 backdrop-blur">What you see</motion.span>
+          <motion.span style={{ opacity: labels }} className="absolute bottom-3 right-3 rounded-full bg-[#f3d9a4] px-2.5 py-1 text-[11.5px] font-medium text-ink">What’s really going on</motion.span>
         </div>
       </div>
     </section>
@@ -125,9 +127,9 @@ function NotYourFault() {
 /* 3. We don't guess. We look. */
 function WeLook() {
   const steps = [
-    { w: "Test.", d: "A simple test shows what’s really going on with your gut, hormones or vitamins." },
-    { w: "Understand.", d: "We find the reason behind what you see in the mirror." },
-    { w: "Treat.", d: "We treat that reason, not just the surface." },
+    { w: "Look.", d: "We scan your skin up close." },
+    { w: "Find.", d: "A simple test shows why it keeps happening." },
+    { w: "Fix.", d: "We treat the why, not just the spot." },
   ];
   return (
     <section className="chapter">
@@ -161,9 +163,9 @@ function WeLook() {
 /* 4. One team. One plan. Yours. */
 function OneTeam() {
   const team = [
-    { icon: Sparkles, t: "Skin experts", d: "Aestheticians who treat the skin you see" },
-    { icon: Stethoscope, t: "Medical team", d: "Physician-managed care, start to finish" },
-    { icon: FlaskConical, t: "Registered Dietitian", d: "Food and gut, the inside of your plan" },
+    { icon: Sparkles, t: "Skin experts", d: "They care for your skin" },
+    { icon: Stethoscope, t: "Doctors", d: "They keep it safe, start to finish" },
+    { icon: FlaskConical, t: "Dietitian", d: "Food that helps your skin" },
   ];
   return (
     <section className="chapter bg-mist/60">
@@ -172,7 +174,7 @@ function OneTeam() {
           One team. One plan. <span className="aurora-text italic">Yours.</span>
         </motion.h2>
         <motion.p {...reveal} className="mx-auto mt-5 max-w-xl text-[17px] text-graphite">
-          Not a package off a menu. Three kinds of experts, one plan built around you.
+          No menu. No guesswork. Just people who work together, on you.
         </motion.p>
         <div className="relative mx-auto mt-12 grid max-w-4xl gap-3 sm:grid-cols-3">
           {team.map((m, i) => (
@@ -210,8 +212,8 @@ function Compare() {
     const c = animate(100, 0, { duration: 1.8, delay: 0.6, ease: [0.65, 0, 0.35, 1], onUpdate: (x) => !touched.current && setV(x) });
     return () => c.stop();
   }, [seen]);
-  const other = ["A treatment that looks great for a few weeks", "A test result with nobody to explain it", "A diet plan that ignores your skin"];
-  const nea = ["The reason behind your skin problem", "Treatment for that reason, not just the surface", "Proof it’s working, in numbers"];
+  const other = ["Looks good for a few weeks", "Test results, nobody to explain them", "A diet that forgets your skin"];
+  const nea = ["You know why it’s happening", "We fix the why, not just the surface", "You see it working, in numbers"];
   return (
     <section className="chapter">
       <div className="container">
@@ -276,10 +278,10 @@ function Proof() {
       <div className="container grid items-center gap-12 md:grid-cols-2">
         <div>
           <motion.h2 {...reveal} className="font-display text-[clamp(2.4rem,6vw,4.4rem)] leading-[0.98]">
-            Don’t take our word for it.
+            See it for yourself.
           </motion.h2>
           <motion.p {...reveal} className="mt-5 max-w-md text-[18px] leading-relaxed text-white/75">
-            We scan your skin again, test again, and show you the numbers changing.
+            We scan again. You see the change.
           </motion.p>
           <motion.figure {...reveal} className="mt-10 max-w-md border-l-2 border-[#f3d9a4] pl-5">
             <blockquote className="font-display text-[1.35rem] leading-snug">“I struggled with adult acne and hyperpigmentation… they helped me build a skin care routine that I religiously follow now.”</blockquote>
@@ -316,10 +318,10 @@ function FirstStep() {
       <div aria-hidden className="absolute left-1/2 top-1/2 -z-10 h-[520px] w-[520px] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-60 blur-3xl" style={{ background: "var(--aurora)" }} />
       <div className="container">
         <motion.h2 {...reveal} className="mx-auto max-w-3xl font-display text-[clamp(2.4rem,7vw,5.2rem)] leading-[0.98] text-ink">
-          The first step costs nothing.
+          Start free.
         </motion.h2>
         <motion.p {...reveal} className="mx-auto mt-5 max-w-lg text-[18px] text-graphite">
-          A free 15-minute skin scan. Come in, see what we see, and decide for yourself.
+          A 15-minute skin scan. No pressure. Just answers.
         </motion.p>
         <motion.div {...reveal} className="mt-10 flex flex-col items-center gap-4">
           <Link href="/skin-scan" className="btn-light !px-9 !py-4 !text-[17px]">
