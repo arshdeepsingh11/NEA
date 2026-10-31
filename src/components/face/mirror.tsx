@@ -3,11 +3,11 @@ import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Camera, CalendarHeart, Download, Loader2, ScanFace, ShieldCheck, Sparkles, X } from "lucide-react";
-import { ParticleFace, ZONE_LABEL } from "./particle-face";
 import { PartLayers } from "@/components/ui/holo-portrait";
 import { useBooking } from "@/components/booking/booking";
 import { faceZones } from "@/content/body";
-import { EDGES, ZONES } from "@/content/face-mesh";
+import { ZONES, ZONE_LABEL } from "@/content/face-mesh";
+import { IMG } from "@/content/media";
 import { cameraSupported, loadLandmarker, startCamera, track, type Pt } from "@/lib/face-tracker";
 import { cn } from "@/lib/utils";
 
@@ -17,7 +17,7 @@ type Stage = "intro" | "loading" | "live" | "fallback";
 /**
  * NEA's AR mirror: the face map drawn live on the visitor's own face.
  * Everything runs in their browser; the camera picture is never recorded, saved or sent.
- * Tap a zone on your face to open it. No camera? The particle face works the same way.
+ * Tap a zone on your face to open it. No camera? A real face with the same zones works the same way.
  */
 export function MirrorHost() {
   const [open, setOpen] = useState(false);
@@ -68,7 +68,7 @@ export function MirrorHost() {
 
   const begin = async () => {
     if (!cameraSupported()) {
-      setNote("This browser can’t use the camera, so here is the face map to explore instead.");
+      setNote("This browser can’t use the camera. Tap any part of her face instead.");
       return setStage("fallback");
     }
     setStage("loading");
@@ -81,7 +81,7 @@ export function MirrorHost() {
     } catch (e) {
       stopAll();
       const denied = (e as Error)?.name === "NotAllowedError";
-      setNote(denied ? "No problem. Without the camera you can still explore the face map here." : "The camera couldn’t start, so here is the face map to explore instead.");
+      setNote(denied ? "No problem. Tap any part of her face instead." : "The camera couldn’t start. Tap any part of her face instead.");
       setStage("fallback");
     }
   };
@@ -129,25 +129,6 @@ export function MirrorHost() {
       const bot = Math.max(...ys);
       const size = bot - top;
       const t = (now - t0) / 1000;
-      const beam = top + (((t * 0.28) % 1.4) - 0.2) * size;
-
-      ctx.lineWidth = 0.7;
-      ctx.strokeStyle = "rgba(243,217,164,0.22)";
-      ctx.beginPath();
-      for (const [a, b] of EDGES) {
-        ctx.moveTo(pts[a][0], pts[a][1]);
-        ctx.lineTo(pts[b][0], pts[b][1]);
-      }
-      ctx.stroke();
-      ctx.globalCompositeOperation = "lighter";
-      for (const [x, y] of pts) {
-        const near = Math.max(0, 1 - Math.abs(y - beam) / (size * 0.04));
-        ctx.fillStyle = `rgba(255,${Math.round(225 - near * 20)},${Math.round(190 + near * 60)},${0.35 + near * 0.6})`;
-        ctx.beginPath();
-        ctx.arc(x, y, 1.1 + near * 1.6, 0, Math.PI * 2);
-        ctx.fill();
-      }
-      ctx.globalCompositeOperation = "source-over";
 
       // zones: a soft dot each, a halo and label on the chosen one
       const active = zoneRef.current;
@@ -157,18 +138,25 @@ export function MirrorHost() {
         const cy = ids.reduce((s, i) => s + pts[i][1], 0) / ids.length;
         cents[z] = [cx, cy];
         const on = z === active;
-        ctx.fillStyle = on ? "#fff" : "rgba(243,217,164,0.95)";
-        ctx.beginPath();
-        ctx.arc(cx, cy, on ? 5 : 3.5, 0, Math.PI * 2);
-        ctx.fill();
+        // a soft glow on the chosen zone, like light on skin
         if (on) {
-          ctx.strokeStyle = "rgba(255,255,255,0.85)";
-          ctx.setLineDash([4, 6]);
+          const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, size * 0.16);
+          g.addColorStop(0, "rgba(255,240,220,0.45)");
+          g.addColorStop(1, "rgba(255,240,220,0)");
+          ctx.fillStyle = g;
           ctx.beginPath();
-          ctx.arc(cx, cy, size * 0.1 * (1 + Math.sin(t * 3) * 0.06), 0, Math.PI * 2);
-          ctx.stroke();
-          ctx.setLineDash([]);
+          ctx.arc(cx, cy, size * 0.16, 0, Math.PI * 2);
+          ctx.fill();
         }
+        const pulse = 1 + Math.sin(t * 2.4 + cx) * 0.25;
+        ctx.fillStyle = "rgba(255,255,255,0.35)";
+        ctx.beginPath();
+        ctx.arc(cx, cy, (on ? 9 : 7) * pulse, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = "#fff";
+        ctx.beginPath();
+        ctx.arc(cx, cy, on ? 4.5 : 3.5, 0, Math.PI * 2);
+        ctx.fill();
         const label = ZONE_LABEL[z];
         ctx.font = `${on ? 600 : 500} ${on ? 13 : 11}px Inter, system-ui, sans-serif`;
         const tw = ctx.measureText(label).width;
@@ -220,9 +208,9 @@ export function MirrorHost() {
     g.drawImage(c, 0, 0);
     g.fillStyle = "rgba(255,255,255,0.9)";
     g.font = `${14 * k}px Inter, system-ui, sans-serif`;
-    g.fillText("NEA Precision Skin · face map", 16 * k, out.height - 18 * k);
+    g.fillText("NEA Precision Skin · skin mirror", 16 * k, out.height - 18 * k);
     const a = document.createElement("a");
-    a.download = "my-nea-face-map.png";
+    a.download = "my-nea-skin-map.png";
     a.href = out.toDataURL("image/png");
     a.click();
   };
@@ -238,19 +226,15 @@ export function MirrorHost() {
           <div aria-hidden className={cn("pointer-events-none absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60 transition-opacity", stage === "live" ? "opacity-100" : "opacity-0")} />
           <canvas ref={canvas} onClick={tapLive} className={cn("absolute inset-0 h-full w-full", stage === "live" ? "block" : "hidden")} />
 
-          {/* before the camera, and when there isn't one: the particle face */}
-          {stage !== "live" && (
-            <div className="absolute inset-0 grid place-items-center">
-              <div className="h-[min(78svh,760px)] w-[min(92vw,620px)]">
-                <ParticleFace zone={zone} onZone={setZone} demo={!zone} />
-              </div>
-            </div>
-          )}
+          {/* before the camera, and when there isn't one: a real face with the same zones */}
+          {stage !== "live" && <PhotoMap zone={zone} onZone={setZone} dim={stage !== "fallback" && !zone} />}
+          {/* a soft ring light around the mirror */}
+          <div aria-hidden className="pointer-events-none absolute inset-0 shadow-[inset_0_0_120px_30px_rgba(255,236,214,0.35)]" />
 
           {/* top bar */}
           <div className="absolute inset-x-0 top-0 flex items-center justify-between p-4 sm:p-6">
             <p className="flex items-center gap-2 rounded-full bg-black/35 px-3 py-1.5 text-[12.5px] backdrop-blur-md">
-              <ScanFace className="h-4 w-4 text-[#f3d9a4]" /> NEA face map
+              <ScanFace className="h-4 w-4 text-[#f3d9a4]" /> NEA skin mirror
             </p>
             <div className="flex gap-2">
               {stage === "live" && (
@@ -267,11 +251,11 @@ export function MirrorHost() {
           {/* intro card */}
           {(stage === "intro" || stage === "loading") && !zone && (
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="absolute inset-x-4 bottom-6 mx-auto max-w-md rounded-3xl border border-white/15 bg-black/45 p-5 text-center backdrop-blur-xl sm:bottom-10">
-              <p className="font-display text-[1.6rem] leading-tight">See your face the way we do.</p>
-              <p className="mt-1.5 text-[14.5px] text-white/75">Turn on your camera and your face map appears on you, live. Tap any part of your face to learn about it.</p>
+              <p className="font-display text-[1.6rem] leading-tight">See your skin, zone by zone.</p>
+              <p className="mt-1.5 text-[14.5px] text-white/75">Turn on your camera, then tap any part of your face to see what it needs.</p>
               <button onClick={begin} disabled={stage === "loading"} className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#f3d9a4] px-6 py-3.5 text-[15.5px] font-semibold text-ink transition hover:bg-[#f6e3c0] disabled:opacity-70">
                 {stage === "loading" ? <Loader2 className="h-5 w-5 animate-spin" /> : <Camera className="h-5 w-5" />}
-                {stage === "loading" ? "Getting your face map ready…" : "Turn on my camera"}
+                {stage === "loading" ? "Getting ready…" : "Turn on my camera"}
               </button>
               <p className="mt-3 flex items-center justify-center gap-1.5 text-[12px] text-white/60">
                 <ShieldCheck className="h-3.5 w-3.5" /> Your camera stays on your device. Nothing is recorded, saved or sent.
@@ -321,5 +305,62 @@ export function MirrorHost() {
         </motion.div>
       )}
     </AnimatePresence>
+  );
+}
+
+// a different face from the Skin Twin's, so no photo repeats; zone spots are fractions of the photo
+const PHOTO = { w: 1000, h: 1258, face: 0.324, cx: 0.5, cy: 0.53 };
+const PHOTO_ZONES: Record<string, [number, number]> = {
+  forehead: [0.505, 0.42],
+  undereye: [0.421, 0.525],
+  tzone: [0.505, 0.548],
+  cheeks: [0.614, 0.565],
+  mouth: [0.505, 0.632],
+  jaw: [0.495, 0.69],
+};
+
+/** A real, smiling face filling the mirror, with a soft dot on each zone to tap. */
+function PhotoMap({ zone, onZone, dim }: { zone: string | null; onZone: (z: string) => void; dim?: boolean }) {
+  const box = useRef<HTMLDivElement>(null);
+  const [k, setK] = useState({ x: 0, y: 0, w: 0, h: 0 });
+  useEffect(() => {
+    const fit = () => {
+      const b = box.current;
+      if (!b) return;
+      const W = b.clientWidth;
+      const H = b.clientHeight;
+      const s = Math.max((0.5 * H) / (PHOTO.face * PHOTO.h), W / PHOTO.w, H / PHOTO.h);
+      const w = PHOTO.w * s;
+      const h = PHOTO.h * s;
+      setK({ x: Math.min(0, Math.max(W - w, W / 2 - PHOTO.cx * w)), y: Math.min(0, Math.max(H - h, H * 0.42 - PHOTO.cy * h)), w, h });
+    };
+    fit();
+    const ro = new ResizeObserver(fit);
+    if (box.current) ro.observe(box.current);
+    return () => ro.disconnect();
+  }, []);
+  return (
+    <div ref={box} className="absolute inset-0 overflow-hidden">
+      {k.w > 0 && (
+        <>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={`${IMG.twin}?auto=format&fit=crop&w=1400&q=80`} alt="Example face" className="absolute max-w-none select-none" style={{ left: k.x, top: k.y, width: k.w, height: k.h }} draggable={false} />
+          <div aria-hidden className={cn("absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/55 transition-opacity duration-500", dim ? "opacity-100" : "opacity-60")} />
+          {Object.entries(PHOTO_ZONES).map(([z, [fx, fy]]) => {
+            const on = z === zone;
+            const left = k.x + fx * k.w;
+            const right = left > (box.current?.clientWidth ?? 0) / 2;
+            return (
+              <button key={z} onClick={() => onZone(z)} aria-label={`Open ${ZONE_LABEL[z]}`} aria-pressed={on} className="group absolute grid h-11 w-11 -translate-x-1/2 -translate-y-1/2 place-items-center" style={{ left, top: k.y + fy * k.h }}>
+                {on && <span className="absolute h-24 w-24 rounded-full bg-[radial-gradient(circle,rgba(255,240,220,0.45),transparent_70%)]" />}
+                <span className="absolute h-5 w-5 animate-ping rounded-full bg-white/50" style={{ animationDuration: "2.6s" }} />
+                <span className={cn("relative rounded-full bg-white shadow-[0_0_12px_rgba(255,255,255,0.9)] transition", on ? "h-3.5 w-3.5" : "h-2.5 w-2.5 group-hover:scale-125")} />
+                <span className={cn("pointer-events-none absolute top-1/2 -translate-y-1/2 whitespace-nowrap rounded-full px-2.5 py-1 text-[12px] font-medium backdrop-blur-md transition", right ? "left-9" : "right-9", on ? "bg-white text-ink" : "bg-black/40 text-white")}>{ZONE_LABEL[z]}</span>
+              </button>
+            );
+          })}
+        </>
+      )}
+    </div>
   );
 }
