@@ -1,7 +1,8 @@
 "use client";
 import { NeaSiIcon } from "@/components/brand/nea-si-icon";
 import Link from "next/link";
-import { ArrowUpRight, ScanFace } from "lucide-react";
+import { ArrowUpRight, Camera, ScanFace } from "lucide-react";
+import { openMirror } from "@/components/face/open-mirror";
 import { useState } from "react";
 import { HoloPortrait, PartLayers } from "@/components/ui/holo-portrait";
 import { AnimatePresence } from "framer-motion";
@@ -28,7 +29,7 @@ export function SystemsChapter() {
             <br />
             <span className="text-graphite">Move the inputs and watch.</span>
           </h2>
-          <p className="measure mt-5 text-lede text-graphite">This digital twin reacts to everyday habits the way real skin does. Slide sleep, sun, stress and food, and see glow, breakouts, spots and redness change, with a plain-language reason for every change.</p>
+          <p className="measure mt-5 text-lede text-graphite">Move the sliders for sleep, water, sun, stress and food, and watch the face change. Want to see it on you? Tap “Try it on my face”.</p>
         </div>
         <SkinTwin />
       </div>
@@ -95,9 +96,9 @@ export function FaceMapChapter({ zones }: { zones: Region[] }) {
               ]}
               footer={
                 <div className="flex flex-wrap gap-3">
-                  <Link href={`/body?mode=face&focus=${z.id}`} className="btn-ghost">
-                    Open in 3D <ArrowUpRight className="h-4 w-4" />
-                  </Link>
+                  <button onClick={() => openMirror(z.id)} className="btn-light">
+                    <Camera className="h-4 w-4" /> Try it on your face
+                  </button>
                   <button onClick={() => ai.open({ query: `What does NEA recommend for my ${z.name.toLowerCase()}?`, context: z.name })} className="btn-primary">
                     <NeaSiIcon className="h-4 w-4" /> Ask Nea SI
                   </button>

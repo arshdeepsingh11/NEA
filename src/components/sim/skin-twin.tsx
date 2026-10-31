@@ -4,9 +4,8 @@ import Link from "next/link";
 import { animate, motion, useMotionValue, useTransform } from "framer-motion";
 import { ArrowUpRight, BedDouble, Brain, GlassWater, Salad, Sparkles, Sun, Waves } from "lucide-react";
 import { useEffect, useMemo, useState, type ReactNode } from "react";
-import { NeaImage } from "@/components/ui/nea-image";
 import { useAi } from "@/components/ai/ai-provider";
-import { IMG } from "@/content/media";
+import { TwinStage } from "./twin-stage";
 import { cn } from "@/lib/utils";
 
 /**
@@ -34,13 +33,6 @@ export function model(i: Inputs) {
   return { glow, clarity, tone, calm, score, f: { sleep, water, sun, stress, food, cycle } };
 }
 
-const BREAKOUTS = [
-  [38, 57], [62, 57], [41, 60], [59, 61], [46, 42], [54, 41], [50, 66], [36, 54], [64, 53], [44, 64], [56, 65], [48, 46],
-] as const;
-const SPOTS = [
-  [40, 54], [43, 52], [57, 52], [60, 55], [47, 51], [54, 50], [38, 51], [62, 50],
-] as const;
-
 export function SkinTwin({ className }: { className?: string }) {
   const ai = useAi();
   const [v, setV] = useState<Inputs>(DEFAULT);
@@ -60,49 +52,28 @@ export function SkinTwin({ className }: { className?: string }) {
     };
   }, [m.score, mv, shown]);
 
-  const breakouts = Math.round(((100 - m.clarity) / 100) * BREAKOUTS.length * 1.2);
   const notes = explain(v, m);
 
   return (
     <div className={cn("grid items-center gap-8 lg:grid-cols-[0.95fr_1.05fr] lg:gap-14", className)}>
-      {/* the twin */}
-      <div className="relative mx-auto w-full max-w-[520px]">
-        <div className="relative aspect-[4/5] overflow-hidden rounded-[40px] border border-white/80 shadow-[0_50px_120px_-60px_rgba(var(--shadow-tint),0.65)]">
-          <motion.div className="absolute inset-0" animate={{ filter: `saturate(${0.7 + m.glow / 300}) brightness(${0.9 + m.glow / 900}) contrast(${0.96 + m.glow / 2000})` }} transition={{ duration: 0.5 }}>
-            <NeaImage src={IMG.twin} alt="Digital skin twin" fill sizes="(min-width:1024px) 40vw, 90vw" className="object-cover object-[50%_40%]" />
-          </motion.div>
-          {/* redness: inflammation shows on the cheeks first */}
-          <motion.div aria-hidden className="absolute inset-0 mix-blend-multiply" animate={{ opacity: ((100 - m.calm) / 100) * 0.9 }} transition={{ duration: 0.5 }} style={{ background: "radial-gradient(9% 6% at 40% 57%, rgba(220,70,70,0.55), transparent 70%), radial-gradient(9% 6% at 60% 57%, rgba(220,70,70,0.55), transparent 70%), radial-gradient(6% 4% at 50% 54%, rgba(220,70,70,0.35), transparent 70%)" }} />
-          {/* glow: a healthy sheen on the high points */}
-          <motion.div aria-hidden className="absolute inset-0 mix-blend-screen" animate={{ opacity: m.glow / 140 }} transition={{ duration: 0.5 }} style={{ background: "radial-gradient(7% 4% at 50% 42%, rgba(255,255,255,0.7), transparent 70%), radial-gradient(6% 4% at 41% 55%, rgba(255,255,255,0.5), transparent 70%), radial-gradient(6% 4% at 59% 55%, rgba(255,255,255,0.5), transparent 70%)" }} />
-          {/* breakouts */}
-          {BREAKOUTS.map(([x, y], k) => (
-            <motion.span key={k} aria-hidden className="absolute h-[9px] w-[9px] -translate-x-1/2 -translate-y-1/2 rounded-full" style={{ left: `${x}%`, top: `${y}%`, background: "radial-gradient(circle, rgba(196,60,60,0.95) 0 35%, rgba(220,110,100,0.5) 60%, transparent 72%)" }} animate={{ opacity: k < breakouts ? 1 : 0, scale: k < breakouts ? 1 : 0.4 }} transition={{ duration: 0.4 }} />
-          ))}
-          {/* sun spots */}
-          {SPOTS.map(([x, y], k) => (
-            <motion.span key={k} aria-hidden className="absolute h-[7px] w-[10px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[rgba(110,70,40,0.6)] blur-[1px]" style={{ left: `${x}%`, top: `${y}%` }} animate={{ opacity: c01((100 - m.tone) / 70) }} transition={{ duration: 0.5 }} />
-          ))}
-          {/* scanner chrome */}
-          <div aria-hidden className="absolute inset-x-0 top-0 h-[24%] animate-[heroscan_5s_cubic-bezier(0.65,0,0.35,1)_infinite] bg-gradient-to-b from-transparent via-white/30 to-transparent" />
-          <div className="absolute left-4 top-4 flex items-center gap-2 rounded-full border border-white/70 bg-white/75 px-3 py-1.5 text-[11.5px] text-ink backdrop-blur">
-            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-flora" /> Skin Twin · live
-          </div>
-        </div>
+      {/* the twin: a real face, or yours (stays in view on phones while you move the sliders) */}
+      <div className="sticky top-14 z-20 lg:static">
+        <TwinStage look={m} className="mx-auto aspect-[4/5] max-h-[48svh] w-full max-w-[520px] lg:max-h-none">
         {/* score */}
-        <div className="glass absolute -bottom-6 left-1/2 flex w-[86%] -translate-x-1/2 items-center gap-5 rounded-3xl px-5 py-4">
-          <Ring value={m.score} />
-          <div className="min-w-0 flex-1">
-            <p className="text-[12px] text-graphite">Skin score</p>
-            <p className="tabular font-display text-[2.6rem] leading-none text-ink">
-              {n}
-              <span className="text-[15px] text-graphite">/100</span>
-            </p>
+          <div className="glass absolute bottom-3 left-1/2 flex w-[92%] -translate-x-1/2 items-center gap-3 rounded-3xl px-4 py-2.5 sm:gap-5 sm:px-5 sm:py-4 lg:-bottom-6 lg:w-[86%]">
+            <Ring value={m.score} />
+            <div className="min-w-0 flex-1">
+              <p className="text-[12px] text-graphite">Skin score</p>
+              <p className="tabular font-display text-[1.9rem] leading-none text-ink sm:text-[2.6rem]">
+                {n}
+                <span className="text-[15px] text-graphite">/100</span>
+              </p>
+            </div>
+            <button onClick={() => setV(IDEAL)} className="btn-ghost !px-3.5 !py-2 !text-[12.5px]">
+              <Sparkles className="h-3.5 w-3.5" /> Best habits
+            </button>
           </div>
-          <button onClick={() => setV(IDEAL)} className="btn-ghost !px-3.5 !py-2 !text-[12.5px]">
-            <Sparkles className="h-3.5 w-3.5" /> Best habits
-          </button>
-        </div>
+        </TwinStage>
       </div>
 
       {/* the inputs */}
